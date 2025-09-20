@@ -29,7 +29,7 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<Login />} />
-          <Route path="/" element={
+          <Route path="/*" element={
             <SidebarProvider>
               <MainLayout>
                 <Routes>
@@ -41,11 +41,11 @@ const App = () => (
                   <Route path="/profile" element={<Profile />} />
                   <Route path="/settings" element={<Settings />} />
                   <Route path="/admin" element={<AdminPanel />} />
+                  <Route path="*" element={<NotFound />} />
                 </Routes>
               </MainLayout>
             </SidebarProvider>
           } />
-          <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
