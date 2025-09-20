@@ -46,46 +46,46 @@ export function AppSidebar() {
   
   const getNavClassName = (path: string) => 
     isActive(path) 
-      ? "bg-primary text-primary-foreground hover:bg-primary/90" 
-      : "hover:bg-muted/20 text-white hover:text-primary";
+      ? "bg-primary text-white hover:bg-primary/90 font-semibold" 
+      : "text-gray-300 hover:bg-gray-700 hover:text-white";
 
   return (
-    <Sidebar className={`bg-sidebar-bg text-white ${state === "collapsed" ? "w-14" : "w-64"}`}>
-      <SidebarHeader className="border-b border-white/10 p-4">
+    <Sidebar className={`bg-gray-800 border-r border-gray-700 ${state === "collapsed" ? "w-14" : "w-64"}`}>
+      <SidebarHeader className="border-b border-gray-700 p-4">
         {state !== "collapsed" && (
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-sm">HR</span>
+              <span className="text-white font-bold text-sm">HR</span>
             </div>
             <div>
               <h1 className="font-semibold text-lg text-white">HRMS Pro</h1>
-              <p className="text-xs text-white/70">Human Resource Management</p>
+              <p className="text-xs text-gray-400">Human Resource Management</p>
             </div>
           </div>
         )}
         {state === "collapsed" && (
           <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center mx-auto">
-            <span className="text-primary-foreground font-bold text-sm">HR</span>
+            <span className="text-white font-bold text-sm">HR</span>
           </div>
         )}
       </SidebarHeader>
 
-      <SidebarContent>
+      <SidebarContent className="p-2">
         <SidebarGroup>
-          <SidebarGroupLabel className="text-white/70 uppercase text-xs font-medium px-2 mb-2">
+          <SidebarGroupLabel className="text-gray-400 uppercase text-xs font-medium px-2 mb-2">
             {state !== "collapsed" ? "Main Menu" : ""}
           </SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu>
+            <SidebarMenu className="space-y-1">
               {navigation.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
+                  <SidebarMenuButton asChild className="w-full">
                     <NavLink
                       to={item.url}
-                      className={`${getNavClassName(item.url)} transition-all duration-200 flex items-center gap-3 px-3 py-2 rounded-md mb-1`}
+                      className={`${getNavClassName(item.url)} transition-all duration-200 flex items-center gap-3 px-3 py-2.5 rounded-md w-full text-sm`}
                     >
-                      <item.icon className="h-4 w-4" />
-                      {state !== "collapsed" && <span className="font-medium">{item.title}</span>}
+                      <item.icon className="h-4 w-4 flex-shrink-0" />
+                      {state !== "collapsed" && <span>{item.title}</span>}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -94,21 +94,21 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        <SidebarGroup>
-          <SidebarGroupLabel className="text-white/70 uppercase text-xs font-medium px-2 mb-2 mt-6">
+        <SidebarGroup className="mt-6">
+          <SidebarGroupLabel className="text-gray-400 uppercase text-xs font-medium px-2 mb-2">
             {state !== "collapsed" ? "Administration" : ""}
           </SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu>
+            <SidebarMenu className="space-y-1">
               {adminNavigation.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
+                  <SidebarMenuButton asChild className="w-full">
                     <NavLink
                       to={item.url}
-                      className={`${getNavClassName(item.url)} transition-all duration-200 flex items-center gap-3 px-3 py-2 rounded-md mb-1`}
+                      className={`${getNavClassName(item.url)} transition-all duration-200 flex items-center gap-3 px-3 py-2.5 rounded-md w-full text-sm`}
                     >
-                      <item.icon className="h-4 w-4" />
-                      {state !== "collapsed" && <span className="font-medium">{item.title}</span>}
+                      <item.icon className="h-4 w-4 flex-shrink-0" />
+                      {state !== "collapsed" && <span>{item.title}</span>}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -118,10 +118,10 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="border-t border-white/10 p-4">
+      <SidebarFooter className="border-t border-gray-700 p-4">
         <Button 
           variant="ghost" 
-          className="w-full justify-start text-white hover:text-primary hover:bg-white/10"
+          className="w-full justify-start text-gray-300 hover:text-white hover:bg-gray-700"
         >
           <LogOut className="h-4 w-4" />
           {state !== "collapsed" && <span className="ml-2">Logout</span>}
