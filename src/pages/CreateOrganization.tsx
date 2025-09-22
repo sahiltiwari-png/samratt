@@ -14,6 +14,7 @@ const CreateOrganization = () => {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [formError, setFormError] = useState(null);
   const [formData, setFormData] = useState({
     name: "",
     addressLine1: "",
@@ -73,7 +74,64 @@ const CreateOrganization = () => {
     });
   };
 
+  const validateEmail = (email) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
+
   const handleSubmit = async () => {
+    setFormError(null);
+    // Required fields
+    const requiredFields = [
+      { key: 'name', label: 'Organization Name' },
+      { key: 'addressLine1', label: 'Address Line 1' },
+      { key: 'country', label: 'Country' },
+      { key: 'state', label: 'State' },
+      { key: 'city', label: 'City' },
+      { key: 'zipCode', label: 'Zip Code' },
+      { key: 'contactPersonName', label: 'Contact Person Name' },
+      { key: 'contactEmail', label: 'Organization Email' },
+      { key: 'contactPhone', label: 'Contact Phone' },
+      { key: 'registrationNumber', label: 'Registration Number' },
+      { key: 'taxId', label: 'Tax ID' },
+      { key: 'industryType', label: 'Industry Type' },
+      { key: 'website', label: 'Website' },
+      { key: 'domain', label: 'Domain' },
+      { key: 'logoUrl', label: 'Logo URL' },
+      { key: 'timezone', label: 'Timezone' },
+      { key: 'workingDays', label: 'Working Days' },
+      { key: 'status', label: 'Status' },
+      { key: 'dayStartTime', label: 'Day Start Time' },
+      { key: 'dayEndTime', label: 'Day End Time' },
+    ];
+    for (const field of requiredFields) {
+      if (!formData[field.key] || (typeof formData[field.key] === 'string' && formData[field.key].trim() === '')) {
+        setFormError(`${field.label} is required.`);
+        return;
+      }
+    }
+    // Validate organization email
+    if (!validateEmail(formData.contactEmail)) {
+      setFormError('A valid organization email is required.');
+      return;
+    }
+    // Validate admin fields
+    const adminFields = [
+      { key: 'firstName', label: 'Admin First Name' },
+      { key: 'lastName', label: 'Admin Last Name' },
+      { key: 'email', label: 'Admin Email' },
+      { key: 'password', label: 'Admin Password' },
+      { key: 'phone', label: 'Admin Phone' },
+    ];
+    for (const field of adminFields) {
+      if (!formData.admin[field.key] || (typeof formData.admin[field.key] === 'string' && formData.admin[field.key].trim() === '')) {
+        setFormError(`${field.label} is required.`);
+        return;
+      }
+    }
+    if (!validateEmail(formData.admin.email)) {
+      setFormError('A valid admin email is required.');
+      return;
+    }
     try {
       setLoading(true);
       await createOrganization(formData);
@@ -561,6 +619,11 @@ const CreateOrganization = () => {
         </CardHeader>
         <CardContent>
           {renderStepIndicator()}
+          {formError && (
+            <div className="mb-4 text-red-600 bg-red-50 border border-red-200 rounded p-2 text-center">
+              {formError}
+            </div>
+          )}
           {renderStep()}
           
           <div className="flex justify-between mt-8">

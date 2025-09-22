@@ -214,13 +214,19 @@ const HR = () => {
             {error}
           </div>
         ) : organizations.length === 0 ? (
-          <div className="col-span-full text-center p-6">
-            <Building className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium">No Organizations Found</h3>
-            <p className="text-gray-500 mb-4">Create your first organization to get started</p>
-            <Button asChild>
-              <Link to="/create-organization">Create Organization</Link>
-            </Button>
+          <div className="col-span-full flex justify-center items-center min-h-[300px]">
+            <Card className="w-full max-w-xs border-dashed border-2 border-gray-200 hover:shadow-lg transition cursor-pointer" onClick={() => navigate('/create-organization')}>
+              <CardContent className="flex flex-col items-center py-8">
+                <div className="bg-gray-100 rounded-full p-4 mb-4">
+                  <Plus className="h-10 w-10 text-gray-400" />
+                </div>
+                <h3 className="text-lg font-semibold mb-1">No Organizations Found</h3>
+                <p className="text-gray-500 mb-4 text-center">Create your first organization to get started.</p>
+                <Button variant="outline" className="border-primary text-primary hover:bg-primary/10" onClick={e => { e.stopPropagation(); navigate('/create-organization'); }}>
+                  Create Organization
+                </Button>
+              </CardContent>
+            </Card>
           </div>
         ) : (
           organizations.map((org) => (
