@@ -15,6 +15,11 @@ import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import AdminPanel from "./pages/AdminPanel";
 import NotFound from "./pages/NotFound";
+import HR from "./pages/HR";
+import Payroll from "./pages/Payroll";
+import SalarySlips from "./pages/SalarySlips";
+import Reports from "./pages/Reports";
+import CreateOrganization from "./pages/CreateOrganization";
 
 // Layout
 import MainLayout from "./components/layout/MainLayout";
@@ -35,12 +40,17 @@ const App = () => (
                 <Routes>
                   <Route path="/" element={<Navigate to="/dashboard" replace />} />
                   <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/employees" element={<Employees />} />
+                  <Route path="/hr" element={<HR />} />
+                  <Route path="/payroll" element={<Payroll />} />
+                  <Route path="/salary-slips" element={<SalarySlips />} />
                   <Route path="/attendance" element={<Attendance />} />
                   <Route path="/leaves" element={<Leaves />} />
-                  <Route path="/employees" element={<Employees />} />
-                  <Route path="/profile" element={<Profile />} />
+                  <Route path="/reports" element={<Reports />} />
                   <Route path="/settings" element={<Settings />} />
+                  <Route path="/profile" element={<Profile />} />
                   <Route path="/admin" element={<AdminPanel />} />
+                  <Route path="/create-organization" element={<CreateOrganization />} />
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </MainLayout>

@@ -27,14 +27,13 @@ import { Button } from "@/components/ui/button";
 
 const navigation = [
   { title: "Dashboard", url: "/dashboard", icon: Home },
-  { title: "Attendance", url: "/attendance", icon: Clock },
-  { title: "Leave Management", url: "/leaves", icon: Calendar },
   { title: "Employees", url: "/employees", icon: Users },
-  { title: "Profile", url: "/profile", icon: User },
-];
-
-const adminNavigation = [
-  { title: "Admin Panel", url: "/admin", icon: Shield },
+  { title: "HR", url: "/hr", icon: User },
+  { title: "Payroll", url: "/payroll", icon: FileText },
+  { title: "Salary Slips", url: "/salary-slips", icon: FileText },
+  { title: "Attendance", url: "/attendance", icon: Clock },
+  { title: "Leaves", url: "/leaves", icon: Calendar },
+  { title: "Reports", url: "/reports", icon: FileText },
   { title: "Settings", url: "/settings", icon: Settings },
 ];
 
@@ -54,26 +53,30 @@ export function AppSidebar() {
       <SidebarHeader className="border-b border-gray-700 p-4">
         {state !== "collapsed" && (
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">HR</span>
-            </div>
+            <img 
+              src="/src/assets/gounicrew-logo.png" 
+              alt="GoUnicrew"
+              className="h-8 w-auto"
+            />
             <div>
-              <h1 className="font-semibold text-lg text-white">HRMS Pro</h1>
-              <p className="text-xs text-gray-400">Human Resource Management</p>
+              <h1 className="font-semibold text-lg text-white">GoUnicrew</h1>
+              <p className="text-xs text-gray-400">HR Management Platform</p>
             </div>
           </div>
         )}
         {state === "collapsed" && (
-          <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center mx-auto">
-            <span className="text-white font-bold text-sm">HR</span>
-          </div>
+          <img 
+            src="/src/assets/gounicrew-logo.png" 
+            alt="GoUnicrew"
+            className="h-8 w-8 mx-auto object-contain"
+          />
         )}
       </SidebarHeader>
 
       <SidebarContent className="p-2">
         <SidebarGroup>
           <SidebarGroupLabel className="text-gray-400 uppercase text-xs font-medium px-2 mb-2">
-            {state !== "collapsed" ? "Main Menu" : ""}
+            {state !== "collapsed" ? "Menu" : ""}
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu className="space-y-1">
@@ -94,28 +97,6 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        <SidebarGroup className="mt-6">
-          <SidebarGroupLabel className="text-gray-400 uppercase text-xs font-medium px-2 mb-2">
-            {state !== "collapsed" ? "Administration" : ""}
-          </SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu className="space-y-1">
-              {adminNavigation.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild className="w-full">
-                    <NavLink
-                      to={item.url}
-                      className={`${getNavClassName(item.url)} transition-all duration-200 flex items-center gap-3 px-3 py-2.5 rounded-md w-full text-sm`}
-                    >
-                      <item.icon className="h-4 w-4 flex-shrink-0" />
-                      {state !== "collapsed" && <span>{item.title}</span>}
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
       </SidebarContent>
 
       <SidebarFooter className="border-t border-gray-700 p-4">
