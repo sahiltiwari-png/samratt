@@ -1,304 +1,589 @@
-import { useState } from "react";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { ChevronLeft, Upload } from "lucide-react";
+import { ChevronLeft, Upload, CheckCircle, ArrowRight } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { createOrganization } from "@/api/organizations";
+import { toast } from "@/components/ui/use-toast";
 
 const CreateOrganization = () => {
+  const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    organizationName: "",
-    taxId: "",
-    industry: "",
-    registrationNumber: "",
-    status: "",
-    website: "",
-    domain: "",
+    name: "",
     addressLine1: "",
     addressLine2: "",
     country: "",
     state: "",
     city: "",
     zipCode: "",
-    logo: null as File | null
+    contactPersonName: "",
+    contactEmail: "",
+    contactPhone: "",
+    registrationNumber: "",
+    taxId: "",
+    industryType: "",
+    website: "",
+    domain: "",
+    logoUrl: "",
+    timezone: "UTC",
+    workingDays: "Monday-Friday",
+    defaultShiftId: "",
+    status: "active",
+    dayStartTime: "09:00",
+    dayEndTime: "18:00",
+    admin: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      password: "",
+      phone: ""
+    }
   });
 
-  const steps = [
-    { id: 1, title: "Organization Details", description: "Basic information about your organization" },
-    { id: 2, title: "Address Information", description: "Location and contact details" },
-    { id: 3, title: "Contact & Settings", description: "Final setup and configuration" },
-    { id: 4, title: "Admin Details", description: "Administrator account setup" }
-  ];
-
-  const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    
+    if (name.includes('.')) {
+      const [parent, child] = name.split('.');
+      setFormData({
+        ...formData,
+        [parent]: {
+          ...formData[parent],
+          [child]: value
+        }
+      });
+    } else {
+      setFormData({
+        ...formData,
+        [name]: value
+      });
+    }
   };
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      setFormData(prev => ({ ...prev, logo: file }));
+  const handleSelectChange = (name, value) => {
+    setFormData({
+      ...formData,
+      [name]: value
+    });
+  };
+
+  const handleSubmit = async () => {
+    try {
+      setLoading(true);
+      await createOrganization(formData);
+      toast({
+        title: "Success",
+        description: "Organization created successfully",
+      });
+      navigate('/dashboard');
+    } catch (error) {
+      console.error("Error creating organization:", error);
+      toast({
+        title: "Error",
+        description: "Failed to create organization. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
   const nextStep = () => {
-    if (currentStep < steps.length) {
-      setCurrentStep(prev => prev + 1);
-    }
+    setCurrentStep(currentStep + 1);
   };
 
   const prevStep = () => {
-    if (currentStep > 1) {
-      setCurrentStep(prev => prev - 1);
+    setCurrentStep(currentStep - 1);
+  };
+
+  const renderStepIndicator = () => {
+    const steps = [
+      "Organization",
+      "Address",
+      "Contact",
+      "Admin",
+      "Review"
+    ];
+
+    return (
+      <div className="flex justify-between mb-8">
+        {steps.map((step, index) => (
+          <div key={index} className="flex flex-col items-center">
+            <div 
+              className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                currentStep > index + 1 
+                  ? "bg-green-500 text-white" 
+                  : currentStep === index + 1 
+                  ? "bg-primary text-white" 
+                  : "bg-gray-200 text-gray-500"
+              }`}
+            >
+              {currentStep > index + 1 ? <CheckCircle className="h-5 w-5" /> : index + 1}
+            </div>
+            <span className="text-xs mt-1">{step}</span>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  const renderStep = () => {
+    switch (currentStep) {
+      case 1:
+        return (
+          <div className="space-y-4">
+            <h2 className="text-xl font-semibold">Organization Details</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="name">Organization Name *</Label>
+                <Input 
+                  id="name" 
+                  name="name" 
+                  value={formData.name} 
+                  onChange={handleChange} 
+                  placeholder="Acme Corporation" 
+                  required 
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="industryType">Industry Type *</Label>
+                <Select 
+                  value={formData.industryType} 
+                  onValueChange={(value) => handleSelectChange("industryType", value)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select industry" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Technology">Technology</SelectItem>
+                    <SelectItem value="Healthcare">Healthcare</SelectItem>
+                    <SelectItem value="Finance">Finance</SelectItem>
+                    <SelectItem value="Education">Education</SelectItem>
+                    <SelectItem value="Manufacturing">Manufacturing</SelectItem>
+                    <SelectItem value="Retail">Retail</SelectItem>
+                    <SelectItem value="Other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="registrationNumber">Registration Number *</Label>
+                <Input 
+                  id="registrationNumber" 
+                  name="registrationNumber" 
+                  value={formData.registrationNumber} 
+                  onChange={handleChange} 
+                  placeholder="REG123456" 
+                  required 
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="taxId">Tax ID *</Label>
+                <Input 
+                  id="taxId" 
+                  name="taxId" 
+                  value={formData.taxId} 
+                  onChange={handleChange} 
+                  placeholder="TAX123456" 
+                  required 
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="website">Website</Label>
+                <Input 
+                  id="website" 
+                  name="website" 
+                  value={formData.website} 
+                  onChange={handleChange} 
+                  placeholder="https://example.com" 
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="domain">Domain</Label>
+                <Input 
+                  id="domain" 
+                  name="domain" 
+                  value={formData.domain} 
+                  onChange={handleChange} 
+                  placeholder="example.com" 
+                />
+              </div>
+            </div>
+          </div>
+        );
+      case 2:
+        return (
+          <div className="space-y-4">
+            <h2 className="text-xl font-semibold">Address Information</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2 md:col-span-2">
+                <Label htmlFor="addressLine1">Address Line 1 *</Label>
+                <Input 
+                  id="addressLine1" 
+                  name="addressLine1" 
+                  value={formData.addressLine1} 
+                  onChange={handleChange} 
+                  placeholder="123 Main St" 
+                  required 
+                />
+              </div>
+              <div className="space-y-2 md:col-span-2">
+                <Label htmlFor="addressLine2">Address Line 2</Label>
+                <Input 
+                  id="addressLine2" 
+                  name="addressLine2" 
+                  value={formData.addressLine2} 
+                  onChange={handleChange} 
+                  placeholder="Suite 100" 
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="city">City *</Label>
+                <Input 
+                  id="city" 
+                  name="city" 
+                  value={formData.city} 
+                  onChange={handleChange} 
+                  placeholder="San Francisco" 
+                  required 
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="state">State/Province *</Label>
+                <Input 
+                  id="state" 
+                  name="state" 
+                  value={formData.state} 
+                  onChange={handleChange} 
+                  placeholder="California" 
+                  required 
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="zipCode">Zip/Postal Code *</Label>
+                <Input 
+                  id="zipCode" 
+                  name="zipCode" 
+                  value={formData.zipCode} 
+                  onChange={handleChange} 
+                  placeholder="94105" 
+                  required 
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="country">Country *</Label>
+                <Input 
+                  id="country" 
+                  name="country" 
+                  value={formData.country} 
+                  onChange={handleChange} 
+                  placeholder="United States" 
+                  required 
+                />
+              </div>
+            </div>
+          </div>
+        );
+      case 3:
+        return (
+          <div className="space-y-4">
+            <h2 className="text-xl font-semibold">Contact Information</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="contactPersonName">Contact Person Name *</Label>
+                <Input 
+                  id="contactPersonName" 
+                  name="contactPersonName" 
+                  value={formData.contactPersonName} 
+                  onChange={handleChange} 
+                  placeholder="John Doe" 
+                  required 
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="contactEmail">Contact Email *</Label>
+                <Input 
+                  id="contactEmail" 
+                  name="contactEmail" 
+                  type="email"
+                  value={formData.contactEmail} 
+                  onChange={handleChange} 
+                  placeholder="john@example.com" 
+                  required 
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="contactPhone">Contact Phone *</Label>
+                <Input 
+                  id="contactPhone" 
+                  name="contactPhone" 
+                  value={formData.contactPhone} 
+                  onChange={handleChange} 
+                  placeholder="1234567890" 
+                  required 
+                />
+              </div>
+            </div>
+            
+            <div className="mt-8">
+              <h2 className="text-xl font-semibold">Working Hours</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <div className="space-y-2">
+                  <Label htmlFor="workingDays">Working Days *</Label>
+                  <Select 
+                    value={formData.workingDays} 
+                    onValueChange={(value) => handleSelectChange("workingDays", value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select working days" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Monday-Friday">Monday-Friday</SelectItem>
+                      <SelectItem value="Monday-Saturday">Monday-Saturday</SelectItem>
+                      <SelectItem value="Sunday-Thursday">Sunday-Thursday</SelectItem>
+                      <SelectItem value="All Days">All Days</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="timezone">Timezone *</Label>
+                  <Select 
+                    value={formData.timezone} 
+                    onValueChange={(value) => handleSelectChange("timezone", value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select timezone" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="UTC">UTC</SelectItem>
+                      <SelectItem value="America/New_York">Eastern Time (ET)</SelectItem>
+                      <SelectItem value="America/Chicago">Central Time (CT)</SelectItem>
+                      <SelectItem value="America/Denver">Mountain Time (MT)</SelectItem>
+                      <SelectItem value="America/Los_Angeles">Pacific Time (PT)</SelectItem>
+                      <SelectItem value="Asia/Kolkata">India Standard Time (IST)</SelectItem>
+                      <SelectItem value="Europe/London">Greenwich Mean Time (GMT)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="dayStartTime">Day Start Time *</Label>
+                  <Input 
+                    id="dayStartTime" 
+                    name="dayStartTime" 
+                    type="time"
+                    value={formData.dayStartTime} 
+                    onChange={handleChange} 
+                    required 
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="dayEndTime">Day End Time *</Label>
+                  <Input 
+                    id="dayEndTime" 
+                    name="dayEndTime" 
+                    type="time"
+                    value={formData.dayEndTime} 
+                    onChange={handleChange} 
+                    required 
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      case 4:
+        return (
+          <div className="space-y-4">
+            <h2 className="text-xl font-semibold">Admin Account</h2>
+            <p className="text-muted-foreground">Create an admin account for this organization</p>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="admin.firstName">First Name *</Label>
+                <Input 
+                  id="admin.firstName" 
+                  name="admin.firstName" 
+                  value={formData.admin.firstName} 
+                  onChange={handleChange} 
+                  placeholder="Admin" 
+                  required 
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="admin.lastName">Last Name *</Label>
+                <Input 
+                  id="admin.lastName" 
+                  name="admin.lastName" 
+                  value={formData.admin.lastName} 
+                  onChange={handleChange} 
+                  placeholder="User" 
+                  required 
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="admin.email">Email *</Label>
+                <Input 
+                  id="admin.email" 
+                  name="admin.email" 
+                  type="email"
+                  value={formData.admin.email} 
+                  onChange={handleChange} 
+                  placeholder="admin@example.com" 
+                  required 
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="admin.phone">Phone *</Label>
+                <Input 
+                  id="admin.phone" 
+                  name="admin.phone" 
+                  value={formData.admin.phone} 
+                  onChange={handleChange} 
+                  placeholder="9876543210" 
+                  required 
+                />
+              </div>
+              <div className="space-y-2 md:col-span-2">
+                <Label htmlFor="admin.password">Password *</Label>
+                <Input 
+                  id="admin.password" 
+                  name="admin.password" 
+                  type="password"
+                  value={formData.admin.password} 
+                  onChange={handleChange} 
+                  placeholder="••••••••" 
+                  required 
+                />
+              </div>
+            </div>
+          </div>
+        );
+      case 5:
+        return (
+          <div className="space-y-4">
+            <h2 className="text-xl font-semibold">Review Information</h2>
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <h3 className="font-medium">Organization Details</h3>
+                <div className="grid grid-cols-2 gap-2 text-sm">
+                  <div className="text-muted-foreground">Name:</div>
+                  <div>{formData.name}</div>
+                  <div className="text-muted-foreground">Industry:</div>
+                  <div>{formData.industryType}</div>
+                  <div className="text-muted-foreground">Registration Number:</div>
+                  <div>{formData.registrationNumber}</div>
+                  <div className="text-muted-foreground">Tax ID:</div>
+                  <div>{formData.taxId}</div>
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                <h3 className="font-medium">Address</h3>
+                <div className="grid grid-cols-2 gap-2 text-sm">
+                  <div className="text-muted-foreground">Address:</div>
+                  <div>{formData.addressLine1} {formData.addressLine2}</div>
+                  <div className="text-muted-foreground">City:</div>
+                  <div>{formData.city}</div>
+                  <div className="text-muted-foreground">State:</div>
+                  <div>{formData.state}</div>
+                  <div className="text-muted-foreground">Country:</div>
+                  <div>{formData.country}</div>
+                  <div className="text-muted-foreground">Zip Code:</div>
+                  <div>{formData.zipCode}</div>
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                <h3 className="font-medium">Contact Information</h3>
+                <div className="grid grid-cols-2 gap-2 text-sm">
+                  <div className="text-muted-foreground">Contact Person:</div>
+                  <div>{formData.contactPersonName}</div>
+                  <div className="text-muted-foreground">Email:</div>
+                  <div>{formData.contactEmail}</div>
+                  <div className="text-muted-foreground">Phone:</div>
+                  <div>{formData.contactPhone}</div>
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                <h3 className="font-medium">Working Hours</h3>
+                <div className="grid grid-cols-2 gap-2 text-sm">
+                  <div className="text-muted-foreground">Working Days:</div>
+                  <div>{formData.workingDays}</div>
+                  <div className="text-muted-foreground">Hours:</div>
+                  <div>{formData.dayStartTime} - {formData.dayEndTime}</div>
+                  <div className="text-muted-foreground">Timezone:</div>
+                  <div>{formData.timezone}</div>
+                </div>
+              </div>
+              
+              <div className="space-y-2">
+                <h3 className="font-medium">Admin Account</h3>
+                <div className="grid grid-cols-2 gap-2 text-sm">
+                  <div className="text-muted-foreground">Name:</div>
+                  <div>{formData.admin.firstName} {formData.admin.lastName}</div>
+                  <div className="text-muted-foreground">Email:</div>
+                  <div>{formData.admin.email}</div>
+                  <div className="text-muted-foreground">Phone:</div>
+                  <div>{formData.admin.phone}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      default:
+        return null;
     }
   };
 
-  const getProgressPercentage = () => {
-    return ((currentStep - 1) / (steps.length - 1)) * 100;
-  };
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/10 to-primary/5 p-4">
-      <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Create New organization</h1>
+    <div className="container mx-auto py-8 px-4">
+      <Button 
+        variant="ghost" 
+        className="mb-4" 
+        onClick={() => navigate('/dashboard')}
+      >
+        <ChevronLeft className="mr-2 h-4 w-4" /> Back to Dashboard
+      </Button>
+      
+      <Card className="max-w-4xl mx-auto">
+        <CardHeader>
+          <CardTitle>Create Organization</CardTitle>
+          <Progress 
+            value={(currentStep / 5) * 100} 
+            className="h-2" 
+          />
+        </CardHeader>
+        <CardContent>
+          {renderStepIndicator()}
+          {renderStep()}
           
-          {/* Progress Bar */}
-          <div className="bg-white rounded-lg p-6 shadow-sm border">
-            <div className="flex justify-between items-center mb-4">
-              {steps.map((step, index) => (
-                <div key={step.id} className="flex items-center">
-                  <div className={`flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium ${
-                    currentStep >= step.id 
-                      ? 'bg-primary text-white' 
-                      : 'bg-gray-200 text-gray-600'
-                  }`}>
-                    {step.id}
-                  </div>
-                  <div className="ml-3">
-                    <p className={`text-sm font-medium ${
-                      currentStep >= step.id ? 'text-gray-900' : 'text-gray-500'
-                    }`}>
-                      {step.title}
-                    </p>
-                  </div>
-                  {index < steps.length - 1 && (
-                    <div className={`w-16 h-0.5 ml-6 ${
-                      currentStep > step.id ? 'bg-primary' : 'bg-gray-200'
-                    }`} />
-                  )}
-                </div>
-              ))}
-            </div>
-            <Progress value={getProgressPercentage()} className="h-2" />
+          <div className="flex justify-between mt-8">
+            <Button
+              variant="outline"
+              onClick={prevStep}
+              disabled={currentStep === 1 || loading}
+            >
+              Previous
+            </Button>
+            
+            {currentStep < 5 ? (
+              <Button onClick={nextStep} disabled={loading}>
+                Next <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            ) : (
+              <Button onClick={handleSubmit} disabled={loading}>
+                {loading ? "Creating..." : "Create Organization"}
+              </Button>
+            )}
           </div>
-        </div>
-
-        {/* Form Content */}
-        <Card className="shadow-lg border-0">
-          <CardHeader className="pb-4">
-            <CardTitle className="text-xl font-semibold">
-              {steps[currentStep - 1].title}
-            </CardTitle>
-            <p className="text-gray-600">{steps[currentStep - 1].description}</p>
-          </CardHeader>
-          <CardContent className="pt-4">
-            {/* Step 1: Organization Details */}
-            {currentStep === 1 && (
-              <div className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="organizationName">Organization Name</Label>
-                    <Input
-                      id="organizationName"
-                      value={formData.organizationName}
-                      onChange={(e) => handleInputChange('organizationName', e.target.value)}
-                      placeholder="Enter organization name"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="taxId">Tax ID</Label>
-                    <Input
-                      id="taxId"
-                      value={formData.taxId}
-                      onChange={(e) => handleInputChange('taxId', e.target.value)}
-                      placeholder="Enter tax ID"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="industry">Industry</Label>
-                    <Input
-                      id="industry"
-                      value={formData.industry}
-                      onChange={(e) => handleInputChange('industry', e.target.value)}
-                      placeholder="Enter industry"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="registrationNumber">Registration Number</Label>
-                    <Input
-                      id="registrationNumber"
-                      value={formData.registrationNumber}
-                      onChange={(e) => handleInputChange('registrationNumber', e.target.value)}
-                      placeholder="Enter registration number"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="status">Status</Label>
-                    <Input
-                      id="status"
-                      value={formData.status}
-                      onChange={(e) => handleInputChange('status', e.target.value)}
-                      placeholder="Enter status"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="website">Website</Label>
-                    <Input
-                      id="website"
-                      value={formData.website}
-                      onChange={(e) => handleInputChange('website', e.target.value)}
-                      placeholder="Enter website URL"
-                    />
-                  </div>
-                  <div className="space-y-2 md:col-span-2">
-                    <Label htmlFor="domain">Domain</Label>
-                    <Input
-                      id="domain"
-                      value={formData.domain}
-                      onChange={(e) => handleInputChange('domain', e.target.value)}
-                      placeholder="Enter domain"
-                    />
-                  </div>
-                </div>
-
-                {/* Logo Upload */}
-                <div className="space-y-4">
-                  <Label>Organization Logo</Label>
-                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-                    <Upload className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-                    <p className="text-sm text-gray-600 mb-2">Please upload square image, size less than 100KB</p>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleFileUpload}
-                      className="hidden"
-                      id="logo-upload"
-                    />
-                    <Button 
-                      variant="outline" 
-                      onClick={() => document.getElementById('logo-upload')?.click()}
-                      className="mr-2"
-                    >
-                      Choose File
-                    </Button>
-                    <span className="text-sm text-gray-500">
-                      {formData.logo ? formData.logo.name : 'No File Chosen'}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Step 2: Address Information */}
-            {currentStep === 2 && (
-              <div className="space-y-6">
-                <div className="space-y-2">
-                  <Label htmlFor="addressLine1">Address Line 1</Label>
-                  <Input
-                    id="addressLine1"
-                    value={formData.addressLine1}
-                    onChange={(e) => handleInputChange('addressLine1', e.target.value)}
-                    placeholder="Enter address line 1"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="addressLine2">Address Line 2 (optional)</Label>
-                  <Input
-                    id="addressLine2"
-                    value={formData.addressLine2}
-                    onChange={(e) => handleInputChange('addressLine2', e.target.value)}
-                    placeholder="Enter address line 2"
-                  />
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="country">Country</Label>
-                    <Input
-                      id="country"
-                      value={formData.country}
-                      onChange={(e) => handleInputChange('country', e.target.value)}
-                      placeholder="Enter country"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="state">State</Label>
-                    <Input
-                      id="state"
-                      value={formData.state}
-                      onChange={(e) => handleInputChange('state', e.target.value)}
-                      placeholder="Enter state"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="city">City</Label>
-                    <Input
-                      id="city"
-                      value={formData.city}
-                      onChange={(e) => handleInputChange('city', e.target.value)}
-                      placeholder="Enter city"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="zipCode">Zip Code</Label>
-                    <Input
-                      id="zipCode"
-                      value={formData.zipCode}
-                      onChange={(e) => handleInputChange('zipCode', e.target.value)}
-                      placeholder="Enter zip code"
-                    />
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Step 3 & 4 placeholders */}
-            {currentStep === 3 && (
-              <div className="text-center py-12">
-                <p className="text-gray-600">Contact & Settings configuration will be implemented here.</p>
-              </div>
-            )}
-
-            {currentStep === 4 && (
-              <div className="text-center py-12">
-                <p className="text-gray-600">Admin Details setup will be implemented here.</p>
-              </div>
-            )}
-
-            {/* Navigation Buttons */}
-            <div className="flex justify-between mt-8 pt-6 border-t">
-              <Button
-                variant="outline"
-                onClick={prevStep}
-                disabled={currentStep === 1}
-                className="flex items-center"
-              >
-                <ChevronLeft className="w-4 h-4 mr-2" />
-                Previous
-              </Button>
-              <Button
-                onClick={currentStep === steps.length ? () => console.log('Submit form') : nextStep}
-                className="bg-primary hover:bg-primary/90"
-              >
-                {currentStep === steps.length ? 'Create Organization' : 'Save and continue'}
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };

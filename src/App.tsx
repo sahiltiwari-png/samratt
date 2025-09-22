@@ -4,6 +4,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { SidebarProvider } from "@/components/ui/sidebar";
+import { AuthProvider } from "./contexts/AuthContext";
+import ProtectedRoute from "./components/auth/ProtectedRoute";
 
 // Pages
 import Login from "./pages/Login";
@@ -32,31 +34,36 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/*" element={
-            <SidebarProvider>
-              <MainLayout>
-                <Routes>
-                  <Route path="/" element={<Navigate to="/dashboard" replace />} />
-                  <Route path="/dashboard" element={<Dashboard />} />
-                  <Route path="/employees" element={<Employees />} />
-                  <Route path="/hr" element={<HR />} />
-                  <Route path="/payroll" element={<Payroll />} />
-                  <Route path="/salary-slips" element={<SalarySlips />} />
-                  <Route path="/attendance" element={<Attendance />} />
-                  <Route path="/leaves" element={<Leaves />} />
-                  <Route path="/reports" element={<Reports />} />
-                  <Route path="/settings" element={<Settings />} />
+        <AuthProvider>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/*" element={
+              <ProtectedRoute>
+                <SidebarProvider>
+                  <MainLayout>
+                    <Routes>
+                      <Route path="/" element={<Navigate to="/dashboard" replace />} />
+                      <Route path="/dashboard" element={<Dashboard />} />
+                      <Route path="/employees" element={<Employees />} />
+                      <Route path="/hr" element={<HR />} />
+                      <Route path="/hr/:id" element={<HR />} />
+                      <Route path="/payroll" element={<Payroll />} />
+                      <Route path="/salary-slips" element={<SalarySlips />} />
+                      <Route path="/attendance" element={<Attendance />} />
+                      <Route path="/leaves" element={<Leaves />} />
+                      <Route path="/reports" element={<Reports />} />
+                      <Route path="/settings" element={<Settings />} />
                   <Route path="/profile" element={<Profile />} />
-                  <Route path="/admin" element={<AdminPanel />} />
-                  <Route path="/create-organization" element={<CreateOrganization />} />
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </MainLayout>
-            </SidebarProvider>
-          } />
-        </Routes>
+                      <Route path="/admin" element={<AdminPanel />} />
+                      <Route path="/create-organization" element={<CreateOrganization />} />
+                      <Route path="*" element={<NotFound />} />
+                    </Routes>
+                  </MainLayout>
+                </SidebarProvider>
+              </ProtectedRoute>
+            } />
+          </Routes>
+        </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
