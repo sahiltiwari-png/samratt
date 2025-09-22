@@ -46,27 +46,27 @@ export function AppSidebar() {
   const getNavClassName = (path: string) => 
     isActive(path) 
       ? "bg-primary text-white hover:bg-primary/90 font-semibold" 
-      : "text-gray-300 hover:bg-gray-700 hover:text-white";
+      : "text-gray-800 hover:bg-gray-100 hover:text-gray-900";
 
   return (
-    <Sidebar className={`bg-gray-800 border-r border-gray-700 ${state === "collapsed" ? "w-14" : "w-64"}`}>
-      <SidebarHeader className="border-b border-gray-700 p-4">
+    <Sidebar className={`bg-gray-50 border-r border-gray-200 ${state === "collapsed" ? "w-14" : "w-64"}`}>
+      <SidebarHeader className="border-b border-gray-200 p-4">
         {state !== "collapsed" && (
           <div className="flex items-center gap-3">
             <img 
-              src="/src/assets/gounicrew-logo.png" 
+              src="/gounicrew-logo.png" 
               alt="GoUnicrew"
               className="h-8 w-auto"
             />
             <div>
-              <h1 className="font-semibold text-lg text-white">GoUnicrew</h1>
-              <p className="text-xs text-gray-400">HR Management Platform</p>
+              <h1 className="font-semibold text-lg text-gray-900">GoUnicrew</h1>
+              <p className="text-xs text-gray-600">HR Management Platform</p>
             </div>
           </div>
         )}
         {state === "collapsed" && (
           <img 
-            src="/src/assets/gounicrew-logo.png" 
+            src="/gounicrew-logo.png" 
             alt="GoUnicrew"
             className="h-8 w-8 mx-auto object-contain"
           />
@@ -75,7 +75,7 @@ export function AppSidebar() {
 
       <SidebarContent className="p-2">
         <SidebarGroup>
-          <SidebarGroupLabel className="text-gray-400 uppercase text-xs font-medium px-2 mb-2">
+          <SidebarGroupLabel className="text-gray-600 uppercase text-xs font-medium px-2 mb-2">
             {state !== "collapsed" ? "Menu" : ""}
           </SidebarGroupLabel>
           <SidebarGroupContent>
@@ -99,10 +99,10 @@ export function AppSidebar() {
 
       </SidebarContent>
 
-      <SidebarFooter className="border-t border-gray-700 p-4">
+      <SidebarFooter className="border-t border-gray-200 p-4">
         <Button 
           variant="ghost" 
-          className="w-full justify-start text-gray-300 hover:text-white hover:bg-gray-700"
+          className="w-full justify-start text-gray-800 hover:text-gray-900 hover:bg-gray-100"
         >
           <LogOut className="h-4 w-4" />
           {state !== "collapsed" && <span className="ml-2">Logout</span>}

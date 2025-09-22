@@ -25,7 +25,7 @@ const Login = () => {
         <div className="relative z-10 flex flex-col justify-center items-start p-12 text-white">
           <div className="mb-8">
             <img 
-              src="/src/assets/gounicrew-logo.png" 
+              src="/gounicrew-logo.png" 
               alt="GoUnicrew"
               className="h-12 w-auto mb-4 brightness-0 invert"
             />
