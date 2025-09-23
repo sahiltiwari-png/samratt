@@ -1,4 +1,8 @@
-import { ReactNode } from "react";
+import { ReactNode, useState, createContext } from "react";
+import { Input } from "@/components/ui/input";
+// Context to provide search value and setter
+export const OrgSearchContext = createContext<{search: string, setSearch: (v: string) => void}>({search: '', setSearch: () => {}});
+import { useAuth } from '@/contexts/AuthContext';
 import { AppSidebar } from "@/components/layout/AppSidebar";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Bell, User } from "lucide-react";
@@ -16,6 +20,12 @@ interface MainLayoutProps {
 }
 
 const MainLayout = ({ children }: MainLayoutProps) => {
+  const { logout } = useAuth();
+  const [search, setSearch] = useState("");
+  const handleLogout = () => {
+    localStorage.clear();
+    logout();
+  };
   return (
     <div className="min-h-screen flex w-full bg-muted/20">
       <AppSidebar />
@@ -24,12 +34,15 @@ const MainLayout = ({ children }: MainLayoutProps) => {
         {/* Header */}
         <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
           <div className="container flex h-14 items-center justify-between px-4">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4 w-full">
               <SidebarTrigger />
-              <div className="flex flex-col">
-                <h2 className="text-lg font-semibold gradient-text">HRMS Dashboard</h2>
-                <p className="text-xs text-muted-foreground">Welcome back, manage your team efficiently</p>
-              </div>
+              <Input
+                type="text"
+                placeholder="Search organizations..."
+                className="w-full max-w-2xl bg-background shadow-sm border-0 focus:border-0 focus-visible:border-0 focus:ring-0 focus-visible:ring-0 outline-none"
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+              />
             </div>
 
             <div className="flex items-center gap-4">
@@ -52,8 +65,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
                     <User className="mr-2 h-4 w-4" />
                     Profile
                   </DropdownMenuItem>
-                  <DropdownMenuItem>Settings</DropdownMenuItem>
-                  <DropdownMenuItem>Logout</DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleLogout}>Logout</DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
@@ -61,9 +73,11 @@ const MainLayout = ({ children }: MainLayoutProps) => {
         </header>
 
         {/* Main Content */}
-        <main className="flex-1 overflow-hidden">
-          {children}
-        </main>
+        <OrgSearchContext.Provider value={{search, setSearch}}>
+          <main className="flex-1 overflow-hidden">
+            {children}
+          </main>
+        </OrgSearchContext.Provider>
       </div>
     </div>
   );

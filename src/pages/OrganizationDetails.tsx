@@ -517,9 +517,8 @@ const OrganizationDetails = () => {
 
   return (
     <div className="container mx-auto py-8 px-4">
-      <Button 
-        variant="ghost" 
-        className="mb-4" 
+      <Button
+        className="mb-4 bg-green-600 hover:bg-green-700 text-white"
         onClick={() => navigate('/dashboard')}
       >
         <ChevronLeft className="mr-2 h-4 w-4" /> Back to Dashboard
