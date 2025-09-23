@@ -24,6 +24,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { Button } from "@/components/ui/button";
+import { useAuth } from '@/contexts/AuthContext';
 
 const navigation = [
   { title: "Dashboard", url: "/dashboard", icon: Home },
@@ -40,9 +41,10 @@ const navigation = [
 export function AppSidebar() {
   const { state } = useSidebar();
   const location = useLocation();
-  
+  const { user } = useAuth();
+  const role = user?.role || localStorage.getItem('role');
+
   const isActive = (path: string) => location.pathname === path || location.pathname === "/" && path === "/dashboard";
-  
   const getNavClassName = (path: string) => 
     isActive(path) 
       ? "bg-primary text-white hover:bg-primary/90 font-semibold" 
@@ -80,23 +82,43 @@ export function AppSidebar() {
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu className="space-y-1">
-              {navigation.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild className="w-full">
-                    <NavLink
-                      to={item.url}
-                      className={`${getNavClassName(item.url)} transition-all duration-200 flex items-center gap-3 px-3 py-2.5 rounded-md w-full text-sm`}
-                    >
-                      <item.icon className="h-4 w-4 flex-shrink-0" />
-                      {state !== "collapsed" && <span>{item.title}</span>}
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              {role === 'superAdmin' ? (
+                <>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton asChild className="w-full">
+                      <NavLink to="/dashboard" className={getNavClassName("/dashboard") + " flex items-center gap-3 px-3 py-2.5 rounded-md w-full text-sm"}>
+                        <Home className="h-4 w-4 flex-shrink-0" />
+                        {state !== "collapsed" && <span>Organizations</span>}
+                      </NavLink>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton asChild className="w-full">
+                      <NavLink to="/settings" className={getNavClassName("/settings") + " flex items-center gap-3 px-3 py-2.5 rounded-md w-full text-sm"}>
+                        <Settings className="h-4 w-4 flex-shrink-0" />
+                        {state !== "collapsed" && <span>Settings</span>}
+                      </NavLink>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                </>
+              ) : (
+                navigation.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton asChild className="w-full">
+                      <NavLink
+                        to={item.url}
+                        className={`${getNavClassName(item.url)} transition-all duration-200 flex items-center gap-3 px-3 py-2.5 rounded-md w-full text-sm`}
+                      >
+                        <item.icon className="h-4 w-4 flex-shrink-0" />
+                        {state !== "collapsed" && <span>{item.title}</span>}
+                      </NavLink>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))
+              )}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
-
       </SidebarContent>
 
       <SidebarFooter className="border-t border-gray-200 p-4">
