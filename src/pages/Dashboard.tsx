@@ -108,27 +108,18 @@ const Dashboard = () => {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {organizations.map((org, index) => (
-                <Card key={index} className="hover:shadow-md transition-shadow">
-                  <CardContent className="p-4">
-                    <div className="flex items-center space-x-4">
-                      <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-                        {org.logoUrl ? (
-                          <img src={org.logoUrl} alt={org.name} className="h-10 w-10 rounded-full" />
-                        ) : (
-                          <Building className="h-6 w-6 text-primary" />
-                        )}
-                      </div>
-                      <div>
-                        <h3 className="font-medium">{org.name}</h3>
-                        <p className="text-sm text-muted-foreground">{org.industryType}</p>
-                      </div>
-                    </div>
-                    <Button variant="outline" className="w-full mt-4" asChild>
+                <Card key={index} className="hover:shadow-md transition-shadow flex flex-col items-center p-0">
+                  {org.logoUrl && (
+                    <img src={org.logoUrl} alt={org.name} className="w-full h-32 object-cover rounded-t" />
+                  )}
+                  <div className="flex-1 w-full flex flex-col items-center p-4">
+                    <h3 className="font-bold text-xl text-center mb-4 w-full">{org.name}</h3>
+                    <Button variant="outline" className="w-full mt-auto" asChild>
                       <Link to={`/hr/${org.id}`}>
                         View Details
                       </Link>
                     </Button>
-                  </CardContent>
+                  </div>
                 </Card>
               ))}
             </div>
