@@ -115,9 +115,9 @@ const Dashboard = () => {
                   <div className="flex-1 w-full flex flex-col items-center p-4">
                     <h3 className="font-bold text-xl text-center mb-4 w-full">{org.name}</h3>
                     <Button variant="outline" className="w-full mt-auto" asChild>
-                      <Link to={`/hr/${org.id}`}>
-                        View Details
-                      </Link>
+                        <Link to={`/organizations/${org._id}`}>
+                          View Details
+                        </Link>
                     </Button>
                   </div>
                 </Card>

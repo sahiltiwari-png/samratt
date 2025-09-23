@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -7,12 +7,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { ChevronLeft, Upload, CheckCircle, ArrowRight } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { createOrganization } from "@/api/organizations";
+import { createOrganization, getOrganizationById, updateOrganization } from "@/api/organizations";
 import { uploadFile } from "@/api/uploadFile";
 import { toast } from "@/components/ui/use-toast";
 
 const CreateOrganization = () => {
   const navigate = useNavigate();
+  const { orgId } = useParams();
   const [currentStep, setCurrentStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [formError, setFormError] = useState(null);
@@ -47,6 +48,37 @@ const CreateOrganization = () => {
       phone: ""
     }
   });
+  const [isEditMode, setIsEditMode] = useState(false);
+
+  // Fetch organization data if editing
+  useEffect(() => {
+    const fetchOrg = async () => {
+      if (orgId) {
+        setLoading(true);
+        setIsEditMode(true);
+        try {
+          const org = await getOrganizationById(orgId);
+          setFormData({
+            ...org,
+            organizationEmail: org.contactEmail || org.organizationEmail || "",
+            admin: {
+              firstName: org.admin?.firstName || "",
+              lastName: org.admin?.lastName || "",
+              email: org.admin?.email || "",
+              password: "", // Don't prefill password
+              phone: org.admin?.phone || ""
+            }
+          });
+        } catch (err) {
+          toast({ title: "Error", description: "Failed to load organization.", variant: "destructive" });
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
+    fetchOrg();
+    // eslint-disable-next-line
+  }, [orgId]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -137,22 +169,23 @@ const CreateOrganization = () => {
     }
     try {
       setLoading(true);
-      // Send both organizationEmail and contactEmail for backend compatibility
       const payload = {
         ...formData,
         contactEmail: formData.organizationEmail
       };
-      await createOrganization(payload);
-      toast({
-        title: "Success",
-        description: "Organization created successfully",
-      });
+      if (isEditMode && orgId) {
+        await updateOrganization(orgId, payload);
+        toast({ title: "Success", description: "Organization updated successfully" });
+      } else {
+        await createOrganization(payload);
+        toast({ title: "Success", description: "Organization created successfully" });
+      }
       navigate('/dashboard');
     } catch (error) {
-      console.error("Error creating organization:", error);
+      console.error("Error submitting organization:", error);
       toast({
         title: "Error",
-        description: "Failed to create organization. Please try again.",
+        description: isEditMode ? "Failed to update organization. Please try again." : "Failed to create organization. Please try again.",
         variant: "destructive"
       });
     } finally {
@@ -665,7 +698,7 @@ const CreateOrganization = () => {
       
       <Card className="max-w-4xl mx-auto">
         <CardHeader>
-          <CardTitle>Create Organization</CardTitle>
+          <CardTitle>{isEditMode ? "Edit Organization" : "Create Organization"}</CardTitle>
           <Progress 
             value={(currentStep / 5) * 100} 
             className="h-2" 
@@ -695,7 +728,7 @@ const CreateOrganization = () => {
               </Button>
             ) : (
               <Button onClick={handleSubmit} disabled={loading}>
-                {loading ? "Creating..." : "Create Organization"}
+                {loading ? (isEditMode ? "Updating..." : "Creating...") : (isEditMode ? "Update Details" : "Create Organization")}
               </Button>
             )}
           </div>

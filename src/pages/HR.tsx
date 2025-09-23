@@ -62,10 +62,15 @@ const HR = () => {
       <div className="p-6 space-y-6">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold">Organization Details</h1>
-          <Button onClick={handleBackToDashboard} variant="outline">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Dashboard
-          </Button>
+          <div className="flex gap-2">
+            <Button onClick={() => navigate(`/create-organization/${selectedOrg.id}`)} variant="default">
+              Edit Organization
+            </Button>
+            <Button onClick={handleBackToDashboard} variant="outline">
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              Back to Dashboard
+            </Button>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -230,7 +235,7 @@ const HR = () => {
           </div>
         ) : (
           organizations.map((org) => (
-            <Card key={org.id} className="hover:shadow-lg transition-shadow">
+            <Card key={org._id ? org._id : org.id} className="hover:shadow-lg transition-shadow">
               <CardHeader className="pb-4">
                 <div className="flex items-center justify-center mb-4">
                   {org.logoUrl ? (
@@ -252,7 +257,7 @@ const HR = () => {
               </CardHeader>
               <CardContent className="pt-0">
                 <Button className="w-full bg-primary hover:bg-primary/90 text-white" asChild>
-                  <Link to={`/hr/${org.id}`}>View Details</Link>
+                  <Link to={`/hr/${org._id ? org._id : org.id}`}>View Details</Link>
                 </Button>
               </CardContent>
             </Card>

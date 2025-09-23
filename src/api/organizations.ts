@@ -10,6 +10,7 @@ export interface OrganizationAdmin {
 
 export interface Organization {
   id?: string;
+  _id?: string; // for MongoDB compatibility
   name: string;
   addressLine1: string;
   addressLine2?: string;
