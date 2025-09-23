@@ -32,12 +32,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       setLoading(true);
       const response = await apiLogin(email, password);
-      
-      // Store user data and token
+      // Store user data, token, and role
       const userData = response.user || { email };
+      if (response.role) {
+        userData.role = response.role;
+      }
       localStorage.setItem('user', JSON.stringify(userData));
       localStorage.setItem('token', response.token || 'dummy-token');
-      
+      if (response.role) {
+        localStorage.setItem('role', response.role);
+      }
       setUser(userData);
       navigate('/dashboard');
     } catch (error) {

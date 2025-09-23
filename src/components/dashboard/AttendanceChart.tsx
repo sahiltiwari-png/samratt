@@ -40,7 +40,10 @@ export const AttendanceChart = () => {
             />
             <Tooltip 
               content={({ active, payload, label }) => {
-                if (active && payload && payload.length) {
+                if (active && Array.isArray(payload) && payload.length > 0) {
+                  // Find present and total values safely
+                  const present = payload.find((p) => p.dataKey === 'present')?.value;
+                  const total = payload.find((p) => p.dataKey === 'total')?.value;
                   return (
                     <div className="rounded-lg border bg-background p-2 shadow-lg">
                       <div className="grid grid-cols-1 gap-2">
@@ -49,7 +52,9 @@ export const AttendanceChart = () => {
                             {label}
                           </span>
                           <span className="font-bold text-muted-foreground">
-                            {payload[0].value} / {payload[1].value} Present
+                            {typeof present === 'number' && typeof total === 'number'
+                              ? `${present} / ${total} Present`
+                              : '--'}
                           </span>
                         </div>
                       </div>

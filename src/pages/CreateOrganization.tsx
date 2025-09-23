@@ -24,7 +24,7 @@ const CreateOrganization = () => {
     city: "",
     zipCode: "",
     contactPersonName: "",
-    contactEmail: "",
+    organizationEmail: "",
     contactPhone: "",
     registrationNumber: "",
     taxId: "",
@@ -32,12 +32,12 @@ const CreateOrganization = () => {
     website: "",
     domain: "",
     logoUrl: "",
-    timezone: "UTC",
-    workingDays: "Monday-Friday",
+    timezone: "",
+    workingDays: "",
     defaultShiftId: "",
-    status: "active",
-    dayStartTime: "09:00",
-    dayEndTime: "18:00",
+    status: "",
+    dayStartTime: "",
+    dayEndTime: "",
     admin: {
       firstName: "",
       lastName: "",
@@ -84,12 +84,13 @@ const CreateOrganization = () => {
     const requiredFields = [
       { key: 'name', label: 'Organization Name' },
       { key: 'addressLine1', label: 'Address Line 1' },
+      { key: 'addressLine2', label: 'Address Line 2' },
       { key: 'country', label: 'Country' },
       { key: 'state', label: 'State' },
       { key: 'city', label: 'City' },
       { key: 'zipCode', label: 'Zip Code' },
       { key: 'contactPersonName', label: 'Contact Person Name' },
-      { key: 'contactEmail', label: 'Organization Email' },
+      { key: 'organizationEmail', label: 'Organization Email' },
       { key: 'contactPhone', label: 'Contact Phone' },
       { key: 'registrationNumber', label: 'Registration Number' },
       { key: 'taxId', label: 'Tax ID' },
@@ -99,34 +100,35 @@ const CreateOrganization = () => {
       { key: 'logoUrl', label: 'Logo URL' },
       { key: 'timezone', label: 'Timezone' },
       { key: 'workingDays', label: 'Working Days' },
+      { key: 'defaultShiftId', label: 'Default Shift ID' },
       { key: 'status', label: 'Status' },
       { key: 'dayStartTime', label: 'Day Start Time' },
       { key: 'dayEndTime', label: 'Day End Time' },
+      // Admin fields
+      { key: 'admin.firstName', label: 'Admin First Name' },
+      { key: 'admin.lastName', label: 'Admin Last Name' },
+      { key: 'admin.email', label: 'Admin Email' },
+      { key: 'admin.password', label: 'Admin Password' },
+      { key: 'admin.phone', label: 'Admin Phone' },
     ];
+
     for (const field of requiredFields) {
-      if (!formData[field.key] || (typeof formData[field.key] === 'string' && formData[field.key].trim() === '')) {
+      let value;
+      if (field.key.startsWith('admin.')) {
+        const adminKey = field.key.split('.')[1];
+        value = formData.admin[adminKey];
+      } else {
+        value = formData[field.key];
+      }
+      if (!value || (typeof value === 'string' && value.trim() === '')) {
         setFormError(`${field.label} is required.`);
         return;
       }
     }
-    // Validate organization email
-    if (!validateEmail(formData.contactEmail)) {
+    // Email validation
+    if (!validateEmail(formData.organizationEmail)) {
       setFormError('A valid organization email is required.');
       return;
-    }
-    // Validate admin fields
-    const adminFields = [
-      { key: 'firstName', label: 'Admin First Name' },
-      { key: 'lastName', label: 'Admin Last Name' },
-      { key: 'email', label: 'Admin Email' },
-      { key: 'password', label: 'Admin Password' },
-      { key: 'phone', label: 'Admin Phone' },
-    ];
-    for (const field of adminFields) {
-      if (!formData.admin[field.key] || (typeof formData.admin[field.key] === 'string' && formData.admin[field.key].trim() === '')) {
-        setFormError(`${field.label} is required.`);
-        return;
-      }
     }
     if (!validateEmail(formData.admin.email)) {
       setFormError('A valid admin email is required.');
@@ -134,7 +136,12 @@ const CreateOrganization = () => {
     }
     try {
       setLoading(true);
-      await createOrganization(formData);
+      // Send both organizationEmail and contactEmail for backend compatibility
+      const payload = {
+        ...formData,
+        contactEmail: formData.organizationEmail
+      };
+      await createOrganization(payload);
       toast({
         title: "Success",
         description: "Organization created successfully",
@@ -200,76 +207,106 @@ const CreateOrganization = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="name">Organization Name *</Label>
-                <Input 
-                  id="name" 
-                  name="name" 
-                  value={formData.name} 
-                  onChange={handleChange} 
-                  placeholder="Acme Corporation" 
-                  required 
+                <Input
+                  id="name"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  placeholder="Acme Corporation"
+                  required
                 />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="industryType">Industry Type *</Label>
-                <Select 
-                  value={formData.industryType} 
-                  onValueChange={(value) => handleSelectChange("industryType", value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select industry" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Technology">Technology</SelectItem>
-                    <SelectItem value="Healthcare">Healthcare</SelectItem>
-                    <SelectItem value="Finance">Finance</SelectItem>
-                    <SelectItem value="Education">Education</SelectItem>
-                    <SelectItem value="Manufacturing">Manufacturing</SelectItem>
-                    <SelectItem value="Retail">Retail</SelectItem>
-                    <SelectItem value="Other">Other</SelectItem>
-                  </SelectContent>
-                </Select>
+                <Input
+                  id="industryType"
+                  name="industryType"
+                  value={formData.industryType}
+                  onChange={handleChange}
+                  placeholder="Technology"
+                  required
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="registrationNumber">Registration Number *</Label>
-                <Input 
-                  id="registrationNumber" 
-                  name="registrationNumber" 
-                  value={formData.registrationNumber} 
-                  onChange={handleChange} 
-                  placeholder="REG123456" 
-                  required 
+                <Input
+                  id="registrationNumber"
+                  name="registrationNumber"
+                  value={formData.registrationNumber}
+                  onChange={handleChange}
+                  placeholder="REG123456"
+                  required
                 />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="taxId">Tax ID *</Label>
-                <Input 
-                  id="taxId" 
-                  name="taxId" 
-                  value={formData.taxId} 
-                  onChange={handleChange} 
-                  placeholder="TAX123456" 
-                  required 
+                <Input
+                  id="taxId"
+                  name="taxId"
+                  value={formData.taxId}
+                  onChange={handleChange}
+                  placeholder="TAX123456"
+                  required
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="website">Website</Label>
-                <Input 
-                  id="website" 
-                  name="website" 
-                  value={formData.website} 
-                  onChange={handleChange} 
-                  placeholder="https://example.com" 
+                <Label htmlFor="website">Website *</Label>
+                <Input
+                  id="website"
+                  name="website"
+                  value={formData.website}
+                  onChange={handleChange}
+                  placeholder="https://acme.com"
+                  required
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="domain">Domain</Label>
-                <Input 
-                  id="domain" 
-                  name="domain" 
-                  value={formData.domain} 
-                  onChange={handleChange} 
-                  placeholder="example.com" 
+                <Label htmlFor="domain">Domain *</Label>
+                <Input
+                  id="domain"
+                  name="domain"
+                  value={formData.domain}
+                  onChange={handleChange}
+                  placeholder="acme.com"
+                  required
                 />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="logoUrl">Logo URL *</Label>
+                <Input
+                  id="logoUrl"
+                  name="logoUrl"
+                  value={formData.logoUrl}
+                  onChange={handleChange}
+                  placeholder="https://acme.com/logo.png"
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="defaultShiftId">Default Shift ID *</Label>
+                <Input
+                  id="defaultShiftId"
+                  name="defaultShiftId"
+                  value={formData.defaultShiftId}
+                  onChange={handleChange}
+                  placeholder="shift123"
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="status">Status *</Label>
+                <select
+                  id="status"
+                  name="status"
+                  value={formData.status}
+                  onChange={handleChange}
+                  required
+                  className="w-full border rounded px-3 py-2"
+                >
+                  <option value="">Select status</option>
+                  <option value="active">Active</option>
+                  <option value="inactive">Inactive</option>
+                </select>
               </div>
             </div>
           </div>
@@ -364,14 +401,14 @@ const CreateOrganization = () => {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="contactEmail">Contact Email *</Label>
+                <Label htmlFor="organizationEmail">Organization Email *</Label>
                 <Input 
-                  id="contactEmail" 
-                  name="contactEmail" 
+                  id="organizationEmail" 
+                  name="organizationEmail" 
                   type="email"
-                  value={formData.contactEmail} 
+                  value={formData.organizationEmail} 
                   onChange={handleChange} 
-                  placeholder="john@example.com" 
+                  placeholder="john@acme.com" 
                   required 
                 />
               </div>
@@ -562,7 +599,7 @@ const CreateOrganization = () => {
                   <div className="text-muted-foreground">Contact Person:</div>
                   <div>{formData.contactPersonName}</div>
                   <div className="text-muted-foreground">Email:</div>
-                  <div>{formData.contactEmail}</div>
+                  <div>{formData.organizationEmail}</div>
                   <div className="text-muted-foreground">Phone:</div>
                   <div>{formData.contactPhone}</div>
                 </div>
