@@ -8,6 +8,7 @@ import { Progress } from "@/components/ui/progress";
 import { ChevronLeft, Upload, CheckCircle, ArrowRight } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { createOrganization } from "@/api/organizations";
+import { uploadFile } from "@/api/uploadFile";
 import { toast } from "@/components/ui/use-toast";
 
 const CreateOrganization = () => {
@@ -272,15 +273,31 @@ const CreateOrganization = () => {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="logoUrl">Logo URL *</Label>
+                <Label htmlFor="logoUrl">Organization Logo *</Label>
                 <Input
                   id="logoUrl"
                   name="logoUrl"
-                  value={formData.logoUrl}
-                  onChange={handleChange}
-                  placeholder="https://acme.com/logo.png"
-                  required
+                  type="file"
+                  accept="image/*"
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      setLoading(true);
+                      try {
+                        const url = await uploadFile(file);
+                        setFormData((prev) => ({ ...prev, logoUrl: url }));
+                        toast({ title: "Logo uploaded", description: "Image uploaded successfully." });
+                      } catch (err) {
+                        toast({ title: "Upload failed", description: "Could not upload image.", variant: "destructive" });
+                      } finally {
+                        setLoading(false);
+                      }
+                    }
+                  }}
                 />
+                {formData.logoUrl && (
+                  <img src={formData.logoUrl} alt="Logo Preview" className="mt-2 h-16" />
+                )}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="defaultShiftId">Default Shift ID *</Label>
