@@ -17,8 +17,9 @@ const Dashboard = () => {
     const fetchOrganizations = async () => {
       try {
         setLoading(true);
-        const data = await getOrganizations();
-        setOrganizations(data);
+  const data = await getOrganizations();
+  // Ensure organizations is always an array
+  setOrganizations(Array.isArray(data) ? data : (Array.isArray(data?.organizations) ? data.organizations : []));
       } catch (err) {
         console.error("Failed to fetch organizations:", err);
         setError("Failed to load organizations");
