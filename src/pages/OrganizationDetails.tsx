@@ -9,6 +9,7 @@ import { Progress } from "@/components/ui/progress";
 import { ChevronLeft, Upload, CheckCircle, ArrowRight } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { getOrganizationById, updateOrganization } from "@/api/organizations";
+import API from "@/api/auth";
 import { uploadFile } from "@/api/uploadFile";
 import { toast } from "@/components/ui/use-toast";
 
@@ -46,7 +47,8 @@ const OrganizationDetails = () => {
       lastName: "",
       email: "",
       password: "",
-      phone: ""
+      phone: "",
+      adminId: "" // store admin id here
     }
   });
 
@@ -64,7 +66,8 @@ const OrganizationDetails = () => {
               lastName: org.admin?.lastName || "",
               email: org.admin?.email || "",
               password: "", // Don't prefill password
-              phone: org.admin?.phone || ""
+              phone: org.admin?.phone || "",
+              adminId: org.admin?._id || org.admin?.id || ""
             }
           });
         } catch (err) {
@@ -105,6 +108,34 @@ const OrganizationDetails = () => {
 
   const validateEmail = (email) => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
+
+  const handleAdminUpdate = async () => {
+    if (!formData.admin.password && !formData.admin.phone && !formData.admin.firstName && !formData.admin.lastName) {
+      toast({ title: "Nothing to update", description: "No admin fields changed.", variant: "destructive" });
+      return;
+    }
+    try {
+      setLoading(true);
+      const adminId = formData.admin.adminId;
+      if (!adminId) {
+        toast({ title: "Error", description: "No admin ID found.", variant: "destructive" });
+        return;
+      }
+      const payload = {
+        firstName: formData.admin.firstName,
+        lastName: formData.admin.lastName,
+        phone: formData.admin.phone,
+        password: formData.admin.password || undefined // Only send if filled
+      };
+  await API.put(`/auth/employees/${adminId}`, payload);
+      toast({ title: "Success", description: "Admin details updated successfully" });
+      setFormData((prev) => ({ ...prev, admin: { ...prev.admin, password: "" } })); // Clear password field
+    } catch (error) {
+      toast({ title: "Error", description: "Failed to update admin details.", variant: "destructive" });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleSubmit = async () => {
@@ -392,7 +423,7 @@ const OrganizationDetails = () => {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="admin.email">Email *</Label>
-                <Input id="admin.email" name="admin.email" type="email" value={formData.admin.email} onChange={handleChange} placeholder="admin@example.com" required />
+                <Input id="admin.email" name="admin.email" type="email" value={formData.admin.email} disabled placeholder="admin@example.com" required />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="admin.phone">Phone *</Label>
@@ -402,6 +433,11 @@ const OrganizationDetails = () => {
                 <Label htmlFor="admin.password">Password</Label>
                 <Input id="admin.password" name="admin.password" type="password" value={formData.admin.password} onChange={handleChange} placeholder="••••••••" />
               </div>
+            </div>
+            <div className="flex justify-end mt-4">
+              <Button variant="secondary" onClick={handleAdminUpdate} disabled={loading}>
+                {loading ? "Updating..." : "Update Admin Details"}
+              </Button>
             </div>
           </div>
         );
