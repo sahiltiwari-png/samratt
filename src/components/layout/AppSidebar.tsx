@@ -41,8 +41,12 @@ const navigation = [
 export function AppSidebar() {
   const { state } = useSidebar();
   const location = useLocation();
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const role = user?.role || localStorage.getItem('role');
+  const handleLogout = () => {
+    localStorage.clear();
+    logout();
+  };
 
   const isActive = (path: string) => location.pathname === path || location.pathname === "/" && path === "/dashboard";
   const getNavClassName = (path: string) => 
@@ -125,6 +129,7 @@ export function AppSidebar() {
         <Button 
           variant="ghost" 
           className="w-full justify-start text-gray-800 hover:text-gray-900 hover:bg-gray-100"
+          onClick={handleLogout}
         >
           <LogOut className="h-4 w-4" />
           {state !== "collapsed" && <span className="ml-2">Logout</span>}

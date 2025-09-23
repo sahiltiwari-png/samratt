@@ -1,4 +1,5 @@
 import { ReactNode, useState, createContext } from "react";
+import { useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 // Context to provide search value and setter
 export const OrgSearchContext = createContext<{search: string, setSearch: (v: string) => void}>({search: '', setSearch: () => {}});
@@ -22,9 +23,13 @@ interface MainLayoutProps {
 const MainLayout = ({ children }: MainLayoutProps) => {
   const { logout } = useAuth();
   const [search, setSearch] = useState("");
+  const navigate = useNavigate();
   const handleLogout = () => {
     localStorage.clear();
     logout();
+  };
+  const handleProfile = () => {
+    navigate('/settings');
   };
   return (
     <div className="min-h-screen flex w-full bg-muted/20">
@@ -56,7 +61,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-56" align="end" forceMount>
-                  <DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleProfile}>
                     <User className="mr-2 h-4 w-4" />
                     Profile
                   </DropdownMenuItem>

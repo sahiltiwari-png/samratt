@@ -1,184 +1,85 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { Separator } from "@/components/ui/separator";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Settings as SettingsIcon, Bell, Shield, Palette, Globe } from "lucide-react";
+
+import { useAuth } from '@/contexts/AuthContext';
+import { useState } from 'react';
+import API from '@/api/auth';
 
 const Settings = () => {
+  const { user } = useAuth();
+  const [form, setForm] = useState({
+    name: user?.name || '',
+    email: user?.email || '',
+    phone: user?.phone || '',
+    password: '',
+  });
+  const [isEditing, setIsEditing] = useState(false);
+  const [success, setSuccess] = useState('');
+  const [error, setError] = useState('');
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSave = async () => {
+    setError('');
+    setSuccess('');
+    try {
+      // Assume /auth/employees/:id for all roles (superadmin, admin, etc.)
+      await API.put(`/auth/employees/${user._id || user.id}`, {
+        name: form.name,
+        email: form.email,
+        phone: form.phone,
+        ...(form.password ? { password: form.password } : {}),
+      });
+      setSuccess('Profile updated successfully!');
+      setIsEditing(false);
+    } catch (err: any) {
+      setError(err?.response?.data?.message || 'Failed to update profile');
+    }
+  };
+
   return (
-    <div className="p-6 space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold gradient-text">Settings</h1>
-          <p className="text-muted-foreground mt-1">
-            Manage your application preferences and account settings
-          </p>
-        </div>
-      </div>
-
-      <Tabs defaultValue="general" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="general">General</TabsTrigger>
-          <TabsTrigger value="notifications">Notifications</TabsTrigger>
-          <TabsTrigger value="security">Security</TabsTrigger>
-          <TabsTrigger value="appearance">Appearance</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="general" className="space-y-6">
-          <Card className="hrms-card">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Globe className="h-5 w-5 text-primary" />
-                General Settings
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="timezone">Timezone</Label>
-                <Input
-                  id="timezone"
-                  defaultValue="America/New_York"
-                  placeholder="Select timezone"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="language">Language</Label>
-                <Input
-                  id="language"
-                  defaultValue="English (US)"
-                  placeholder="Select language"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="dateFormat">Date Format</Label>
-                <Input
-                  id="dateFormat"
-                  defaultValue="MM/DD/YYYY"
-                  placeholder="Select date format"
-                />
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="notifications" className="space-y-6">
-          <Card className="hrms-card">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Bell className="h-5 w-5 text-primary" />
-                Notification Preferences
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <Label>Email Notifications</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Receive email notifications for important updates
-                  </p>
-                </div>
-                <Switch defaultChecked />
-              </div>
-              <Separator />
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <Label>Leave Request Updates</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Get notified when your leave requests are approved/rejected
-                  </p>
-                </div>
-                <Switch defaultChecked />
-              </div>
-              <Separator />
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <Label>Attendance Reminders</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Remind me to check in/out
-                  </p>
-                </div>
-                <Switch />
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="security" className="space-y-6">
-          <Card className="hrms-card">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Shield className="h-5 w-5 text-primary" />
-                Security Settings
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="currentPassword">Current Password</Label>
-                <Input
-                  id="currentPassword"
-                  type="password"
-                  placeholder="Enter current password"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="newPassword">New Password</Label>
-                <Input
-                  id="newPassword"
-                  type="password"
-                  placeholder="Enter new password"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirm New Password</Label>
-                <Input
-                  id="confirmPassword"
-                  type="password"
-                  placeholder="Confirm new password"
-                />
-              </div>
-              <Button className="hrms-button-primary">
-                Update Password
-              </Button>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="appearance" className="space-y-6">
-          <Card className="hrms-card">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Palette className="h-5 w-5 text-primary" />
-                Appearance Settings
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <Label>Dark Mode</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Switch to dark theme
-                  </p>
-                </div>
-                <Switch />
-              </div>
-              <Separator />
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <Label>Compact Layout</Label>
-                  <p className="text-sm text-muted-foreground">
-                    Use a more compact interface layout
-                  </p>
-                </div>
-                <Switch />
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+    <div className="p-6 max-w-2xl mx-auto">
+      <h1 className="text-3xl font-bold mb-2 text-black">Settings</h1>
+      <p className="text-muted-foreground mb-6">View and update your credentials</p>
+      <Card className="hrms-card">
+        <CardHeader>
+          <CardTitle>Your Details</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {success && <div className="text-green-600 bg-green-50 border border-green-200 rounded p-2 text-center">{success}</div>}
+          {error && <div className="text-red-600 bg-red-50 border border-red-200 rounded p-2 text-center">{error}</div>}
+          <div className="space-y-2">
+            <Label htmlFor="name">Name</Label>
+            <Input id="name" name="name" value={form.name} onChange={handleChange} disabled={!isEditing} />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="email">Email</Label>
+            <Input id="email" name="email" value={form.email} onChange={handleChange} disabled={!isEditing} />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="phone">Phone</Label>
+            <Input id="phone" name="phone" value={form.phone} onChange={handleChange} disabled={!isEditing} />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="password">Password</Label>
+            <Input id="password" name="password" type="password" value={form.password} onChange={handleChange} disabled={!isEditing} placeholder="Leave blank to keep unchanged" />
+          </div>
+          <div className="flex gap-4 mt-4">
+            {isEditing ? (
+              <>
+                <Button className="bg-green-600 text-white" onClick={handleSave}>Save</Button>
+                <Button variant="outline" onClick={() => setIsEditing(false)}>Cancel</Button>
+              </>
+            ) : (
+              <Button className="bg-green-600 text-white" onClick={() => setIsEditing(true)}>Edit</Button>
+            )}
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };
