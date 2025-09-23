@@ -113,11 +113,10 @@ const CreateOrganization = () => {
 
   const handleSubmit = async () => {
     setFormError(null);
-    // Required fields
+    // Only required fields from schema (timezone, workingDays, dayStartTime, dayEndTime are NOT required)
     const requiredFields = [
       { key: 'name', label: 'Organization Name' },
       { key: 'addressLine1', label: 'Address Line 1' },
-      { key: 'addressLine2', label: 'Address Line 2' },
       { key: 'country', label: 'Country' },
       { key: 'state', label: 'State' },
       { key: 'city', label: 'City' },
@@ -125,24 +124,6 @@ const CreateOrganization = () => {
       { key: 'contactPersonName', label: 'Contact Person Name' },
       { key: 'organizationEmail', label: 'Organization Email' },
       { key: 'contactPhone', label: 'Contact Phone' },
-      { key: 'registrationNumber', label: 'Registration Number' },
-      { key: 'taxId', label: 'Tax ID' },
-      { key: 'industryType', label: 'Industry Type' },
-      { key: 'website', label: 'Website' },
-      { key: 'domain', label: 'Domain' },
-      { key: 'logoUrl', label: 'Logo URL' },
-      { key: 'timezone', label: 'Timezone' },
-      { key: 'workingDays', label: 'Working Days' },
-      { key: 'defaultShiftId', label: 'Default Shift ID' },
-      { key: 'status', label: 'Status' },
-      { key: 'dayStartTime', label: 'Day Start Time' },
-      { key: 'dayEndTime', label: 'Day End Time' },
-      // Admin fields
-      { key: 'admin.firstName', label: 'Admin First Name' },
-      { key: 'admin.lastName', label: 'Admin Last Name' },
-      { key: 'admin.email', label: 'Admin Email' },
-      { key: 'admin.password', label: 'Admin Password' },
-      { key: 'admin.phone', label: 'Admin Phone' },
     ];
 
     for (const field of requiredFields) {
@@ -306,7 +287,7 @@ const CreateOrganization = () => {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="logoUrl">Organization Logo *</Label>
+                <Label htmlFor="logoUrl">Organization Logo</Label>
                 <Input
                   id="logoUrl"
                   name="logoUrl"
@@ -333,24 +314,12 @@ const CreateOrganization = () => {
                 )}
               </div>
               <div className="space-y-2">
-                <Label htmlFor="defaultShiftId">Default Shift ID *</Label>
-                <Input
-                  id="defaultShiftId"
-                  name="defaultShiftId"
-                  value={formData.defaultShiftId}
-                  onChange={handleChange}
-                  placeholder="shift123"
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="status">Status *</Label>
+                <Label htmlFor="status">Status</Label>
                 <select
                   id="status"
                   name="status"
                   value={formData.status}
                   onChange={handleChange}
-                  required
                   className="w-full border rounded px-3 py-2"
                 >
                   <option value="">Select status</option>
@@ -479,7 +448,7 @@ const CreateOrganization = () => {
               <h2 className="text-xl font-semibold">Working Hours</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                 <div className="space-y-2">
-                  <Label htmlFor="workingDays">Working Days *</Label>
+                  <Label htmlFor="workingDays">Working Days</Label>
                   <Select 
                     value={formData.workingDays} 
                     onValueChange={(value) => handleSelectChange("workingDays", value)}
@@ -496,7 +465,7 @@ const CreateOrganization = () => {
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="timezone">Timezone *</Label>
+                  <Label htmlFor="timezone">Timezone</Label>
                   <Select 
                     value={formData.timezone} 
                     onValueChange={(value) => handleSelectChange("timezone", value)}
@@ -516,7 +485,7 @@ const CreateOrganization = () => {
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="dayStartTime">Day Start Time *</Label>
+                  <Label htmlFor="dayStartTime">Day Start Time</Label>
                   <Input 
                     id="dayStartTime" 
                     name="dayStartTime" 
@@ -527,7 +496,7 @@ const CreateOrganization = () => {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="dayEndTime">Day End Time *</Label>
+                  <Label htmlFor="dayEndTime">Day End Time</Label>
                   <Input 
                     id="dayEndTime" 
                     name="dayEndTime" 

@@ -21,7 +21,7 @@ interface MainLayoutProps {
 }
 
 const MainLayout = ({ children }: MainLayoutProps) => {
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
   const [search, setSearch] = useState("");
   const navigate = useNavigate();
   const handleLogout = () => {
@@ -55,8 +55,11 @@ const MainLayout = ({ children }: MainLayoutProps) => {
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                     <Avatar className="h-8 w-8">
-                      <AvatarImage src="/avatars/01.png" alt="Avatar" />
-                      <AvatarFallback>JD</AvatarFallback>
+                      {user && user.profileImage ? (
+                        <AvatarImage src={user.profileImage} alt="Avatar" />
+                      ) : (
+                        <AvatarFallback><User className="h-6 w-6 text-muted-foreground" /></AvatarFallback>
+                      )}
                     </Avatar>
                   </Button>
                 </DropdownMenuTrigger>
