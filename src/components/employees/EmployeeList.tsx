@@ -12,7 +12,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { getEmployees } from "@/api/employees";
+import { getEmployees, getEmployeeById } from "@/api/employees";
+import { uploadFile } from "@/api/uploadFile";
+import { useRef } from "react";
+import API from "@/api/auth";
 
 
 
@@ -47,6 +50,14 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
   const [designationFilter, setDesignationFilter] = useState<string | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
+  const [employeeDetails, setEmployeeDetails] = useState<any>(null);
+  const [editMode, setEditMode] = useState(false);
+  const [profilePreview, setProfilePreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [formData, setFormData] = useState<any>({});
+  const [loadingDetails, setLoadingDetails] = useState(false);
+  const [updateLoading, setUpdateLoading] = useState(false);
+  const [updateMessage, setUpdateMessage] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchEmployees = async () => {
@@ -131,7 +142,22 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
                             type="button"
                             className="ml-1 text-gray-400 hover:text-blue-600"
                             title="View details"
-                            onClick={() => { setSelectedEmployee(emp); setModalOpen(true); }}
+                            onClick={async () => {
+                              setSelectedEmployee(emp);
+                              setModalOpen(true);
+                              setLoadingDetails(true);
+                              setEditMode(false);
+                              setUpdateMessage(null);
+                              try {
+                                const details = await getEmployeeById(emp._id);
+                                setEmployeeDetails(details);
+                                setFormData(details);
+                              } catch (e) {
+                                setEmployeeDetails(null);
+                              } finally {
+                                setLoadingDetails(false);
+                              }
+                            }}
                           >
                             <Eye className="w-4 h-4" />
                           </button>
@@ -169,23 +195,146 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
         </div>
         {/* Employee Details Modal (UI only, no API yet) */}
         <Dialog open={modalOpen} onOpenChange={setModalOpen}>
-          <DialogContent className="max-w-lg w-full">
+          <DialogContent className="max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Employee Details</DialogTitle>
             </DialogHeader>
             {selectedEmployee && (
-              <div className="space-y-2 text-sm">
-                <div><b>Name:</b> {selectedEmployee.firstName} {selectedEmployee.lastName}</div>
-                <div><b>Email:</b> {selectedEmployee.email}</div>
-                <div><b>Employee Code:</b> {selectedEmployee.employeeCode}</div>
-                <div><b>Designation:</b> {selectedEmployee.designation}</div>
-                <div><b>Date of Joining:</b> {selectedEmployee.dateOfJoining ? new Date(selectedEmployee.dateOfJoining).toLocaleDateString() : (selectedEmployee.createdAt ? new Date(selectedEmployee.createdAt).toLocaleDateString() : '-')}</div>
-                <div><b>Probation End:</b> {selectedEmployee.probationEndDate ? new Date(selectedEmployee.probationEndDate).toLocaleDateString() : '-'}</div>
-                <div><b>Status:</b> {selectedEmployee.status}</div>
+              <div className="space-y-4 text-sm p-2 md:p-4 bg-white rounded-lg shadow-md">
+                {/* Profile Image Upload */}
+                <div className="flex flex-col items-center mb-4">
+                  <div className="relative w-24 h-24 mb-2">
+                    <img
+                      src={profilePreview || employeeDetails?.profilePhotoUrl || 'https://ui-avatars.com/api/?name=' + encodeURIComponent((employeeDetails?.firstName || '') + ' ' + (employeeDetails?.lastName || ''))}
+                      alt="Profile"
+                      className="w-24 h-24 rounded-full object-cover border shadow"
+                    />
+                    {editMode && (
+                      <button
+                        type="button"
+                        className="absolute bottom-0 right-0 bg-blue-600 text-white rounded-full p-1 shadow hover:bg-blue-700"
+                        onClick={() => fileInputRef.current?.click()}
+                        title="Upload Photo"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M12 16.5v-6m0 0V7.5m0 3h3m-3 0H9m12 6.75A2.25 2.25 0 0 1 18.75 21H5.25A2.25 2.25 0 0 1 3 18.75V7.5A2.25 2.25 0 0 1 5.25 5.25h3.379a2.25 2.25 0 0 0 1.591-.659l1.5-1.5a2.25 2.25 0 0 1 3.18 0l1.5 1.5a2.25 2.25 0 0 0 1.591.659h3.379A2.25 2.25 0 0 1 21 7.5v11.25Z" />
+                        </svg>
+                        <input
+                          ref={fileInputRef}
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={async e => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              const reader = new FileReader();
+                              reader.onload = ev => setProfilePreview(ev.target?.result as string);
+                              reader.readAsDataURL(file);
+                              // Upload immediately and set URL
+                              try {
+                                const url = await uploadFile(file);
+                                setFormData((fd: any) => ({ ...fd, profilePhotoUrl: url }));
+                              } catch {
+                                // Optionally show error
+                              }
+                            }
+                          }}
+                        />
+                      </button>
+                    )}
+                  </div>
+                  <div className="text-xs text-gray-500">Profile Photo</div>
+                </div>
+                {loadingDetails ? (
+                  <div>Loading...</div>
+                ) : employeeDetails ? (
+                  <form className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {[
+                      "firstName","lastName","phone","department","designation","grade","dateOfJoining","probationEndDate","employmentType","shiftId","status","reportingManagerId","dob","gender","bloodGroup","maritalStatus","nationality","addressLine1","addressLine2","country","state","city","zipCode","aadhaarNo","panNo","passportNo","salaryStructureId","benefits","skills","loginEnabled","isActive","camsEmployeeId"
+                    ].map((key) => {
+                      const value = employeeDetails[key];
+                      if (typeof value === "object" && value !== null) return null;
+                      return (
+                        <div key={key} className="flex flex-col">
+                          <label className="font-semibold capitalize">{key.replace(/([A-Z])/g, ' $1')}</label>
+                          {editMode ? (
+                            <input className="border rounded px-2 py-1" value={formData[key] || ''} onChange={e => setFormData((fd: any) => ({ ...fd, [key]: e.target.value }))} />
+                          ) : (
+                            <span>{value !== undefined && value !== null && value !== '' ? value.toString() : '-'}</span>
+                          )}
+                        </div>
+                      );
+                    })}
+                    {/* Bank Details */}
+                    {employeeDetails.bankDetails && Object.entries(employeeDetails.bankDetails).map(([k, v]) => (
+                      <div key={"bankDetails" + k} className="flex flex-col">
+                        <label className="font-semibold capitalize">Bank {k.replace(/([A-Z])/g, ' $1')}</label>
+                        {editMode ? (
+                          <input className="border rounded px-2 py-1" value={formData.bankDetails?.[k] || ''} onChange={e => setFormData((fd: any) => ({ ...fd, bankDetails: { ...fd.bankDetails, [k]: e.target.value } }))} />
+                        ) : (
+                          <span>{v || '-'}</span>
+                        )}
+                      </div>
+                    ))}
+                    {/* Tax Details */}
+                    {employeeDetails.taxDetails && Object.entries(employeeDetails.taxDetails).map(([k, v]) => (
+                      <div key={"taxDetails" + k} className="flex flex-col">
+                        <label className="font-semibold capitalize">Tax {k.replace(/([A-Z])/g, ' $1')}</label>
+                        {editMode ? (
+                          <input className="border rounded px-2 py-1" value={formData.taxDetails?.[k] || ''} onChange={e => setFormData((fd: any) => ({ ...fd, taxDetails: { ...fd.taxDetails, [k]: e.target.value } }))} />
+                        ) : (
+                          <span>{v || '-'}</span>
+                        )}
+                      </div>
+                    ))}
+                    {/* Emergency Contact */}
+                    {employeeDetails.emergencyContact && Object.entries(employeeDetails.emergencyContact).map(([k, v]) => (
+                      <div key={"emergencyContact" + k} className="flex flex-col">
+                        <label className="font-semibold capitalize">Emergency {k.replace(/([A-Z])/g, ' $1')}</label>
+                        {editMode ? (
+                          <input className="border rounded px-2 py-1" value={formData.emergencyContact?.[k] || ''} onChange={e => setFormData((fd: any) => ({ ...fd, emergencyContact: { ...fd.emergencyContact, [k]: e.target.value } }))} />
+                        ) : (
+                          <span>{v || '-'}</span>
+                        )}
+                      </div>
+                    ))}
+                  </form>
+                ) : (
+                  <div>No details found.</div>
+                )}
+                {updateMessage && <div className={updateMessage.includes('success') ? 'text-green-600' : 'text-red-600'}>{updateMessage}</div>}
               </div>
             )}
             <DialogFooter>
-              <button className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" onClick={() => {/* update logic will go here */}}>Update</button>
+              {employeeDetails && !editMode && (
+                <button className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" onClick={() => setEditMode(true)}>Update</button>
+              )}
+              {editMode && (
+                <button
+                  className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+                  disabled={updateLoading}
+                  onClick={async () => {
+                    setUpdateLoading(true);
+                    setUpdateMessage(null);
+                    try {
+                      const submitData = { ...formData };
+                      await API.put(`/auth/employees/${selectedEmployee?._id}`, submitData);
+                      setUpdateMessage('Update success!');
+                      setEditMode(false);
+                      setProfilePreview(null);
+                    } catch (e) {
+                      setUpdateMessage('Update failed!');
+                    } finally {
+                      setUpdateLoading(false);
+                    }
+                  }}
+                >
+                  {updateLoading ? 'Saving...' : 'Save'}
+                </button>
+              )}
+              {editMode && (
+                <button className="ml-2 px-4 py-2 rounded border" onClick={() => { setEditMode(false); setFormData(employeeDetails); setProfilePreview(null); }}>Cancel</button>
+              )}
             </DialogFooter>
           </DialogContent>
         </Dialog>
