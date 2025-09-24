@@ -5,6 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Mail, Phone, MapPin, MoreVertical } from "lucide-react";
+import { Eye } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -83,7 +84,7 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
         <CardTitle className="text-lg font-semibold">Total Employees - {total}</CardTitle>
       </CardHeader>
       <CardContent>
-  <div className="rounded-lg border bg-white overflow-x-auto max-h-[500px] overflow-y-auto mx-auto" style={{ width: '100%', maxWidth: '1200px', minWidth: '0' }}>
+  <div className="rounded-lg border bg-white overflow-x-auto max-h-[500px] overflow-y-auto mx-auto" style={{ width: '100%', maxWidth: '1200px', minWidth: '0', touchAction: 'pan-y' }}>
    <table className="w-full text-[11px] border-separate border-spacing-0" style={{ width: '100%', borderRadius: '12px', overflow: 'hidden', background: '#fff', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', tableLayout: 'auto' }}>
             <colgroup>
               <col style={{ width: '16%' }} />
@@ -115,26 +116,26 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
               ) : (
                 employees.map((emp) => (
                   <tr key={emp._id} className="border-b last:border-b-0 hover:bg-green-50 transition-colors">
-                    <td className="px-1 py-1 flex items-center gap-1 max-w-xs truncate align-middle">
-                      <Avatar className="h-8 w-8 self-end mt-3">
-                        {emp.profilePhotoUrl ? (
-                          <AvatarImage src={emp.profilePhotoUrl} alt={emp.firstName + ' ' + emp.lastName} />
-                        ) : (
-                          <AvatarFallback>{emp.firstName?.[0] || ''}{emp.lastName?.[0] || ''}</AvatarFallback>
-                        )}
-                      </Avatar>
-                      <div className="truncate flex items-center gap-1">
-                        <span className="font-medium text-gray-900 leading-tight text-xs truncate self-end flex items-center mt-3">{emp.firstName} {emp.lastName}</span>
-                        <button
-                          type="button"
-                          className="ml-1 text-gray-400 hover:text-blue-600"
-                          title="View details"
-                          onClick={() => { setSelectedEmployee(emp); setModalOpen(true); }}
-                        >
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 6h7.125a.375.375 0 0 1 .375.375V20.25M17.25 6l-9 9m0 0h5.25M8.25 15V9.75" />
-                          </svg>
-                        </button>
+                    <td className="px-1 py-1 max-w-xs truncate align-middle">
+                      <div className="flex flex-row items-center gap-1 w-full">
+                        <Avatar className="h-8 w-8">
+                          {emp.profilePhotoUrl ? (
+                            <AvatarImage src={emp.profilePhotoUrl} alt={emp.firstName + ' ' + emp.lastName} />
+                          ) : (
+                            <AvatarFallback>{emp.firstName?.[0] || ''}{emp.lastName?.[0] || ''}</AvatarFallback>
+                          )}
+                        </Avatar>
+                        <div className="truncate flex items-center gap-1">
+                          <span className="font-medium text-gray-900 leading-tight text-xs truncate">{emp.firstName} {emp.lastName}</span>
+                          <button
+                            type="button"
+                            className="ml-1 text-gray-400 hover:text-blue-600"
+                            title="View details"
+                            onClick={() => { setSelectedEmployee(emp); setModalOpen(true); }}
+                          >
+                            <Eye className="w-4 h-4" />
+                          </button>
+                        </div>
                       </div>
                     </td>
                     <td className="px-1 py-1 max-w-xs truncate align-middle">{emp.employeeCode || '-'}</td>
