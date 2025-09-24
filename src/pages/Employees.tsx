@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { EmployeeList } from "@/components/employees/EmployeeList";
+import EmployeeList from "@/components/employees/EmployeeList";
 
 
 const Employees = () => {

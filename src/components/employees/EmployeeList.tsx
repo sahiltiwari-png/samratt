@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -20,19 +21,22 @@ interface EmployeeListProps {
 
 interface Employee {
   _id: string;
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  employeeCode: string;
-  designation: string;
-  status: string;
-  createdAt: string;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  phone?: string;
+  employeeCode?: string;
+  designation?: string;
+  status?: string;
+  createdAt?: string;
+  dateOfJoining?: string;
+  probationEndDate?: string;
+  profilePhotoUrl?: string;
 }
 
 
 
-export const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
+const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
@@ -40,6 +44,8 @@ export const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
   const [totalPages, setTotalPages] = useState(1);
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
   const [designationFilter, setDesignationFilter] = useState<string | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
 
   useEffect(() => {
     const fetchEmployees = async () => {
@@ -73,73 +79,73 @@ export const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
 
   return (
     <Card className="shadow-md rounded-xl">
-      <CardHeader className="pb-2">
+      <CardHeader className="pb-2 flex flex-row items-center justify-between">
         <CardTitle className="text-lg font-semibold">Total Employees - {total}</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="flex gap-2 mb-4">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant={statusFilter ? 'default' : 'outline'} className="min-w-[120px]">Status</Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem onClick={() => setStatusFilter(null)}>All</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setStatusFilter('active')}>Active</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setStatusFilter('inactive')}>Inactive</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant={designationFilter ? 'default' : 'outline'} className="min-w-[140px]">Designation</Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem onClick={() => setDesignationFilter(null)}>All</DropdownMenuItem>
-              {/* You can map designations dynamically if needed */}
-              <DropdownMenuItem onClick={() => setDesignationFilter('Company Admin')}>Company Admin</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setDesignationFilter('Employee')}>Employee</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setDesignationFilter('HR')}>HR</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <Button variant="ghost" onClick={clearFilters} className="ml-2">Clear filters</Button>
-        </div>
-        <div className="overflow-x-auto rounded-lg border">
-          <table className="min-w-full bg-white">
+        <div className="rounded-lg border bg-white overflow-x-auto">
+          <table className="min-w-[900px] w-full text-sm whitespace-nowrap">
+            <colgroup>
+              <col style={{ width: '16%' }} />
+              <col style={{ width: '13%' }} />
+              <col style={{ width: '13%' }} />
+              <col style={{ width: '13%' }} />
+              <col style={{ width: '13%' }} />
+              <col style={{ width: '18%' }} />
+              <col style={{ width: '8%' }} />
+              <col style={{ width: '6%' }} />
+            </colgroup>
             <thead>
-              <tr className="text-gray-700 text-sm font-semibold border-b">
-                <th className="px-4 py-3 text-left">Name</th>
-                <th className="px-4 py-3 text-left">Employee code</th>
-                <th className="px-4 py-3 text-left">Roles</th>
-                <th className="px-4 py-3 text-left">Date of Joining</th>
-                <th className="px-4 py-3 text-left">Email</th>
-                <th className="px-4 py-3 text-left">Status</th>
-                <th className="px-4 py-3 text-left">Actions</th>
+              <tr className="text-gray-700 font-semibold border-b bg-white">
+                <th className="px-4 py-2 text-left">Name</th>
+                <th className="px-4 py-2 text-left">Employee Code</th>
+                <th className="px-4 py-2 text-left">Designation</th>
+                <th className="px-4 py-2 text-left">Date of Joining</th>
+                <th className="px-4 py-2 text-left">Probation End</th>
+                <th className="px-4 py-2 text-left">Email</th>
+                <th className="px-4 py-2 text-left">Status</th>
+                <th className="px-4 py-2 text-left">Actions</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
-                <tr><td colSpan={7} className="text-center py-8">Loading...</td></tr>
+                <tr><td colSpan={8} className="text-center py-8">Loading...</td></tr>
               ) : employees.length === 0 ? (
-                <tr><td colSpan={7} className="text-center py-8 text-muted-foreground">No employees found.</td></tr>
+                <tr><td colSpan={8} className="text-center py-8 text-muted-foreground">No employees found.</td></tr>
               ) : (
                 employees.map((emp) => (
                   <tr key={emp._id} className="border-b hover:bg-gray-50">
-                    <td className="px-4 py-3 flex items-center gap-3">
-                      <Avatar className="h-9 w-9">
-                        <AvatarFallback>{emp.firstName[0]}{emp.lastName[0]}</AvatarFallback>
+                    <td className="px-4 py-2 flex items-center gap-3 max-w-xs truncate">
+                      <Avatar className="h-8 w-8">
+                        {emp.profilePhotoUrl ? (
+                          <AvatarImage src={emp.profilePhotoUrl} alt={emp.firstName + ' ' + emp.lastName} />
+                        ) : (
+                          <AvatarFallback>{emp.firstName?.[0] || ''}{emp.lastName?.[0] || ''}</AvatarFallback>
+                        )}
                       </Avatar>
-                      <div>
-                        <div className="font-medium text-gray-900">{emp.firstName} {emp.lastName}</div>
-                        <div className="text-xs text-gray-500">{emp.designation}</div>
+                      <div className="truncate flex items-center gap-1">
+                        <span className="font-medium text-gray-900 leading-tight text-sm truncate">{emp.firstName} {emp.lastName}</span>
+                        <button
+                          type="button"
+                          className="ml-1 text-gray-400 hover:text-blue-600"
+                          title="View details"
+                          onClick={() => { setSelectedEmployee(emp); setModalOpen(true); }}
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 6h7.125a.375.375 0 0 1 .375.375V20.25M17.25 6l-9 9m0 0h5.25M8.25 15V9.75" />
+                          </svg>
+                        </button>
                       </div>
                     </td>
-                    <td className="px-4 py-3">{emp.employeeCode}</td>
-                    <td className="px-4 py-3">{emp.designation}</td>
-                    <td className="px-4 py-3">{emp.createdAt ? new Date(emp.createdAt).toLocaleDateString() : '-'}</td>
-                    <td className="px-4 py-3">{emp.email}</td>
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-2 max-w-xs truncate">{emp.employeeCode || '-'}</td>
+                    <td className="px-4 py-2 max-w-xs truncate">{emp.designation || '-'}</td>
+                    <td className="px-4 py-2 max-w-xs truncate">{emp.dateOfJoining ? new Date(emp.dateOfJoining).toLocaleDateString() : (emp.createdAt ? new Date(emp.createdAt).toLocaleDateString() : '-')}</td>
+                    <td className="px-4 py-2 max-w-xs truncate">{emp.probationEndDate ? new Date(emp.probationEndDate).toLocaleDateString() : '-'}</td>
+                    <td className="px-4 py-2">{emp.email || '-'}</td>
+                    <td className="px-4 py-2">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button size="sm" variant="outline" className={`min-w-[80px] ${emp.status === 'active' ? 'text-green-600 border-green-200' : 'text-red-500 border-red-200'}`}>{emp.status === 'active' ? 'Active' : 'Inactive'}</Button>
+                          <Button size="sm" variant="outline" className={`min-w-[70px] px-2 py-1 ${emp.status === 'active' ? 'text-green-600 border-green-200' : 'text-red-500 border-red-200'}`}>{emp.status === 'active' ? 'Active' : 'Inactive'}</Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent>
                           <DropdownMenuItem onClick={() => handleStatusChange(emp._id, 'active')} className="text-green-600">Active</DropdownMenuItem>
@@ -147,9 +153,12 @@ export const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </td>
-                    <td className="px-4 py-3">
-                      <Button variant="link" size="sm" className="text-blue-600">Edit</Button>
-                      <Button variant="link" size="sm" className="text-blue-400 ml-2">Update</Button>
+                    <td className="px-4 py-2">
+                      <Button variant="link" size="icon" className="text-blue-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487a2.25 2.25 0 1 1 3.182 3.183L7.5 20.213l-4.243 1.06 1.06-4.243 12.545-12.543ZM19.5 6.75l-1.5-1.5" />
+                        </svg>
+                      </Button>
                     </td>
                   </tr>
                 ))
@@ -157,6 +166,28 @@ export const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
             </tbody>
           </table>
         </div>
+        {/* Employee Details Modal (UI only, no API yet) */}
+        <Dialog open={modalOpen} onOpenChange={setModalOpen}>
+          <DialogContent className="max-w-lg w-full">
+            <DialogHeader>
+              <DialogTitle>Employee Details</DialogTitle>
+            </DialogHeader>
+            {selectedEmployee && (
+              <div className="space-y-2 text-sm">
+                <div><b>Name:</b> {selectedEmployee.firstName} {selectedEmployee.lastName}</div>
+                <div><b>Email:</b> {selectedEmployee.email}</div>
+                <div><b>Employee Code:</b> {selectedEmployee.employeeCode}</div>
+                <div><b>Designation:</b> {selectedEmployee.designation}</div>
+                <div><b>Date of Joining:</b> {selectedEmployee.dateOfJoining ? new Date(selectedEmployee.dateOfJoining).toLocaleDateString() : (selectedEmployee.createdAt ? new Date(selectedEmployee.createdAt).toLocaleDateString() : '-')}</div>
+                <div><b>Probation End:</b> {selectedEmployee.probationEndDate ? new Date(selectedEmployee.probationEndDate).toLocaleDateString() : '-'}</div>
+                <div><b>Status:</b> {selectedEmployee.status}</div>
+              </div>
+            )}
+            <DialogFooter>
+              <button className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" onClick={() => {/* update logic will go here */}}>Update</button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
         {/* Pagination */}
         <div className="flex items-center justify-between mt-4">
           <div>
@@ -171,3 +202,5 @@ export const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
     </Card>
   );
 };
+
+export default EmployeeList;
