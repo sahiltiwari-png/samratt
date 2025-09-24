@@ -248,19 +248,30 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
                 {loadingDetails ? (
                   <div>Loading...</div>
                 ) : employeeDetails ? (
-                  <form className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <form className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {[
                       "firstName","lastName","phone","department","designation","grade","dateOfJoining","probationEndDate","employmentType","shiftId","status","reportingManagerId","dob","gender","bloodGroup","maritalStatus","nationality","addressLine1","addressLine2","country","state","city","zipCode","aadhaarNo","panNo","passportNo","salaryStructureId","benefits","skills","loginEnabled","isActive","camsEmployeeId"
                     ].map((key) => {
                       const value = employeeDetails[key];
                       if (typeof value === "object" && value !== null) return null;
+                      let inputType = "text";
+                      if (["dateOfJoining", "probationEndDate", "dob"].includes(key)) inputType = "date";
+                      let inputValue = formData[key] || '';
+                      if (inputType === "date" && inputValue) {
+                        inputValue = inputValue.slice(0, 10); // yyyy-mm-dd
+                      }
                       return (
-                        <div key={key} className="flex flex-col">
-                          <label className="font-semibold capitalize">{key.replace(/([A-Z])/g, ' $1')}</label>
+                        <div key={key} className="flex flex-col mb-2">
+                          <label className="font-semibold capitalize mb-1 text-gray-700">{key.replace(/([A-Z])/g, ' $1')}</label>
                           {editMode ? (
-                            <input className="border rounded px-2 py-1" value={formData[key] || ''} onChange={e => setFormData((fd: any) => ({ ...fd, [key]: e.target.value }))} />
+                            <input
+                              className="border rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
+                              type={inputType}
+                              value={inputValue}
+                              onChange={e => setFormData((fd: any) => ({ ...fd, [key]: e.target.value }))}
+                            />
                           ) : (
-                            <span>{value !== undefined && value !== null && value !== '' ? value.toString() : '-'}</span>
+                            <span className="bg-gray-50 rounded px-2 py-1 border border-gray-100">{inputType === 'date' && value ? new Date(value).toLocaleDateString() : (value !== undefined && value !== null && value !== '' ? value.toString() : '-')}</span>
                           )}
                         </div>
                       );
