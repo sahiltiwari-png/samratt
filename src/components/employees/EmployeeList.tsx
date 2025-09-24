@@ -115,8 +115,8 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
               ) : (
                 employees.map((emp) => (
                   <tr key={emp._id} className="border-b last:border-b-0 hover:bg-green-50 transition-colors">
-                    <td className="px-1 py-1 flex items-center gap-1 max-w-xs truncate">
-                      <Avatar className="h-8 w-8">
+                    <td className="px-1 py-1 flex items-center gap-1 max-w-xs truncate align-middle">
+                      <Avatar className="h-8 w-8 self-end mt-3">
                         {emp.profilePhotoUrl ? (
                           <AvatarImage src={emp.profilePhotoUrl} alt={emp.firstName + ' ' + emp.lastName} />
                         ) : (
@@ -124,7 +124,7 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
                         )}
                       </Avatar>
                       <div className="truncate flex items-center gap-1">
-                        <span className="font-medium text-gray-900 leading-tight text-xs truncate">{emp.firstName} {emp.lastName}</span>
+                        <span className="font-medium text-gray-900 leading-tight text-xs truncate self-end flex items-center mt-3">{emp.firstName} {emp.lastName}</span>
                         <button
                           type="button"
                           className="ml-1 text-gray-400 hover:text-blue-600"
@@ -137,12 +137,12 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
                         </button>
                       </div>
                     </td>
-                    <td className="px-1 py-1 max-w-xs truncate">{emp.employeeCode || '-'}</td>
-                    <td className="px-1 py-1 max-w-xs truncate">{emp.designation || '-'}</td>
-                    <td className="px-1 py-1 max-w-xs truncate">{emp.dateOfJoining ? new Date(emp.dateOfJoining).toLocaleDateString() : (emp.createdAt ? new Date(emp.createdAt).toLocaleDateString() : '-')}</td>
-                    <td className="px-1 py-1 max-w-xs truncate">{emp.probationEndDate ? new Date(emp.probationEndDate).toLocaleDateString() : '-'}</td>
-                    <td className="px-1 py-1">{emp.email || '-'}</td>
-                    <td className="px-1 py-1">
+                    <td className="px-1 py-1 max-w-xs truncate align-middle">{emp.employeeCode || '-'}</td>
+                    <td className="px-1 py-1 max-w-xs truncate align-middle">{emp.designation || '-'}</td>
+                    <td className="px-1 py-1 max-w-xs truncate align-middle">{emp.dateOfJoining ? new Date(emp.dateOfJoining).toLocaleDateString() : (emp.createdAt ? new Date(emp.createdAt).toLocaleDateString() : '-')}</td>
+                    <td className="px-1 py-1 max-w-xs truncate align-middle">{emp.probationEndDate ? new Date(emp.probationEndDate).toLocaleDateString() : '-'}</td>
+                    <td className="px-1 py-1 align-middle">{emp.email || '-'}</td>
+                    <td className="px-1 py-1 align-middle">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button size="sm" variant="outline" className={`min-w-[70px] px-2 py-1 ${emp.status === 'active' ? 'text-green-600 border-green-200' : 'text-red-500 border-red-200'}`}>{emp.status === 'active' ? 'Active' : 'Inactive'}</Button>
@@ -153,7 +153,7 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-3 align-middle">
                       <Button variant="link" size="icon" className="text-blue-600">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487a2.25 2.25 0 1 1 3.182 3.183L7.5 20.213l-4.243 1.06 1.06-4.243 12.545-12.543ZM19.5 6.75l-1.5-1.5" />
