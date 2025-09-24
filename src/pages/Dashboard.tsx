@@ -15,19 +15,21 @@ const Dashboard = () => {
   const { user } = useAuth();
 
   useEffect(() => {
-    const fetchOrganizations = async () => {
-      try {
-        setLoading(true);
-        const data = await getOrganizations();
-        setOrganizations(Array.isArray(data) ? data : (Array.isArray(data?.organizations) ? data.organizations : []));
-      } catch (err) {
-        setError("Failed to load organizations");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchOrganizations();
-  }, []);
+    if (user?.role === 'superAdmin') {
+      const fetchOrganizations = async () => {
+        try {
+          setLoading(true);
+          const data = await getOrganizations();
+          setOrganizations(Array.isArray(data) ? data : (Array.isArray(data?.organizations) ? data.organizations : []));
+        } catch (err) {
+          setError("Failed to load organizations");
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchOrganizations();
+    }
+  }, [user?.role]);
 
   // Company Admin Dashboard UI (matches provided image)
   if (user?.role === 'companyAdmin') {
