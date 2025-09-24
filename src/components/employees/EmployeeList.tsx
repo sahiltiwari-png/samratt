@@ -83,8 +83,8 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
         <CardTitle className="text-lg font-semibold">Total Employees - {total}</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="rounded-lg border bg-white overflow-x-auto">
-          <table className="min-w-[900px] w-full text-sm whitespace-nowrap">
+  <div className="rounded-lg border bg-white overflow-x-auto max-h-[500px] overflow-y-auto mx-auto" style={{ width: '100%', maxWidth: '1200px', minWidth: '0' }}>
+   <table className="w-full text-[11px] border-separate border-spacing-0" style={{ width: '100%', borderRadius: '12px', overflow: 'hidden', background: '#fff', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', tableLayout: 'auto' }}>
             <colgroup>
               <col style={{ width: '16%' }} />
               <col style={{ width: '13%' }} />
@@ -96,15 +96,15 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
               <col style={{ width: '6%' }} />
             </colgroup>
             <thead>
-              <tr className="text-gray-700 font-semibold border-b bg-white">
-                <th className="px-4 py-2 text-left">Name</th>
-                <th className="px-4 py-2 text-left">Employee Code</th>
-                <th className="px-4 py-2 text-left">Designation</th>
-                <th className="px-4 py-2 text-left">Date of Joining</th>
-                <th className="px-4 py-2 text-left">Probation End</th>
-                <th className="px-4 py-2 text-left">Email</th>
-                <th className="px-4 py-2 text-left">Status</th>
-                <th className="px-4 py-2 text-left">Actions</th>
+              <tr className="text-gray-700 font-semibold border-b bg-gradient-to-r from-green-50 to-white">
+                <th className="px-1 py-1 text-left rounded-tl-lg">Name</th>
+                <th className="px-1 py-1 text-left">Code</th>
+                <th className="px-1 py-1 text-left">Designation</th>
+                <th className="px-1 py-1 text-left">Joining</th>
+                <th className="px-1 py-1 text-left">Probation</th>
+                <th className="px-1 py-1 text-left">Email</th>
+                <th className="px-1 py-1 text-left">Status</th>
+                <th className="px-1 py-1 text-left rounded-tr-lg">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -114,8 +114,8 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
                 <tr><td colSpan={8} className="text-center py-8 text-muted-foreground">No employees found.</td></tr>
               ) : (
                 employees.map((emp) => (
-                  <tr key={emp._id} className="border-b hover:bg-gray-50">
-                    <td className="px-4 py-2 flex items-center gap-3 max-w-xs truncate">
+                  <tr key={emp._id} className="border-b last:border-b-0 hover:bg-green-50 transition-colors">
+                    <td className="px-1 py-1 flex items-center gap-1 max-w-xs truncate">
                       <Avatar className="h-8 w-8">
                         {emp.profilePhotoUrl ? (
                           <AvatarImage src={emp.profilePhotoUrl} alt={emp.firstName + ' ' + emp.lastName} />
@@ -124,7 +124,7 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
                         )}
                       </Avatar>
                       <div className="truncate flex items-center gap-1">
-                        <span className="font-medium text-gray-900 leading-tight text-sm truncate">{emp.firstName} {emp.lastName}</span>
+                        <span className="font-medium text-gray-900 leading-tight text-xs truncate">{emp.firstName} {emp.lastName}</span>
                         <button
                           type="button"
                           className="ml-1 text-gray-400 hover:text-blue-600"
@@ -137,12 +137,12 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
                         </button>
                       </div>
                     </td>
-                    <td className="px-4 py-2 max-w-xs truncate">{emp.employeeCode || '-'}</td>
-                    <td className="px-4 py-2 max-w-xs truncate">{emp.designation || '-'}</td>
-                    <td className="px-4 py-2 max-w-xs truncate">{emp.dateOfJoining ? new Date(emp.dateOfJoining).toLocaleDateString() : (emp.createdAt ? new Date(emp.createdAt).toLocaleDateString() : '-')}</td>
-                    <td className="px-4 py-2 max-w-xs truncate">{emp.probationEndDate ? new Date(emp.probationEndDate).toLocaleDateString() : '-'}</td>
-                    <td className="px-4 py-2">{emp.email || '-'}</td>
-                    <td className="px-4 py-2">
+                    <td className="px-1 py-1 max-w-xs truncate">{emp.employeeCode || '-'}</td>
+                    <td className="px-1 py-1 max-w-xs truncate">{emp.designation || '-'}</td>
+                    <td className="px-1 py-1 max-w-xs truncate">{emp.dateOfJoining ? new Date(emp.dateOfJoining).toLocaleDateString() : (emp.createdAt ? new Date(emp.createdAt).toLocaleDateString() : '-')}</td>
+                    <td className="px-1 py-1 max-w-xs truncate">{emp.probationEndDate ? new Date(emp.probationEndDate).toLocaleDateString() : '-'}</td>
+                    <td className="px-1 py-1">{emp.email || '-'}</td>
+                    <td className="px-1 py-1">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button size="sm" variant="outline" className={`min-w-[70px] px-2 py-1 ${emp.status === 'active' ? 'text-green-600 border-green-200' : 'text-red-500 border-red-200'}`}>{emp.status === 'active' ? 'Active' : 'Inactive'}</Button>
@@ -153,7 +153,7 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </td>
-                    <td className="px-4 py-2">
+                    <td className="px-4 py-3">
                       <Button variant="link" size="icon" className="text-blue-600">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487a2.25 2.25 0 1 1 3.182 3.183L7.5 20.213l-4.243 1.06 1.06-4.243 12.545-12.543ZM19.5 6.75l-1.5-1.5" />
