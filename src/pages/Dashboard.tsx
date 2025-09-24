@@ -3,9 +3,10 @@ import { getOrganizations } from "@/api/organizations";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { OrgSearchContext } from "@/components/layout/MainLayout";
-import { Plus, Building } from "lucide-react";
+import { Plus, Building, Users } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from '@/contexts/AuthContext';
+import { EmployeeList } from "@/components/employees/EmployeeList";
 const Dashboard = () => {
   const [organizations, setOrganizations] = useState([]);
   const [loading, setLoading] = useState(true);
