@@ -138,29 +138,6 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
                         </Avatar>
                         <div className="truncate flex items-center gap-1">
                           <span className="font-medium text-gray-900 leading-tight text-xs truncate">{emp.firstName} {emp.lastName}</span>
-                          <button
-                            type="button"
-                            className="ml-1 text-gray-400 hover:text-blue-600"
-                            title="View details"
-                            onClick={async () => {
-                              setSelectedEmployee(emp);
-                              setModalOpen(true);
-                              setLoadingDetails(true);
-                              setEditMode(false);
-                              setUpdateMessage(null);
-                              try {
-                                const details = await getEmployeeById(emp._id);
-                                setEmployeeDetails(details);
-                                setFormData(details);
-                              } catch (e) {
-                                setEmployeeDetails(null);
-                              } finally {
-                                setLoadingDetails(false);
-                              }
-                            }}
-                          >
-                            <Eye className="w-4 h-4" />
-                          </button>
                         </div>
                       </div>
                     </td>
@@ -181,10 +158,29 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
                       </DropdownMenu>
                     </td>
                     <td className="px-4 py-3 align-middle">
-                      <Button variant="link" size="icon" className="text-blue-600">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487a2.25 2.25 0 1 1 3.182 3.183L7.5 20.213l-4.243 1.06 1.06-4.243 12.545-12.543ZM19.5 6.75l-1.5-1.5" />
-                        </svg>
+                      <Button
+                        variant="link"
+                        size="icon"
+                        className="text-blue-600"
+                        title="View details"
+                        onClick={async () => {
+                          setSelectedEmployee(emp);
+                          setModalOpen(true);
+                          setLoadingDetails(true);
+                          setEditMode(false);
+                          setUpdateMessage(null);
+                          try {
+                            const details = await getEmployeeById(emp._id);
+                            setEmployeeDetails(details);
+                            setFormData(details);
+                          } catch (e) {
+                            setEmployeeDetails(null);
+                          } finally {
+                            setLoadingDetails(false);
+                          }
+                        }}
+                      >
+                        <Eye className="w-4 h-4" />
                       </Button>
                     </td>
                   </tr>
