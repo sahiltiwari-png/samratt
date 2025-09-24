@@ -1,3 +1,63 @@
+// Reusable filter bar component
+const EmployeeFilterBar = ({
+  statusFilter,
+  setStatusFilter,
+  designationFilter,
+  setDesignationFilter,
+  onClear,
+  onAddEmployee,
+  total
+}: {
+  statusFilter: string | null,
+  setStatusFilter: (v: string | null) => void,
+  designationFilter: string | null,
+  setDesignationFilter: (v: string | null) => void,
+  onClear: () => void,
+  onAddEmployee: () => void,
+  total: number
+}) => {
+  // Example options, replace with dynamic if needed
+  const statusOptions = ["Active", "Inactive"];
+  const designationOptions = ["Manager", "Developer", "HR", "Designer"];
+  return (
+    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4 w-full pb-4">
+      <div className="flex items-center gap-4 flex-wrap">
+        <span className="font-medium text-base text-gray-800">Total Employees - {total}</span>
+        <select
+          className="rounded border px-3 py-1 bg-green-50 text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-200 min-w-[120px]"
+          value={statusFilter || ""}
+          onChange={e => setStatusFilter(e.target.value === "" ? null : e.target.value)}
+        >
+          <option value="">Status</option>
+          {statusOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+        </select>
+        <select
+          className="rounded border px-3 py-1 bg-gray-50 text-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-200 min-w-[140px]"
+          value={designationFilter || ""}
+          onChange={e => setDesignationFilter(e.target.value === "" ? null : e.target.value)}
+        >
+          <option value="">Designation</option>
+          {designationOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+        </select>
+        <button
+          className="inline-flex items-center gap-1 px-3 py-1 rounded border border-gray-200 bg-white text-gray-500 hover:text-green-600 hover:border-green-300 text-sm transition shadow-sm"
+          onClick={onClear}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+          Clear Filters
+        </button>
+      </div>
+      <div>
+        <button
+          className="bg-green-400 hover:bg-green-500 text-white font-semibold px-6 py-2 rounded transition"
+          onClick={onAddEmployee}
+        >
+          Add Employee
+        </button>
+      </div>
+    </div>
+  );
+};
 import { useEffect, useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -91,12 +151,18 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
 
   return (
     <Card className="shadow-md rounded-xl">
-      <CardHeader className="pb-2 flex flex-row items-center justify-between">
-        <CardTitle className="text-lg font-semibold">Total Employees - {total}</CardTitle>
-      </CardHeader>
       <CardContent>
-  <div className="rounded-lg border bg-white overflow-x-auto max-h-[500px] overflow-y-auto mx-auto" style={{ width: '100%', maxWidth: '1200px', minWidth: '0', touchAction: 'pan-y' }}>
-   <table className="w-full text-[11px] border-separate border-spacing-0" style={{ width: '100%', borderRadius: '12px', overflow: 'hidden', background: '#fff', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', tableLayout: 'auto' }}>
+        <EmployeeFilterBar
+          statusFilter={statusFilter}
+          setStatusFilter={setStatusFilter}
+          designationFilter={designationFilter}
+          setDesignationFilter={setDesignationFilter}
+          onClear={clearFilters}
+          onAddEmployee={() => { /* TODO: open add employee modal */ }}
+          total={total}
+        />
+        <div className="rounded-lg border bg-white overflow-x-auto max-h-[500px] overflow-y-auto mx-auto" style={{ width: '100%', maxWidth: '1200px', minWidth: '0', touchAction: 'pan-y' }}>
+          <table className="w-full text-[11px] border-separate border-spacing-0" style={{ width: '100%', borderRadius: '12px', overflow: 'hidden', background: '#fff', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', tableLayout: 'auto' }}>
             <colgroup>
               <col style={{ width: '16%' }} />
               <col style={{ width: '13%' }} />
