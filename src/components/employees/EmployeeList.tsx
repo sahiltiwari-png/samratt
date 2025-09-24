@@ -218,59 +218,61 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
         {/* Employee Details Modal (UI only, no API yet) */}
         <Dialog open={modalOpen} onOpenChange={setModalOpen}>
           <DialogContent className="max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>Employee Details</DialogTitle>
+            <DialogHeader className="mb-2 pb-2 border-b">
+              <div className="flex items-center gap-4">
+                <div className="relative w-20 h-20">
+                  <img
+                    src={profilePreview || employeeDetails?.profilePhotoUrl || 'https://ui-avatars.com/api/?name=' + encodeURIComponent((employeeDetails?.firstName || '') + ' ' + (employeeDetails?.lastName || ''))}
+                    alt="Profile"
+                    className="w-20 h-20 rounded-full object-cover border shadow"
+                  />
+                  {editMode && (
+                    <button
+                      type="button"
+                      className="absolute bottom-0 right-0 bg-blue-600 text-white rounded-full p-1 shadow hover:bg-blue-700"
+                      onClick={() => fileInputRef.current?.click()}
+                      title="Upload Photo"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 16.5v-6m0 0V7.5m0 3h3m-3 0H9m12 6.75A2.25 2.25 0 0 1 18.75 21H5.25A2.25 2.25 0 0 1 3 18.75V7.5A2.25 2.25 0 0 1 5.25 5.25h3.379a2.25 2.25 0 0 0 1.591-.659l1.5-1.5a2.25 2.25 0 0 1 3.18 0l1.5 1.5a2.25 2.25 0 0 0 1.591.659h3.379A2.25 2.25 0 0 1 21 7.5v11.25Z" />
+                      </svg>
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={async e => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            const reader = new FileReader();
+                            reader.onload = ev => setProfilePreview(ev.target?.result as string);
+                            reader.readAsDataURL(file);
+                            // Upload immediately and set URL
+                            try {
+                              const url = await uploadFile(file);
+                              setFormData((fd: any) => ({ ...fd, profilePhotoUrl: url }));
+                            } catch {
+                              // Optionally show error
+                            }
+                          }
+                        }}
+                      />
+                    </button>
+                  )}
+                </div>
+                <div>
+                  <DialogTitle className="text-2xl font-bold text-black tracking-tight mb-1">{employeeDetails?.firstName} {employeeDetails?.lastName}</DialogTitle>
+                  <div className="text-gray-500 text-xs">{employeeDetails?.designation || ''} {employeeDetails?.department ? `| ${employeeDetails.department}` : ''}</div>
+                  <div className="text-gray-400 text-xs mt-1">{employeeDetails?.email}</div>
+                </div>
+              </div>
             </DialogHeader>
             {selectedEmployee && (
-              <div className="space-y-4 text-sm p-2 md:p-4 bg-white rounded-lg shadow-md">
-                {/* Profile Image Upload */}
-                <div className="flex flex-col items-center mb-4">
-                  <div className="relative w-24 h-24 mb-2">
-                    <img
-                      src={profilePreview || employeeDetails?.profilePhotoUrl || 'https://ui-avatars.com/api/?name=' + encodeURIComponent((employeeDetails?.firstName || '') + ' ' + (employeeDetails?.lastName || ''))}
-                      alt="Profile"
-                      className="w-24 h-24 rounded-full object-cover border shadow"
-                    />
-                    {editMode && (
-                      <button
-                        type="button"
-                        className="absolute bottom-0 right-0 bg-blue-600 text-white rounded-full p-1 shadow hover:bg-blue-700"
-                        onClick={() => fileInputRef.current?.click()}
-                        title="Upload Photo"
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M12 16.5v-6m0 0V7.5m0 3h3m-3 0H9m12 6.75A2.25 2.25 0 0 1 18.75 21H5.25A2.25 2.25 0 0 1 3 18.75V7.5A2.25 2.25 0 0 1 5.25 5.25h3.379a2.25 2.25 0 0 0 1.591-.659l1.5-1.5a2.25 2.25 0 0 1 3.18 0l1.5 1.5a2.25 2.25 0 0 0 1.591.659h3.379A2.25 2.25 0 0 1 21 7.5v11.25Z" />
-                        </svg>
-                        <input
-                          ref={fileInputRef}
-                          type="file"
-                          accept="image/*"
-                          className="hidden"
-                          onChange={async e => {
-                            const file = e.target.files?.[0];
-                            if (file) {
-                              const reader = new FileReader();
-                              reader.onload = ev => setProfilePreview(ev.target?.result as string);
-                              reader.readAsDataURL(file);
-                              // Upload immediately and set URL
-                              try {
-                                const url = await uploadFile(file);
-                                setFormData((fd: any) => ({ ...fd, profilePhotoUrl: url }));
-                              } catch {
-                                // Optionally show error
-                              }
-                            }
-                          }}
-                        />
-                      </button>
-                    )}
-                  </div>
-                  <div className="text-xs text-gray-500">Profile Photo</div>
-                </div>
+              <div className="space-y-4 text-sm p-2 md:p-4 bg-white">
                 {loadingDetails ? (
                   <div>Loading...</div>
                 ) : employeeDetails ? (
-                  <form className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <form className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3">
                     {[
                       "firstName","lastName","phone","department","designation","grade","dateOfJoining","probationEndDate","employmentType","shiftId","status","reportingManagerId","dob","gender","bloodGroup","maritalStatus","nationality","addressLine1","addressLine2","country","state","city","zipCode","aadhaarNo","panNo","passportNo","salaryStructureId","benefits","skills","loginEnabled","isActive","camsEmployeeId"
                     ].map((key) => {
