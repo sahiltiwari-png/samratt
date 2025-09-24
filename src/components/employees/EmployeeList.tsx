@@ -5,7 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Mail, Phone, MapPin, MoreVertical } from "lucide-react";
-import { Eye } from "lucide-react";
+import { Eye, Pencil } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -158,30 +158,56 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
                       </DropdownMenu>
                     </td>
                     <td className="px-4 py-3 align-middle">
-                      <Button
-                        variant="link"
-                        size="icon"
-                        className="text-blue-600"
-                        title="View details"
-                        onClick={async () => {
-                          setSelectedEmployee(emp);
-                          setModalOpen(true);
-                          setLoadingDetails(true);
-                          setEditMode(false);
-                          setUpdateMessage(null);
-                          try {
-                            const details = await getEmployeeById(emp._id);
-                            setEmployeeDetails(details);
-                            setFormData(details);
-                          } catch (e) {
-                            setEmployeeDetails(null);
-                          } finally {
-                            setLoadingDetails(false);
-                          }
-                        }}
-                      >
-                        <Eye className="w-4 h-4" />
-                      </Button>
+                      <div className="flex gap-2">
+                        <Button
+                          variant="link"
+                          size="icon"
+                          className="text-blue-600"
+                          title="View details"
+                          onClick={async () => {
+                            setSelectedEmployee(emp);
+                            setModalOpen(true);
+                            setLoadingDetails(true);
+                            setEditMode(false);
+                            setUpdateMessage(null);
+                            try {
+                              const details = await getEmployeeById(emp._id);
+                              setEmployeeDetails(details);
+                              setFormData(details);
+                            } catch (e) {
+                              setEmployeeDetails(null);
+                            } finally {
+                              setLoadingDetails(false);
+                            }
+                          }}
+                        >
+                          <Eye className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant="link"
+                          size="icon"
+                          className="text-green-600"
+                          title="Edit details"
+                          onClick={async () => {
+                            setSelectedEmployee(emp);
+                            setModalOpen(true);
+                            setLoadingDetails(true);
+                            setEditMode(true);
+                            setUpdateMessage(null);
+                            try {
+                              const details = await getEmployeeById(emp._id);
+                              setEmployeeDetails(details);
+                              setFormData(details);
+                            } catch (e) {
+                              setEmployeeDetails(null);
+                            } finally {
+                              setLoadingDetails(false);
+                            }
+                          }}
+                        >
+                          <Pencil className="w-4 h-4" />
+                        </Button>
+                      </div>
                     </td>
                   </tr>
                 ))
@@ -313,34 +339,35 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
               </div>
             )}
             <DialogFooter>
-              {employeeDetails && !editMode && (
-                <button className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700" onClick={() => setEditMode(true)}>Update</button>
-              )}
-              {editMode && (
-                <button
-                  className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
-                  disabled={updateLoading}
-                  onClick={async () => {
-                    setUpdateLoading(true);
-                    setUpdateMessage(null);
-                    try {
-                      const submitData = { ...formData };
-                      await API.put(`/auth/employees/${selectedEmployee?._id}`, submitData);
-                      setUpdateMessage('Update success!');
-                      setEditMode(false);
-                      setProfilePreview(null);
-                    } catch (e) {
-                      setUpdateMessage('Update failed!');
-                    } finally {
-                      setUpdateLoading(false);
-                    }
-                  }}
-                >
-                  {updateLoading ? 'Saving...' : 'Save'}
-                </button>
-              )}
-              {editMode && (
-                <button className="ml-2 px-4 py-2 rounded border" onClick={() => { setEditMode(false); setFormData(employeeDetails); setProfilePreview(null); }}>Cancel</button>
+              {/* Only show Update button if in edit mode */}
+              {employeeDetails && editMode && (
+                <>
+                  <button className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700" disabled={updateLoading}
+                    onClick={async () => {
+                      setUpdateLoading(true);
+                      setUpdateMessage(null);
+                      try {
+                        const submitData = { ...formData };
+                        await API.put(`/auth/employees/${selectedEmployee?._id}`, submitData);
+                        setUpdateMessage('Update success!');
+                        setEditMode(false);
+                        setProfilePreview(null);
+                      } catch (e) {
+                        setUpdateMessage('Update failed!');
+                      } finally {
+                        setUpdateLoading(false);
+                      }
+                    }}
+                  >
+                    {updateLoading ? 'Saving...' : 'Save'}
+                  </button>
+                  <button
+                    className="ml-2 px-4 py-2 rounded border"
+                    onClick={() => { setEditMode(false); setFormData(employeeDetails); setProfilePreview(null); }}
+                  >
+                    Cancel
+                  </button>
+                </>
               )}
             </DialogFooter>
           </DialogContent>
