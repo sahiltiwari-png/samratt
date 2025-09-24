@@ -59,6 +59,7 @@ const EmployeeFilterBar = ({
   );
 };
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -119,6 +120,8 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
   const [updateLoading, setUpdateLoading] = useState(false);
   const [updateMessage, setUpdateMessage] = useState<string | null>(null);
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     const fetchEmployees = async () => {
       setLoading(true);
@@ -158,7 +161,7 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
           designationFilter={designationFilter}
           setDesignationFilter={setDesignationFilter}
           onClear={clearFilters}
-          onAddEmployee={() => { /* TODO: open add employee modal */ }}
+          onAddEmployee={() => navigate('/add-employee')}
           total={total}
         />
         <div className="rounded-lg border bg-white overflow-x-auto max-h-[500px] overflow-y-auto mx-auto" style={{ width: '100%', maxWidth: '1200px', minWidth: '0', touchAction: 'pan-y' }}>

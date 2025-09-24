@@ -17,6 +17,7 @@ import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import AdminPanel from "./pages/AdminPanel";
 import NotFound from "./pages/NotFound";
+import AddEmployeeStepper from "./pages/AddEmployeeStepper";
 import HR from "./pages/HR";
 import Payroll from "./pages/Payroll";
 import SalarySlips from "./pages/SalarySlips";
@@ -46,6 +47,7 @@ const App = () => (
                       <Route path="/" element={<Navigate to="/dashboard" replace />} />
                       <Route path="/dashboard" element={<Dashboard />} />
                       <Route path="/employees" element={<Employees />} />
+                      <Route path="/add-employee" element={<AddEmployeeStepper />} />
                       <Route path="/hr" element={<HR />} />
                       <Route path="/hr/:id" element={<HR />} />
                       <Route path="/organizations/:id" element={<OrganizationDetails />} />
