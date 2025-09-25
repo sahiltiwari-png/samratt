@@ -24,6 +24,7 @@ import SalarySlips from "./pages/SalarySlips";
 import Reports from "./pages/Reports";
 import CreateOrganization from "./pages/CreateOrganization";
 import OrganizationDetails from "./pages/OrganizationDetails";
+import EmployeeAttendanceDetail from "./pages/EmployeeAttendanceDetail";
 
 // Layout
 import MainLayout from "./components/layout/MainLayout";
@@ -54,6 +55,7 @@ const App = () => (
                       <Route path="/payroll" element={<Payroll />} />
                       <Route path="/salary-slips" element={<SalarySlips />} />
                       <Route path="/attendance" element={<Attendance />} />
+                      <Route path="/attendance/employee/:id" element={<EmployeeAttendanceDetail />} />
                       <Route path="/leaves" element={<Leaves />} />
                       <Route path="/reports" element={<Reports />} />
                       <Route path="/settings" element={<Settings />} />

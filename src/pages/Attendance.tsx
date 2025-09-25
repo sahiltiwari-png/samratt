@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -59,6 +60,7 @@ const Attendance = () => {
   const [attendanceData, setAttendanceData] = useState<AttendanceResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
   const [employeeId, setEmployeeId] = useState<string | null>(null);
   const [dateRange, setDateRange] = useState<{
     startDate: Date | null;
@@ -340,7 +342,12 @@ const Attendance = () => {
                       <td className="px-3 py-3 align-middle text-sm hidden md:table-cell">{formatTime(record.clockOut)}</td>
                       <td className="px-3 py-3 align-middle">
                         <div className="flex space-x-1">
-                          <Button variant="link" size="icon" className="text-blue-600 h-8 w-8 p-0">
+                          <Button 
+                            variant="link" 
+                            size="icon" 
+                            className="text-blue-600 h-8 w-8 p-0"
+                            onClick={() => navigate(`/attendance/employee/${record.employee._id}`)}
+                          >
                             <Eye className="w-4 h-4 md:w-5 md:h-5" />
                           </Button>
                           <Button variant="link" size="icon" className="text-green-600 h-8 w-8 p-0">

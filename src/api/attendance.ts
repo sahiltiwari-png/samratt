@@ -23,3 +23,23 @@ export const getAttendance = async (params?: {
   const response = await API.get(`/attendance${queryString}`);
   return response.data;
 };
+
+export const getEmployeeAttendanceById = async (employeeId: string, params?: {
+  status?: string | null;
+  startDate?: string | null;
+  endDate?: string | null;
+  page?: number;
+  limit?: number;
+}) => {
+  const query = [];
+  if (params) {
+    if (params.status) query.push(`status=${params.status}`);
+    if (params.startDate) query.push(`startDate=${params.startDate}`);
+    if (params.endDate) query.push(`endDate=${params.endDate}`);
+    if (params.page) query.push(`page=${params.page}`);
+    if (params.limit) query.push(`limit=${params.limit}`);
+  }
+  const queryString = query.length ? `?${query.join('&')}` : '';
+  const response = await API.get(`/attendance/list-by-id/${employeeId}${queryString}`);
+  return response.data;
+};
