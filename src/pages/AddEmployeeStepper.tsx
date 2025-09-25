@@ -3,7 +3,9 @@ import { useState, useEffect } from "react";
 import { Calendar, Check, ChevronRight } from "lucide-react";
 
 
+
 import { uploadFile } from "../api/uploadFile";
+import API from "../api/auth";
 
 const getRoles = async () => {
   // Mock roles data
@@ -15,13 +17,7 @@ const getRoles = async () => {
   ];
 };
 
-const API = {
-  post: async (url: string, data: any) => {
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    console.log("Employee added:", data);
-    return { success: true };
-  }
-};
+
 
 // Compact Input Component
 const Input = ({ label, type = "text", value, onChange, fullWidth = false, placeholder = "", onlyNumber = false }: any) => (
