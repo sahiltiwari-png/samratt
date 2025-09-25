@@ -34,52 +34,109 @@ const Dashboard = () => {
   // Company Admin Dashboard UI (matches provided image)
   if (user?.role === 'companyAdmin') {
     return (
-      <div className="p-6 min-h-screen bg-gradient-to-br from-green-100 to-white">
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-3xl font-bold text-black">Dashboard</h1>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <Card className="p-6 flex flex-col items-center shadow-md">
-            <div className="text-3xl font-bold text-green-600">89</div>
-            <div className="text-sm text-gray-500 mb-2">Active <span className="text-green-500">11</span> Inactive <span className="text-red-500">4</span></div>
-            <Button className="w-full bg-green-600 hover:bg-green-700 text-white mt-auto">Manage Employees</Button>
-          </Card>
-          <Card className="p-6 flex flex-col items-center shadow-md">
-            <div className="text-3xl font-bold text-green-600">Total Attendance</div>
-            <div className="text-sm text-gray-500 mb-2">this month</div>
-            <Button className="w-full bg-green-600 hover:bg-green-700 text-white mt-auto">Manage Leaves</Button>
-          </Card>
-          <Card className="p-6 flex flex-col items-center shadow-md">
-            <div className="text-3xl font-bold text-green-600">19</div>
-            <div className="text-sm text-gray-500 mb-2">Approved <span className="text-green-500">11</span> Declined <span className="text-red-500">4</span> Pending <span className="text-yellow-500">4</span></div>
-            <Button className="w-full bg-green-600 hover:bg-green-700 text-white mt-auto">Manage leaves requests</Button>
-          </Card>
-          <Card className="p-6 flex flex-col items-center shadow-md col-span-2">
-            <div className="font-semibold mb-2">Today, 13 Sep 2021</div>
-            <div className="w-full space-y-2">
-              <div className="bg-white rounded-lg p-3 shadow-sm">Interview with candidates<br /><span className="text-xs text-gray-400">Today - 10:30 AM</span></div>
-              <div className="bg-white rounded-lg p-3 shadow-sm">Short meeting with product designer from IT Departement<br /><span className="text-xs text-gray-400">Today - 09:15 AM</span></div>
-              <div className="bg-white rounded-lg p-3 shadow-sm">Sort Front-end developer candidates<br /><span className="text-xs text-gray-400">Today - 11:30 AM</span></div>
+      <div className="min-h-screen bg-gradient-to-br from-green-200 to-green-50 py-6 px-2 md:px-8">
+        {/* Header Card */}
+        <div className="max-w-5xl mx-auto">
+          <div className="rounded-2xl bg-[#23292F] flex flex-col md:flex-row items-center justify-between px-8 py-6 mb-8 shadow-lg">
+            <div className="flex items-center gap-4 w-full md:w-auto mb-4 md:mb-0">
+              <div className="w-16 h-16 rounded-full bg-gray-200 border-4 border-white overflow-hidden">
+                {/* Avatar Placeholder */}
+                <span className="w-full h-full block bg-gray-300" />
+              </div>
+              <div>
+                <div className="text-lg font-semibold text-green-300">Vishal Rathore</div>
+                <div className="text-sm text-white opacity-80">HR Manager</div>
+              </div>
             </div>
-          </Card>
-          <Card className="p-6 flex flex-col items-center shadow-md">
-            <div className="font-semibold mb-2">Leave Policy</div>
-            <div className="text-sm text-gray-500 mb-2">3 active policy<br />Casual 11  Medical 4  Earned 4</div>
-            <Button className="w-full bg-green-600 hover:bg-green-700 text-white mt-auto">Edit Policy</Button>
-          </Card>
-          <Card className="p-6 flex flex-col items-center shadow-md">
-            <div className="font-semibold mb-2">Payroll Processed</div>
-            <div className="text-sm text-gray-500 mb-2">69/89 employees<br />Pending employees <span className="text-red-500">20</span></div>
-            <Button className="w-full bg-green-600 hover:bg-green-700 text-white mt-auto">Edit Policy</Button>
-          </Card>
-          <Card className="p-6 flex flex-col items-center shadow-md">
-            <div className="font-semibold mb-2">Update Salary</div>
-            <Button className="w-full bg-green-600 hover:bg-green-700 text-white mt-auto">Update Salary</Button>
-          </Card>
-          <Card className="p-6 flex flex-col items-center shadow-md">
-            <div className="font-semibold mb-2">Reports</div>
-            <div className="text-sm text-gray-500 mb-2">19<br />Approved 11  Declined 4  Pending 4</div>
-          </Card>
+            <div className="flex flex-col md:items-end w-full md:w-auto">
+              <div className="flex gap-2 mb-2">
+                <span className="flex items-center gap-1 px-3 py-1 rounded-lg bg-green-100 text-green-700 text-xs font-semibold"><span className="inline-block w-2 h-2 rounded-full bg-green-500"></span>Clock in</span>
+                <span className="flex items-center gap-1 px-3 py-1 rounded-lg bg-red-100 text-red-700 text-xs font-semibold"><span className="inline-block w-2 h-2 rounded-full bg-red-500"></span>Clock Out</span>
+              </div>
+              <div className="bg-white rounded-lg px-4 py-2 flex flex-col md:flex-row gap-4 items-center shadow">
+                <div className="text-xs text-gray-500">Date<br /><span className="text-base text-gray-800 font-semibold">19/09/2025</span></div>
+                <div className="text-xs text-gray-500">Clockin<br /><span className="text-base text-gray-800 font-semibold">10:00:00</span></div>
+                <div className="text-xs text-gray-500">Clockout<br /><span className="text-base text-gray-800 font-semibold">19:00:00</span></div>
+                <div className="text-xs text-gray-500">Working hours<br /><span className="text-base text-gray-800 font-semibold">9 hours</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {/* Main Content */}
+        <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Left: Events */}
+          <div className="md:col-span-1">
+            <div className="bg-white rounded-2xl shadow p-6 mb-6">
+              <div className="text-gray-500 text-sm mb-4 font-semibold">Today, 13 Sep 2021</div>
+              <div className="space-y-3">
+                <div className="bg-gray-50 rounded-lg p-3 text-gray-800">Interview with candidates<br /><span className="text-xs text-gray-400">Today - 10:30 AM</span></div>
+                <div className="bg-gray-50 rounded-lg p-3 text-gray-800">Short meeting with product designer from IT Departement<br /><span className="text-xs text-gray-400">Today - 09:15 AM</span></div>
+                <div className="bg-gray-50 rounded-lg p-3 text-gray-800">Sort Front-end developer candidates<br /><span className="text-xs text-gray-400">Today - 11:30 AM</span></div>
+              </div>
+            </div>
+          </div>
+          {/* Right: Cards */}
+          <div className="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-6">
+            {/* Total Employees */}
+            <div className="bg-white rounded-2xl shadow p-6 flex flex-col justify-between">
+              <div className="flex items-center justify-between mb-2">
+                <div className="text-gray-500 text-sm font-semibold">Total Employees</div>
+                <div className="flex gap-2 text-xs">
+                  <span className="text-green-600 font-bold">Active 89</span>
+                  <span className="text-red-500 font-bold">Inactive 4</span>
+                </div>
+              </div>
+              <div className="text-3xl font-bold text-green-700 mb-4">89</div>
+              <button className="bg-green-500 hover:bg-green-600 text-white rounded-lg py-2 font-semibold transition">Manage Employees</button>
+            </div>
+            {/* Total Leave Requests */}
+            <div className="bg-white rounded-2xl shadow p-6 flex flex-col justify-between">
+              <div className="flex items-center justify-between mb-2">
+                <div className="text-gray-500 text-sm font-semibold">Total Leave requests</div>
+                <div className="flex gap-2 text-xs">
+                  <span className="text-green-600 font-bold">Approved 11</span>
+                  <span className="text-red-500 font-bold">Declined 4</span>
+                  <span className="text-yellow-500 font-bold">Pending 4</span>
+                </div>
+              </div>
+              <div className="text-3xl font-bold text-green-700 mb-4">19</div>
+              <button className="bg-green-500 hover:bg-green-600 text-white rounded-lg py-2 font-semibold transition">Manage leaves requests</button>
+            </div>
+            {/* Leave Policy */}
+            <div className="bg-white rounded-2xl shadow p-6 flex flex-col justify-between">
+              <div className="flex items-center justify-between mb-2">
+                <div className="text-gray-500 text-sm font-semibold">Leave Policy</div>
+                <div className="flex gap-2 text-xs">
+                  <span className="text-green-600 font-bold">3 active policy</span>
+                  <span className="text-gray-500">Casual 11</span>
+                  <span className="text-gray-500">Medical 4</span>
+                  <span className="text-gray-500">Earned 4</span>
+                </div>
+              </div>
+              <div className="text-3xl font-bold text-green-700 mb-4">3</div>
+              <button className="bg-green-500 hover:bg-green-600 text-white rounded-lg py-2 font-semibold transition">Manage Leave Policy</button>
+            </div>
+            {/* Payroll Processed */}
+            <div className="bg-white rounded-2xl shadow p-6 flex flex-col justify-between">
+              <div className="flex items-center justify-between mb-2">
+                <div className="text-gray-500 text-sm font-semibold">Payroll Processed <span className="text-xs text-gray-400">this month</span></div>
+                <div className="flex gap-2 text-xs">
+                  <span className="text-green-600 font-bold">69/89 employees</span>
+                  <span className="text-red-500 font-bold">Pending employees 20</span>
+                </div>
+              </div>
+              <div className="text-3xl font-bold text-green-700 mb-4">69/89</div>
+              <button className="bg-green-500 hover:bg-green-600 text-white rounded-lg py-2 font-semibold transition">Manage Payroll</button>
+            </div>
+            {/* Reports */}
+            <div className="bg-white rounded-2xl shadow p-6 flex flex-col justify-between">
+              <div className="flex items-center justify-between mb-2">
+                <div className="text-gray-500 text-sm font-semibold">Reports</div>
+              </div>
+              <div className="text-3xl font-bold text-green-700 mb-4">-</div>
+              <button className="bg-green-500 hover:bg-green-600 text-white rounded-lg py-2 font-semibold transition">Manage Reports</button>
+            </div>
+          </div>
         </div>
       </div>
     );
