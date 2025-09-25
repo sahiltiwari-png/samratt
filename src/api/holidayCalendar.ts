@@ -1,7 +1,9 @@
 import API from "./auth";
 
-export const getHolidayCalendar = async (organizationId: string) => {
-  const res = await API.get(`/holiday/holiday-calendar/${organizationId}`);
+
+// GET /holiday/holiday-calendar/ (no orgId in URL, orgId in query or from auth)
+export const getHolidayCalendar = async () => {
+  const res = await API.get(`/holiday/holiday-calendar/`);
   return res.data;
 };
 

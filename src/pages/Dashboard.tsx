@@ -50,27 +50,36 @@ const Dashboard = () => {
         .then((data) => setDashboardStats(data))
         .catch(() => setDashboardError("Failed to load dashboard stats"))
         .finally(() => setDashboardLoading(false));
-      // Fetch holiday calendar
-      if (user?.organizationId) {
-        setCalendarLoading(true);
-        getHolidayCalendar(user.organizationId)
-          .then((data) => setCalendarUrl(data?.calendarFileName || null))
-          .catch(() => setCalendarUrl(null))
-          .finally(() => setCalendarLoading(false));
-      }
+      // Fetch holiday calendar (no orgId in URL)
+      setCalendarLoading(true);
+      getHolidayCalendar()
+        .then((data) => setCalendarUrl(data?.calendarFileName || null))
+        .catch(() => setCalendarUrl(null))
+        .finally(() => setCalendarLoading(false));
     }
   }, [user?.role, user?.organizationId]);
 
   const handleCalendarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files || !e.target.files[0] || !user?.organizationId) return;
+    if (!e.target.files || !e.target.files[0] || !user?.organizationId) {
+      console.log('No file selected or missing organizationId');
+      return;
+    }
     setCalendarLoading(true);
     try {
       const file = e.target.files[0];
+      console.log('Selected file:', file);
+      // Reset the input so the same file can be uploaded again
+      if (fileInputRef.current) fileInputRef.current.value = "";
+      console.log('Calling uploadFile API...');
       const url = await uploadFile(file);
-      await saveHolidayCalendar(user.organizationId, url);
+      console.log('uploadFile API returned URL:', url);
+      // Send the full image URL as calendarFileName
+      const saveRes = await saveHolidayCalendar(user.organizationId, url);
+      console.log('saveHolidayCalendar response:', saveRes);
       setCalendarUrl(url);
-    } catch {
-      // handle error (could show toast)
+    } catch (err) {
+      console.error('Calendar upload error:', err);
+      alert('Upload failed: ' + (err?.message || err));
     } finally {
       setCalendarLoading(false);
     }
@@ -120,32 +129,35 @@ const Dashboard = () => {
           <div className="md:col-span-1">
             <div className="bg-white rounded-2xl shadow p-6 mb-6 flex flex-col items-center">
               <div className="text-gray-500 text-sm mb-4 font-semibold">Today</div>
-              {calendarLoading ? (
-                <div className="w-full flex justify-center items-center h-32"><span className="text-gray-400">Loading...</span></div>
-              ) : calendarUrl ? (
-                <div className="w-full flex flex-col items-center">
-                  <img src={calendarUrl} alt="Holiday Calendar" className="w-full max-w-[180px] h-32 object-contain rounded mb-2 border" />
-                  <button
-                    className="flex items-center gap-2 text-green-600 hover:text-green-800 text-xs font-semibold border border-green-200 rounded px-3 py-1 bg-green-50"
-                    onClick={() => fileInputRef.current?.click()}
-                  >
-                    <svg width="18" height="18" fill="none" viewBox="0 0 24 24"><path d="M12 16v-8M8 12h8" stroke="#3CC78F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><rect x="3" y="3" width="18" height="18" rx="4" stroke="#3CC78F" strokeWidth="1.5"/></svg>
-                    Upload Calendar
-                  </button>
-                  <input type="file" accept="image/*" ref={fileInputRef} className="hidden" onChange={handleCalendarUpload} />
-                </div>
-              ) : (
-                <div className="w-full flex flex-col items-center justify-center h-32">
-                  <button
-                    className="flex flex-col items-center gap-1 text-green-600 hover:text-green-800 text-xs font-semibold border border-green-200 rounded px-3 py-2 bg-green-50"
-                    onClick={() => fileInputRef.current?.click()}
-                  >
-                    <svg width="32" height="32" fill="none" viewBox="0 0 24 24"><path d="M12 16v-8M8 12h8" stroke="#3CC78F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><rect x="3" y="3" width="18" height="18" rx="4" stroke="#3CC78F" strokeWidth="1.5"/></svg>
-                    <span>Upload Calendar</span>
-                  </button>
-                  <input type="file" accept="image/*" ref={fileInputRef} className="hidden" onChange={handleCalendarUpload} />
-                </div>
-              )}
+              <div className="w-full flex flex-col items-center">
+                {calendarLoading ? (
+                  <div className="w-full flex justify-center items-center h-32"><span className="text-gray-400">Loading...</span></div>
+                ) : calendarUrl ? (
+                  <>
+                    <img src={calendarUrl} alt="Holiday Calendar" className="w-full max-w-[180px] h-32 object-contain rounded mb-2 border" />
+                  </>
+                ) : (
+                  <span className="text-gray-400 mb-2">No calendar uploaded</span>
+                )}
+                <input
+                  id="calendar-upload-input"
+                  type="file"
+                  accept="image/*"
+                  ref={fileInputRef}
+                  style={{ display: 'none' }}
+                  onChange={handleCalendarUpload}
+                />
+                <button
+                  type="button"
+                  className="flex items-center gap-2 text-green-600 hover:text-green-800 text-xs font-semibold border border-green-200 rounded px-3 py-1 bg-green-50 mt-2"
+                  onClick={() => {
+                    if (fileInputRef.current) fileInputRef.current.click();
+                  }}
+                >
+                  <svg width="18" height="18" fill="none" viewBox="0 0 24 24"><path d="M12 16v-8M8 12h8" stroke="#3CC78F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><rect x="3" y="3" width="18" height="18" rx="4" stroke="#3CC78F" strokeWidth="1.5"/></svg>
+                  Upload Calendar
+                </button>
+              </div>
             </div>
           </div>
           {/* Right: Cards */}
