@@ -1,6 +1,8 @@
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState, useContext, useRef } from "react";
 import { getOrganizations } from "@/api/organizations";
 import { getDashboardStats } from "@/api/dashboard";
+import { getHolidayCalendar, saveHolidayCalendar } from "@/api/holidayCalendar";
+import { uploadFile } from "@/api/uploadFile";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { OrgSearchContext } from "@/components/layout/MainLayout";
@@ -18,6 +20,9 @@ const Dashboard = () => {
   const [dashboardError, setDashboardError] = useState("");
   const { search } = useContext(OrgSearchContext);
   const { user } = useAuth();
+  const [calendarUrl, setCalendarUrl] = useState<string | null>(null);
+  const [calendarLoading, setCalendarLoading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (user?.role === 'superAdmin') {
@@ -45,8 +50,31 @@ const Dashboard = () => {
         .then((data) => setDashboardStats(data))
         .catch(() => setDashboardError("Failed to load dashboard stats"))
         .finally(() => setDashboardLoading(false));
+      // Fetch holiday calendar
+      if (user?.organizationId) {
+        setCalendarLoading(true);
+        getHolidayCalendar(user.organizationId)
+          .then((data) => setCalendarUrl(data?.calendarFileName || null))
+          .catch(() => setCalendarUrl(null))
+          .finally(() => setCalendarLoading(false));
+      }
     }
-  }, [user?.role]);
+  }, [user?.role, user?.organizationId]);
+
+  const handleCalendarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || !e.target.files[0] || !user?.organizationId) return;
+    setCalendarLoading(true);
+    try {
+      const file = e.target.files[0];
+      const url = await uploadFile(file);
+      await saveHolidayCalendar(user.organizationId, url);
+      setCalendarUrl(url);
+    } catch {
+      // handle error (could show toast)
+    } finally {
+      setCalendarLoading(false);
+    }
+  };
 
   if (user?.role === 'companyAdmin') {
     return (
@@ -90,13 +118,34 @@ const Dashboard = () => {
         <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Left: Events (static for now) */}
           <div className="md:col-span-1">
-            <div className="bg-white rounded-2xl shadow p-6 mb-6">
+            <div className="bg-white rounded-2xl shadow p-6 mb-6 flex flex-col items-center">
               <div className="text-gray-500 text-sm mb-4 font-semibold">Today</div>
-              <div className="space-y-3">
-                <div className="bg-gray-50 rounded-lg p-3 text-gray-800">Interview with candidates<br /><span className="text-xs text-gray-400">Today - 10:30 AM</span></div>
-                <div className="bg-gray-50 rounded-lg p-3 text-gray-800">Short meeting with product designer<br /><span className="text-xs text-gray-400">Today - 09:15 AM</span></div>
-                <div className="bg-gray-50 rounded-lg p-3 text-gray-800">Sort Front-end developer candidates<br /><span className="text-xs text-gray-400">Today - 11:30 AM</span></div>
-              </div>
+              {calendarLoading ? (
+                <div className="w-full flex justify-center items-center h-32"><span className="text-gray-400">Loading...</span></div>
+              ) : calendarUrl ? (
+                <div className="w-full flex flex-col items-center">
+                  <img src={calendarUrl} alt="Holiday Calendar" className="w-full max-w-[180px] h-32 object-contain rounded mb-2 border" />
+                  <button
+                    className="flex items-center gap-2 text-green-600 hover:text-green-800 text-xs font-semibold border border-green-200 rounded px-3 py-1 bg-green-50"
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    <svg width="18" height="18" fill="none" viewBox="0 0 24 24"><path d="M12 16v-8M8 12h8" stroke="#3CC78F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><rect x="3" y="3" width="18" height="18" rx="4" stroke="#3CC78F" strokeWidth="1.5"/></svg>
+                    Upload Calendar
+                  </button>
+                  <input type="file" accept="image/*" ref={fileInputRef} className="hidden" onChange={handleCalendarUpload} />
+                </div>
+              ) : (
+                <div className="w-full flex flex-col items-center justify-center h-32">
+                  <button
+                    className="flex flex-col items-center gap-1 text-green-600 hover:text-green-800 text-xs font-semibold border border-green-200 rounded px-3 py-2 bg-green-50"
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    <svg width="32" height="32" fill="none" viewBox="0 0 24 24"><path d="M12 16v-8M8 12h8" stroke="#3CC78F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><rect x="3" y="3" width="18" height="18" rx="4" stroke="#3CC78F" strokeWidth="1.5"/></svg>
+                    <span>Upload Calendar</span>
+                  </button>
+                  <input type="file" accept="image/*" ref={fileInputRef} className="hidden" onChange={handleCalendarUpload} />
+                </div>
+              )}
             </div>
           </div>
           {/* Right: Cards */}
