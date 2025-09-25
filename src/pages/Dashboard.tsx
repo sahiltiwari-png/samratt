@@ -6,7 +6,7 @@ import { uploadFile } from "@/api/uploadFile";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { OrgSearchContext } from "@/components/layout/MainLayout";
-import { Plus, Building, Users } from "lucide-react";
+import { Plus, Building, Users, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from '@/contexts/AuthContext';
 import EmployeeList from "@/components/employees/EmployeeList";
@@ -20,8 +20,9 @@ const Dashboard = () => {
   const [dashboardError, setDashboardError] = useState("");
   const { search } = useContext(OrgSearchContext);
   const { user } = useAuth();
-  const [calendarUrl, setCalendarUrl] = useState<string | null>(null);
+  const [calendarData, setCalendarData] = useState<{calendarFile?: string; calendarFileName?: string} | null>(null);
   const [calendarLoading, setCalendarLoading] = useState(false);
+  const [showImageModal, setShowImageModal] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -50,12 +51,26 @@ const Dashboard = () => {
         .then((data) => setDashboardStats(data))
         .catch(() => setDashboardError("Failed to load dashboard stats"))
         .finally(() => setDashboardLoading(false));
-      // Fetch holiday calendar (no orgId in URL)
+      // Fetch holiday calendar with organizationId
       setCalendarLoading(true);
-      getHolidayCalendar()
-        .then((data) => setCalendarUrl(data?.calendarFileName || null))
-        .catch(() => setCalendarUrl(null))
-        .finally(() => setCalendarLoading(false));
+      if (user?.organizationId) {
+        getHolidayCalendar(user.organizationId)
+          .then((response) => {
+            if (response?.data) {
+              setCalendarData(response.data);
+            } else {
+              setCalendarData(null);
+            }
+          })
+          .catch((error) => {
+            console.error("Error fetching holiday calendar:", error);
+            setCalendarData(null);
+          })
+          .finally(() => setCalendarLoading(false));
+      } else {
+        console.error("Missing organizationId for holiday calendar");
+        setCalendarLoading(false);
+      }
     }
   }, [user?.role, user?.organizationId]);
 
@@ -88,6 +103,31 @@ const Dashboard = () => {
   if (user?.role === 'companyAdmin') {
     return (
       <div className="min-h-screen bg-gradient-to-br from-green-200 to-green-50 py-6 px-2 md:px-8">
+        {/* Image Modal */}
+        {showImageModal && calendarData?.calendarFile && (
+          <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
+            <div className="relative max-w-md w-full bg-white rounded-lg overflow-hidden shadow-xl">
+              <div className="bg-green-400 text-center py-3">
+                <h3 className="font-bold text-lg uppercase">HOLIDAYS LIST</h3>
+                <p className="text-sm">Year 2025</p>
+              </div>
+              <div className="p-4 max-h-[70vh] overflow-y-auto">
+                <img 
+                  src={calendarData.calendarFile} 
+                  alt="Holiday Calendar" 
+                  className="w-full" 
+                />
+              </div>
+              <button 
+                onClick={() => setShowImageModal(false)}
+                className="absolute top-2 right-2 bg-white rounded-full p-1 shadow-lg"
+              >
+                <X className="h-6 w-6" />
+              </button>
+            </div>
+          </div>
+        )}
+        
         {dashboardLoading && (
           <div className="max-w-5xl mx-auto text-center py-8">
             <span className="text-lg text-gray-600">Loading dashboard...</span>
@@ -132,9 +172,14 @@ const Dashboard = () => {
               <div className="w-full flex flex-col items-center">
                 {calendarLoading ? (
                   <div className="w-full flex justify-center items-center h-32"><span className="text-gray-400">Loading...</span></div>
-                ) : calendarUrl ? (
+                ) : calendarData?.calendarFile ? (
                   <>
-                    <img src={calendarUrl} alt="Holiday Calendar" className="w-full max-w-[180px] h-32 object-contain rounded mb-2 border" />
+                    <img 
+                      src={calendarData.calendarFile} 
+                      alt="Holiday Calendar" 
+                      className="w-full h-64 object-cover rounded mb-2 border cursor-pointer" 
+                      onClick={() => setShowImageModal(true)}
+                    />
                   </>
                 ) : (
                   <span className="text-gray-400 mb-2">No calendar uploaded</span>

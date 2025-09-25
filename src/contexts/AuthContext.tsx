@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 interface AuthContextType {
   isAuthenticated: boolean;
   user: any | null;
+  organizationId: string | null;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
   loading: boolean;
@@ -15,6 +16,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<any | null>(null);
+  const [organizationId, setOrganizationId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -24,7 +26,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const token = localStorage.getItem('token');
     
     if (storedUser && token) {
-      setUser(JSON.parse(storedUser));
+      const userData = JSON.parse(storedUser);
+      setUser(userData);
+      if (userData.organizationId) {
+        setOrganizationId(userData.organizationId);
+      }
     }
     setLoading(false);
   }, []);
@@ -44,6 +50,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         localStorage.setItem('role', response.role);
       }
       setUser(userData);
+      if (userData.organizationId) {
+        setOrganizationId(userData.organizationId);
+      }
       navigate('/dashboard');
     } catch (error) {
       console.error('Login failed:', error);
@@ -57,12 +66,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     localStorage.removeItem('user');
     localStorage.removeItem('token');
     setUser(null);
+    setOrganizationId(null);
     navigate('/login');
   };
 
   const value = {
     isAuthenticated: !!user,
     user,
+    organizationId,
     login,
     logout,
     loading,
