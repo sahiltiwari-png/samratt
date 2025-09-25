@@ -105,51 +105,56 @@ const Dashboard = () => {
             <div className="bg-white rounded-2xl shadow p-6 flex flex-col justify-between">
               <div className="flex items-center justify-between mb-2">
                 <div className="text-gray-500 text-sm font-semibold">Total Employees</div>
-                <div className="flex gap-2 text-xs">
-                  <span className="text-green-600 font-bold">Active {dashboardStats?.employees?.active ?? '-'}</span>
-                  <span className="text-red-500 font-bold">Inactive {dashboardStats?.employees?.inactive ?? '-'}</span>
-                </div>
               </div>
-              <div className="text-3xl font-bold text-green-700 mb-4">{dashboardStats?.employees?.total ?? '-'}</div>
+              <div className="text-3xl font-bold text-green-700 mb-1">{dashboardStats?.employees?.total ?? '-'}</div>
+              <div className="flex gap-4 text-xs mb-3">
+                <span className="text-green-600 font-bold">Active {dashboardStats?.employees?.active ?? '-'}</span>
+                <span className="text-red-500 font-bold">Inactive {dashboardStats?.employees?.inactive ?? '-'}</span>
+              </div>
               <button className="bg-green-500 hover:bg-green-600 text-white rounded-lg py-2 font-semibold transition">Manage Employees</button>
             </div>
             {/* Total Leave Requests */}
             <div className="bg-white rounded-2xl shadow p-6 flex flex-col justify-between">
               <div className="flex items-center justify-between mb-2">
                 <div className="text-gray-500 text-sm font-semibold">Total Leave requests</div>
-                <div className="flex gap-2 text-xs">
-                  <span className="text-green-600 font-bold">Approved {dashboardStats?.leaves?.approved ?? '-'}</span>
-                  <span className="text-red-500 font-bold">Declined {dashboardStats?.leaves?.declined ?? '-'}</span>
-                  <span className="text-yellow-500 font-bold">Pending {dashboardStats?.leaves?.pending ?? '-'}</span>
-                </div>
               </div>
-              <div className="text-3xl font-bold text-green-700 mb-4">{dashboardStats?.leaves?.total ?? '-'}</div>
+              <div className="text-3xl font-bold text-green-700 mb-1">{dashboardStats?.leaves?.total ?? '-'}</div>
+              <div className="flex gap-4 text-xs mb-3">
+                <span className="text-green-600 font-bold">Approved {dashboardStats?.leaves?.approved ?? '-'}</span>
+                <span className="text-red-500 font-bold">Declined {dashboardStats?.leaves?.declined ?? '-'}</span>
+                <span className="text-yellow-500 font-bold">Pending {dashboardStats?.leaves?.pending ?? '-'}</span>
+              </div>
               <button className="bg-green-500 hover:bg-green-600 text-white rounded-lg py-2 font-semibold transition">Manage leaves requests</button>
             </div>
-            {/* Leave Policy */}
-            <div className="bg-white rounded-2xl shadow p-6 flex flex-col justify-between">
-              <div className="flex items-center justify-between mb-2">
-                <div className="text-gray-500 text-sm font-semibold">Leave Policy</div>
-                <div className="flex gap-2 text-xs">
-                  <span className="text-green-600 font-bold">{dashboardStats?.leavePolicy?.active ?? '-'} active policy</span>
-                  <span className="text-gray-500">Casual {dashboardStats?.leavePolicy?.casual ?? '-'}</span>
-                  <span className="text-gray-500">Medical {dashboardStats?.leavePolicy?.medical ?? '-'}</span>
-                  <span className="text-gray-500">Earned {dashboardStats?.leavePolicy?.earned ?? '-'}</span>
+            {/* Leave Policy - Redesigned to match screenshot */}
+            <div className="bg-white rounded-2xl shadow p-5 flex flex-col justify-between border-2 border-green-200" style={{boxShadow: '0 2px 8px 0 rgba(60, 199, 143, 0.08)'}}>
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
+                  <svg width="20" height="20" fill="none" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4" fill="#3CC78F" fillOpacity="0.15"/><path d="M8.5 10.5h7M8.5 13.5h4M12 7.5v9" stroke="#3CC78F" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
                 </div>
+                <span className="text-gray-700 font-semibold text-base">Leave Policy</span>
               </div>
-              <div className="text-3xl font-bold text-green-700 mb-4">{dashboardStats?.leavePolicy?.active ?? '-'}</div>
-              <button className="bg-green-500 hover:bg-green-600 text-white rounded-lg py-2 font-semibold transition">Manage Leave Policy</button>
+              <div className="flex items-end gap-2 mb-1">
+                <span className="text-3xl font-bold text-green-500 leading-none">{dashboardStats?.leavePolicy?.active ?? '-'}</span>
+                <span className="text-base text-gray-700 font-medium mb-1">active policy</span>
+              </div>
+              <div className="flex gap-4 text-xs font-medium mb-4">
+                <span className="text-gray-400">Casual <span className="text-green-500 font-bold">{dashboardStats?.leavePolicy?.casual ?? '-'}</span></span>
+                <span className="text-gray-400">Medical <span className="text-red-400 font-bold">{dashboardStats?.leavePolicy?.medical ?? '-'}</span></span>
+                <span className="text-gray-400">Earned <span className="text-yellow-500 font-bold">{dashboardStats?.leavePolicy?.earned ?? '-'}</span></span>
+              </div>
+              <button className="w-full bg-[#3CC78F] hover:bg-[#2fa06e] text-white rounded-lg py-2 font-semibold transition text-base shadow-none">Edit Policy</button>
             </div>
             {/* Payroll Processed */}
             <div className="bg-white rounded-2xl shadow p-6 flex flex-col justify-between">
               <div className="flex items-center justify-between mb-2">
                 <div className="text-gray-500 text-sm font-semibold">Payroll Processed <span className="text-xs text-gray-400">this month</span></div>
-                <div className="flex gap-2 text-xs">
-                  <span className="text-green-600 font-bold">{dashboardStats?.payroll?.processed ?? '-'} / {dashboardStats?.employees?.total ?? '-'} employees</span>
-                  <span className="text-red-500 font-bold">Pending employees {dashboardStats?.payroll?.pending ?? '-'}</span>
-                </div>
               </div>
-              <div className="text-3xl font-bold text-green-700 mb-4">{dashboardStats?.payroll?.processed ?? '-'}/{dashboardStats?.employees?.total ?? '-'}</div>
+              <div className="text-3xl font-bold text-green-700 mb-1">{dashboardStats?.payroll?.processed ?? '-'}/{dashboardStats?.employees?.total ?? '-'}</div>
+              <div className="flex gap-4 text-xs mb-3">
+                <span className="text-green-600 font-bold">{dashboardStats?.payroll?.processed ?? '-'} / {dashboardStats?.employees?.total ?? '-'} employees</span>
+                <span className="text-red-500 font-bold">Pending employees {dashboardStats?.payroll?.pending ?? '-'}</span>
+              </div>
               <button className="bg-green-500 hover:bg-green-600 text-white rounded-lg py-2 font-semibold transition">Manage Payroll</button>
             </div>
             {/* Reports */}
