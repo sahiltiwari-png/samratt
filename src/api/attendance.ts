@@ -5,6 +5,9 @@ export const getAttendance = async (params?: {
   limit?: number;
   status?: string | null;
   date?: string | null;
+  employeeId?: string | null;
+  startDate?: string | null;
+  endDate?: string | null;
 }) => {
   const query = [];
   if (params) {
@@ -12,6 +15,9 @@ export const getAttendance = async (params?: {
     if (params.limit) query.push(`limit=${params.limit}`);
     if (params.status) query.push(`status=${params.status}`);
     if (params.date) query.push(`date=${params.date}`);
+    if (params.employeeId) query.push(`employeeId=${params.employeeId}`);
+    if (params.startDate) query.push(`startDate=${params.startDate}`);
+    if (params.endDate) query.push(`endDate=${params.endDate}`);
   }
   const queryString = query.length ? `?${query.join('&')}` : '';
   const response = await API.get(`/attendance${queryString}`);

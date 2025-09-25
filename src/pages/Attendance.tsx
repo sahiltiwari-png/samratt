@@ -59,6 +59,14 @@ const Attendance = () => {
   const [attendanceData, setAttendanceData] = useState<AttendanceResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [employeeId, setEmployeeId] = useState<string | null>(null);
+  const [dateRange, setDateRange] = useState<{
+    startDate: Date | null;
+    endDate: Date | null;
+  }>({
+    startDate: null,
+    endDate: null
+  });
 
   // Fetch attendance data
   useEffect(() => {
@@ -66,12 +74,28 @@ const Attendance = () => {
       setLoading(true);
       try {
         const formattedDate = format(date, 'yyyy-MM-dd');
-        const data = await getAttendance({
+        
+        // Prepare API parameters
+        const params: any = {
           page: currentPage,
           limit: 10,
-          status: statusFilter,
-          date: formattedDate
-        });
+          status: statusFilter
+        };
+        
+        // Use date range if available, otherwise use single date
+        if (dateRange.startDate && dateRange.endDate) {
+          params.startDate = format(dateRange.startDate, 'yyyy-MM-dd');
+          params.endDate = format(dateRange.endDate, 'yyyy-MM-dd');
+        } else {
+          params.date = formattedDate;
+        }
+        
+        // Add employeeId if available
+        if (employeeId) {
+          params.employeeId = employeeId;
+        }
+        
+        const data = await getAttendance(params);
         setAttendanceData(data);
         setError(null);
       } catch (err) {
@@ -84,7 +108,7 @@ const Attendance = () => {
     };
 
     fetchAttendanceData();
-  }, [currentPage, statusFilter, date]);
+  }, [currentPage, statusFilter, date, dateRange, employeeId]);
 
   // Function to get status badge color
   const getStatusBadgeClass = (status: string) => {
@@ -110,9 +134,23 @@ const Attendance = () => {
     }
   };
 
-  // Handle status filter change
-  const handleStatusChange = (value: string) => {
-    setStatusFilter(value === "all" ? null : value);
+  // Handle date change
+  const handleDateChange = (date: Date) => {
+    setDate(date);
+    setDateRange({ startDate: null, endDate: null }); // Reset date range when single date is selected
+    setCurrentPage(1); // Reset to first page
+  };
+
+  // Handle date range selection
+  const handleDateRangeChange = (range: { startDate: Date | null; endDate: Date | null }) => {
+    setDateRange(range);
+    setCurrentPage(1); // Reset to first page
+  };
+
+  // Handle status change
+  const handleStatusChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value === "all" ? null : e.target.value;
+    setStatusFilter(value);
     setCurrentPage(1); // Reset to first page when filter changes
   };
 
@@ -120,6 +158,8 @@ const Attendance = () => {
   const handleClearFilters = () => {
     setStatusFilter(null);
     setDate(new Date());
+    setDateRange({ startDate: null, endDate: null });
+    setEmployeeId(null);
     setCurrentPage(1);
   };
 
@@ -144,21 +184,84 @@ const Attendance = () => {
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="end">
-                  <Calendar
-                    mode="single"
-                    selected={date}
-                    onSelect={(date) => {
-                      if (date) {
-                        setDate(date);
-                        setIsCalendarOpen(false);
-                      }
-                    }}
-                    initialFocus
-                  />
+                  <div className="flex gap-2 mb-2 p-2">
+                    <Button 
+                      variant={!dateRange.startDate && !dateRange.endDate ? "default" : "outline"}
+                      size="sm"
+                      className="text-xs"
+                      onClick={() => {
+                        setDateRange({ startDate: null, endDate: null });
+                      }}
+                    >
+                      Single Day
+                    </Button>
+                    <Button 
+                      variant={dateRange.startDate || dateRange.endDate ? "default" : "outline"}
+                      size="sm"
+                      className="text-xs"
+                      onClick={() => {
+                        if (!dateRange.startDate) {
+                          setDateRange({ startDate: date, endDate: null });
+                        }
+                      }}
+                    >
+                      Date Range
+                    </Button>
+                  </div>
+                  {(!dateRange.startDate && !dateRange.endDate) ? (
+                    <Calendar
+                      mode="single"
+                      selected={date}
+                      onSelect={(date) => {
+                        if (date) {
+                          handleDateChange(date);
+                          setIsCalendarOpen(false);
+                        }
+                      }}
+                      initialFocus
+                    />
+                  ) : (
+                    <div>
+                      <div className="flex justify-between px-2 mb-2 text-xs">
+                        <div>
+                          <div className="font-medium">Start:</div>
+                          <div>{dateRange.startDate ? format(dateRange.startDate, 'MMM dd, yyyy') : 'Select'}</div>
+                        </div>
+                        <div>
+                          <div className="font-medium">End:</div>
+                          <div>{dateRange.endDate ? format(dateRange.endDate, 'MMM dd, yyyy') : 'Select'}</div>
+                        </div>
+                      </div>
+                      <Calendar
+                        mode="range"
+                        selected={{
+                          from: dateRange.startDate || undefined,
+                          to: dateRange.endDate || undefined
+                        }}
+                        onSelect={(range) => {
+                          if (range?.from) {
+                            handleDateRangeChange({ 
+                              startDate: range.from, 
+                              endDate: range.to || null 
+                            });
+                            if (range.to) setIsCalendarOpen(false);
+                          }
+                        }}
+                        initialFocus
+                      />
+                    </div>
+                  )}
                 </PopoverContent>
               </Popover>
 
-              <Select value={statusFilter || "all"} onValueChange={handleStatusChange}>
+              <Select
+                value={statusFilter || "all"}
+                onValueChange={(value) => {
+                  const statusValue = value === "all" ? null : value;
+                  setStatusFilter(statusValue);
+                  setCurrentPage(1);
+                }}
+              >
                 <SelectTrigger className="w-[100px] text-xs h-7 bg-gray-50 border-gray-100">
                   <SelectValue placeholder="Status" />
                 </SelectTrigger>
