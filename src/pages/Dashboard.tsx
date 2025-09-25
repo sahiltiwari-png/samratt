@@ -1,16 +1,21 @@
 import { useEffect, useState, useContext } from "react";
 import { getOrganizations } from "@/api/organizations";
+import { getDashboardStats } from "@/api/dashboard";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { OrgSearchContext } from "@/components/layout/MainLayout";
 import { Plus, Building, Users } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from '@/contexts/AuthContext';
-import { EmployeeList } from "@/components/employees/EmployeeList";
+import EmployeeList from "@/components/employees/EmployeeList";
 const Dashboard = () => {
   const [organizations, setOrganizations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  // Dashboard stats state for companyAdmin
+  const [dashboardStats, setDashboardStats] = useState<any>(null);
+  const [dashboardLoading, setDashboardLoading] = useState(false);
+  const [dashboardError, setDashboardError] = useState("");
   const { search } = useContext(OrgSearchContext);
   const { user } = useAuth();
 
@@ -32,9 +37,28 @@ const Dashboard = () => {
   }, [user?.role]);
 
   // Company Admin Dashboard UI (matches provided image)
+  useEffect(() => {
+    if (user?.role === 'companyAdmin') {
+      setDashboardLoading(true);
+      setDashboardError("");
+      getDashboardStats()
+        .then((data) => setDashboardStats(data))
+        .catch(() => setDashboardError("Failed to load dashboard stats"))
+        .finally(() => setDashboardLoading(false));
+    }
+  }, [user?.role]);
+
   if (user?.role === 'companyAdmin') {
     return (
       <div className="min-h-screen bg-gradient-to-br from-green-200 to-green-50 py-6 px-2 md:px-8">
+        {dashboardLoading && (
+          <div className="max-w-5xl mx-auto text-center py-8">
+            <span className="text-lg text-gray-600">Loading dashboard...</span>
+          </div>
+        )}
+        {dashboardError && (
+          <div className="max-w-5xl mx-auto text-center py-8 text-red-500">{dashboardError}</div>
+        )}
         {/* Header Card */}
         <div className="max-w-5xl mx-auto">
           <div className="rounded-2xl bg-[#23292F] flex flex-col md:flex-row items-center justify-between px-8 py-6 mb-8 shadow-lg">
@@ -64,13 +88,13 @@ const Dashboard = () => {
         </div>
         {/* Main Content */}
         <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Left: Events */}
+          {/* Left: Events (static for now) */}
           <div className="md:col-span-1">
             <div className="bg-white rounded-2xl shadow p-6 mb-6">
-              <div className="text-gray-500 text-sm mb-4 font-semibold">Today, 13 Sep 2021</div>
+              <div className="text-gray-500 text-sm mb-4 font-semibold">Today</div>
               <div className="space-y-3">
                 <div className="bg-gray-50 rounded-lg p-3 text-gray-800">Interview with candidates<br /><span className="text-xs text-gray-400">Today - 10:30 AM</span></div>
-                <div className="bg-gray-50 rounded-lg p-3 text-gray-800">Short meeting with product designer from IT Departement<br /><span className="text-xs text-gray-400">Today - 09:15 AM</span></div>
+                <div className="bg-gray-50 rounded-lg p-3 text-gray-800">Short meeting with product designer<br /><span className="text-xs text-gray-400">Today - 09:15 AM</span></div>
                 <div className="bg-gray-50 rounded-lg p-3 text-gray-800">Sort Front-end developer candidates<br /><span className="text-xs text-gray-400">Today - 11:30 AM</span></div>
               </div>
             </div>
@@ -82,11 +106,11 @@ const Dashboard = () => {
               <div className="flex items-center justify-between mb-2">
                 <div className="text-gray-500 text-sm font-semibold">Total Employees</div>
                 <div className="flex gap-2 text-xs">
-                  <span className="text-green-600 font-bold">Active 89</span>
-                  <span className="text-red-500 font-bold">Inactive 4</span>
+                  <span className="text-green-600 font-bold">Active {dashboardStats?.employees?.active ?? '-'}</span>
+                  <span className="text-red-500 font-bold">Inactive {dashboardStats?.employees?.inactive ?? '-'}</span>
                 </div>
               </div>
-              <div className="text-3xl font-bold text-green-700 mb-4">89</div>
+              <div className="text-3xl font-bold text-green-700 mb-4">{dashboardStats?.employees?.total ?? '-'}</div>
               <button className="bg-green-500 hover:bg-green-600 text-white rounded-lg py-2 font-semibold transition">Manage Employees</button>
             </div>
             {/* Total Leave Requests */}
@@ -94,12 +118,12 @@ const Dashboard = () => {
               <div className="flex items-center justify-between mb-2">
                 <div className="text-gray-500 text-sm font-semibold">Total Leave requests</div>
                 <div className="flex gap-2 text-xs">
-                  <span className="text-green-600 font-bold">Approved 11</span>
-                  <span className="text-red-500 font-bold">Declined 4</span>
-                  <span className="text-yellow-500 font-bold">Pending 4</span>
+                  <span className="text-green-600 font-bold">Approved {dashboardStats?.leaves?.approved ?? '-'}</span>
+                  <span className="text-red-500 font-bold">Declined {dashboardStats?.leaves?.declined ?? '-'}</span>
+                  <span className="text-yellow-500 font-bold">Pending {dashboardStats?.leaves?.pending ?? '-'}</span>
                 </div>
               </div>
-              <div className="text-3xl font-bold text-green-700 mb-4">19</div>
+              <div className="text-3xl font-bold text-green-700 mb-4">{dashboardStats?.leaves?.total ?? '-'}</div>
               <button className="bg-green-500 hover:bg-green-600 text-white rounded-lg py-2 font-semibold transition">Manage leaves requests</button>
             </div>
             {/* Leave Policy */}
@@ -107,13 +131,13 @@ const Dashboard = () => {
               <div className="flex items-center justify-between mb-2">
                 <div className="text-gray-500 text-sm font-semibold">Leave Policy</div>
                 <div className="flex gap-2 text-xs">
-                  <span className="text-green-600 font-bold">3 active policy</span>
-                  <span className="text-gray-500">Casual 11</span>
-                  <span className="text-gray-500">Medical 4</span>
-                  <span className="text-gray-500">Earned 4</span>
+                  <span className="text-green-600 font-bold">{dashboardStats?.leavePolicy?.active ?? '-'} active policy</span>
+                  <span className="text-gray-500">Casual {dashboardStats?.leavePolicy?.casual ?? '-'}</span>
+                  <span className="text-gray-500">Medical {dashboardStats?.leavePolicy?.medical ?? '-'}</span>
+                  <span className="text-gray-500">Earned {dashboardStats?.leavePolicy?.earned ?? '-'}</span>
                 </div>
               </div>
-              <div className="text-3xl font-bold text-green-700 mb-4">3</div>
+              <div className="text-3xl font-bold text-green-700 mb-4">{dashboardStats?.leavePolicy?.active ?? '-'}</div>
               <button className="bg-green-500 hover:bg-green-600 text-white rounded-lg py-2 font-semibold transition">Manage Leave Policy</button>
             </div>
             {/* Payroll Processed */}
@@ -121,11 +145,11 @@ const Dashboard = () => {
               <div className="flex items-center justify-between mb-2">
                 <div className="text-gray-500 text-sm font-semibold">Payroll Processed <span className="text-xs text-gray-400">this month</span></div>
                 <div className="flex gap-2 text-xs">
-                  <span className="text-green-600 font-bold">69/89 employees</span>
-                  <span className="text-red-500 font-bold">Pending employees 20</span>
+                  <span className="text-green-600 font-bold">{dashboardStats?.payroll?.processed ?? '-'} / {dashboardStats?.employees?.total ?? '-'} employees</span>
+                  <span className="text-red-500 font-bold">Pending employees {dashboardStats?.payroll?.pending ?? '-'}</span>
                 </div>
               </div>
-              <div className="text-3xl font-bold text-green-700 mb-4">69/89</div>
+              <div className="text-3xl font-bold text-green-700 mb-4">{dashboardStats?.payroll?.processed ?? '-'}/{dashboardStats?.employees?.total ?? '-'}</div>
               <button className="bg-green-500 hover:bg-green-600 text-white rounded-lg py-2 font-semibold transition">Manage Payroll</button>
             </div>
             {/* Reports */}
@@ -133,7 +157,7 @@ const Dashboard = () => {
               <div className="flex items-center justify-between mb-2">
                 <div className="text-gray-500 text-sm font-semibold">Reports</div>
               </div>
-              <div className="text-3xl font-bold text-green-700 mb-4">-</div>
+              <div className="text-3xl font-bold text-green-700 mb-4">{dashboardStats?.reports?.total ?? '-'}</div>
               <button className="bg-green-500 hover:bg-green-600 text-white rounded-lg py-2 font-semibold transition">Manage Reports</button>
             </div>
           </div>
