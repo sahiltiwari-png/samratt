@@ -1,6 +1,10 @@
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import { uploadFile } from "@/api/uploadFile";
 import { useNavigate } from "react-router-dom";
+import { getRoles } from "@/api/roles";
+import API from "@/api/auth";
+import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
 
 // Compact Input Component
 const Input = ({ label, type = "text", value, onChange, fullWidth = false }: any) => (
@@ -33,10 +37,20 @@ const AddEmployeeStepper = () => {
   });
 
   const [success, setSuccess] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const [profilePreview, setProfilePreview] = useState<string | null>(null);
   const [docType, setDocType] = useState("");
   const [docFile, setDocFile] = useState<File | null>(null);
   const [docUploading, setDocUploading] = useState(false);
+
+  // Roles dropdown state
+  const [roles, setRoles] = useState<any[]>([]);
+  const [role, setRole] = useState("");
+
+  useEffect(() => {
+    getRoles().then(setRoles).catch(() => setRoles([]));
+  }, []);
 
   const steps = [
     "Employee Details",
@@ -82,13 +96,56 @@ const AddEmployeeStepper = () => {
             <Input label="Department" value={form.department} onChange={(e:any)=>setForm({...form, department:e.target.value})}/>
             <Input label="Designation" value={form.designation} onChange={(e:any)=>setForm({...form, designation:e.target.value})}/>
             <Input label="Grade" value={form.grade} onChange={(e:any)=>setForm({...form, grade:e.target.value})}/>
-            <Input label="Employment Type" value={form.employmentType} onChange={(e:any)=>setForm({...form, employmentType:e.target.value})}/>
+            {/* Roles Dropdown */}
+            <div className="flex flex-col">
+              <label className="mb-1 text-xs font-medium text-gray-600">Role</label>
+              {roles.length === 0 ? (
+                <div className="text-xs text-gray-400 px-2 py-2 border rounded bg-gray-50">No roles found</div>
+              ) : (
+                <Select value={role} onValueChange={val => { setRole(val); setForm({ ...form, role: val }); }}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select Role" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {roles.filter((r:any) => (r.name || r.value)).map((r:any) => (
+                      <SelectItem key={r.id || r._id || r.value || r.name} value={r.name || r.value}>{r.name || r.value}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            </div>
+            {/* Employment Type Dropdown */}
+            <div className="flex flex-col">
+              <label className="mb-1 text-xs font-medium text-gray-600">Employment Type</label>
+              <Select value={form.employmentType} onValueChange={val => setForm({...form, employmentType: val})}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select Employment Type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="full-time">Full-time</SelectItem>
+                  <SelectItem value="part-time">Part-time</SelectItem>
+                  <SelectItem value="contract">Contract</SelectItem>
+                  <SelectItem value="intern">Intern</SelectItem>
+                  <SelectItem value="consultant">Consultant</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
             <Input label="Reporting Manager" value={form.reportingManager} onChange={(e:any)=>setForm({...form, reportingManager:e.target.value})}/>
             <Input label="Date of Joining" type="date" value={form.dateOfJoining} onChange={(e:any)=>setForm({...form, dateOfJoining:e.target.value})}/>
             <Input label="Probation End Date" type="date" value={form.probationEndDate} onChange={(e:any)=>setForm({...form, probationEndDate:e.target.value})}/>
-            <div className="flex items-center col-span-2">
-              <input type="checkbox" checked={form.isActive} onChange={(e:any)=>setForm({...form, isActive:e.target.checked})} className="mr-2"/>
-              <span className="text-sm font-medium text-gray-700">Active</span>
+            {/* Status Dropdown */}
+            <div className="flex flex-col col-span-2">
+              <label className="mb-1 text-xs font-medium text-gray-600">Status</label>
+              <Select value={form.status || "active"} onValueChange={val => setForm({...form, status: val})}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="active">Active</SelectItem>
+                  <SelectItem value="inactive">Inactive</SelectItem>
+                  <SelectItem value="terminated">Terminated</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </form>
         )}
@@ -97,9 +154,37 @@ const AddEmployeeStepper = () => {
         {step === 1 && (
           <form className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <Input label="Date of Birth" type="date" value={form.dob} onChange={(e:any)=>setForm({...form, dob:e.target.value})}/>
-            <Input label="Gender" value={form.gender} onChange={(e:any)=>setForm({...form, gender:e.target.value})}/>
+            {/* Gender Dropdown */}
+            <div className="flex flex-col">
+              <label className="mb-1 text-xs font-medium text-gray-600">Gender</label>
+              <Select value={form.gender} onValueChange={val => setForm({...form, gender: val})}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select Gender" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="male">Male</SelectItem>
+                  <SelectItem value="female">Female</SelectItem>
+                  <SelectItem value="other">Other</SelectItem>
+                  <SelectItem value="prefer-not-to-say">Prefer not to say</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
             <Input label="Blood Group" value={form.bloodGroup} onChange={(e:any)=>setForm({...form, bloodGroup:e.target.value})}/>
-            <Input label="Marital Status" value={form.maritalStatus} onChange={(e:any)=>setForm({...form, maritalStatus:e.target.value})}/>
+            {/* Marital Status Dropdown */}
+            <div className="flex flex-col">
+              <label className="mb-1 text-xs font-medium text-gray-600">Marital Status</label>
+              <Select value={form.maritalStatus} onValueChange={val => setForm({...form, maritalStatus: val})}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select Marital Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="single">Single</SelectItem>
+                  <SelectItem value="married">Married</SelectItem>
+                  <SelectItem value="divorced">Divorced</SelectItem>
+                  <SelectItem value="widowed">Widowed</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
             <Input label="Country" value={form.country} onChange={(e:any)=>setForm({...form, country:e.target.value})}/>
             <Input label="Nationality" value={form.nationality} onChange={(e:any)=>setForm({...form, nationality:e.target.value})}/>
             <Input label="State" value={form.state} onChange={(e:any)=>setForm({...form, state:e.target.value})}/>
@@ -120,7 +205,19 @@ const AddEmployeeStepper = () => {
             <Input label="Account Number" value={form.bankDetails.accountNumber} onChange={(e:any)=>setForm({...form, bankDetails:{...form.bankDetails, accountNumber:e.target.value}})}/>
             <Input label="IFSC Code" value={form.bankDetails.ifscCode} onChange={(e:any)=>setForm({...form, bankDetails:{...form.bankDetails, ifscCode:e.target.value}})}/>
             <Input label="Branch" value={form.bankDetails.branch} onChange={(e:any)=>setForm({...form, bankDetails:{...form.bankDetails, branch:e.target.value}})}/>
-            <Input label="Tax Regime" value={form.taxDetails.taxRegime} onChange={(e:any)=>setForm({...form, taxDetails:{...form.taxDetails, taxRegime:e.target.value}})}/>
+            {/* Tax Regime Dropdown */}
+            <div className="flex flex-col">
+              <label className="mb-1 text-xs font-medium text-gray-600">Tax Regime</label>
+              <Select value={form.taxDetails.taxRegime} onValueChange={val => setForm({...form, taxDetails:{...form.taxDetails, taxRegime: val}})}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select Tax Regime" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="old">Old</SelectItem>
+                  <SelectItem value="new">New</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
             <Input label="UAN" value={form.taxDetails.UAN} onChange={(e:any)=>setForm({...form, taxDetails:{...form.taxDetails, UAN:e.target.value}})}/>
             <Input label="ESIC" value={form.taxDetails.ESIC} onChange={(e:any)=>setForm({...form, taxDetails:{...form.taxDetails, ESIC:e.target.value}})}/>
             <Input label="Emergency Contact Name" value={form.emergencyContact.name} onChange={(e:any)=>setForm({...form, emergencyContact:{...form.emergencyContact, name:e.target.value}})}/>
@@ -245,13 +342,37 @@ const AddEmployeeStepper = () => {
             </button>
           ) : (
             <button
-              className="px-6 py-2 rounded-lg bg-green-600 text-white shadow hover:bg-green-700 transition"
-              onClick={() => setSuccess(true)}
+              className="px-6 py-2 rounded-lg bg-green-600 text-white shadow hover:bg-green-700 transition disabled:opacity-60"
+              disabled={loading}
+              onClick={async (e) => {
+                e.preventDefault();
+                setLoading(true);
+                setError("");
+                try {
+                  // Prepare payload as per schema
+                  const payload = {
+                    ...form,
+                    taxDetails: {
+                      ...form.taxDetails,
+                      UAN: form.taxDetails.UAN,
+                      ESIC: form.taxDetails.ESIC,
+                    },
+                    role: role,
+                  };
+                  await API.post("/auth/employees", payload);
+                  setSuccess(true);
+                } catch (err: any) {
+                  setError(err?.response?.data?.message || "Failed to add employee");
+                } finally {
+                  setLoading(false);
+                }
+              }}
             >
-              Add Employee
-            </button>
-          )}
-        </div>
+              {loading ? "Adding..." : "Add Employee"}
+              </button>
+            )}
+            {error && <div className="text-red-500 text-xs mt-2">{error}</div>}
+          </div>
       </div>
     </div>
   );
