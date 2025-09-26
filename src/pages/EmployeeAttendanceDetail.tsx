@@ -102,11 +102,11 @@ const EmployeeAttendanceDetail: React.FC = () => {
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
-                  className="flex items-center gap-2 text-sm border-gray-300 hover:bg-emerald-100 hover:text-emerald-700 focus:border-gray-300 focus:ring-0"
+                  className="flex items-center gap-2 text-sm border-emerald-300 bg-emerald-100 text-emerald-700 hover:bg-emerald-200 hover:text-emerald-800 focus:border-emerald-400 focus:ring-0"
                 >
-                  <CalendarIcon className="h-4 w-4 text-gray-500" />
+                  <CalendarIcon className="h-4 w-4 text-emerald-600" />
                   Calendar
-                  <ChevronDown className="h-4 w-4 text-gray-500" />
+                  <ChevronDown className="h-4 w-4 text-emerald-600" />
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">
@@ -125,7 +125,7 @@ const EmployeeAttendanceDetail: React.FC = () => {
             </Popover>
 
             <Select value={statusFilter || 'all'} onValueChange={(val) => setStatusFilter(val === 'all' ? null : val)}>
-              <SelectTrigger className="w-[120px] text-sm border-gray-300 hover:bg-emerald-100 hover:text-emerald-700 focus:border-gray-300 focus:ring-0">
+              <SelectTrigger className="w-[120px] text-sm border-emerald-300 bg-emerald-100 text-emerald-700 hover:bg-emerald-200 hover:text-emerald-800 focus:border-emerald-400 focus:ring-0">
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent className="bg-white">
@@ -139,7 +139,7 @@ const EmployeeAttendanceDetail: React.FC = () => {
 
             <Button
               variant="outline"
-              className="text-sm border-gray-300 hover:bg-emerald-100 hover:text-emerald-700 focus:border-gray-300 focus:ring-0"
+              className="text-sm border-emerald-300 bg-emerald-100 text-emerald-700 hover:bg-emerald-200 hover:text-emerald-800 focus:border-emerald-400 focus:ring-0"
               onClick={() => {
                 setStatusFilter(null);
                 setDateRange({ startDate: null, endDate: null });
