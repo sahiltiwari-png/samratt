@@ -102,7 +102,7 @@ const EmployeeAttendanceDetail: React.FC = () => {
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
-                  className="flex items-center gap-2 text-sm border-gray-300"
+                  className="flex items-center gap-2 text-sm border-gray-300 hover:bg-emerald-100 hover:text-emerald-700 focus:border-gray-300 focus:ring-0"
                 >
                   <CalendarIcon className="h-4 w-4 text-gray-500" />
                   Calendar
@@ -119,26 +119,27 @@ const EmployeeAttendanceDetail: React.FC = () => {
                   onSelect={(range) => {
                     if (range?.from) setDateRange({ startDate: range.from, endDate: range.to || null });
                   }}
+                  className="[&_.rdp-day_button:hover:not([disabled])]:bg-emerald-100 [&_.rdp-day_button:hover:not([disabled])]:text-emerald-700 [&_.rdp-day_button:focus:not([disabled])]:bg-emerald-100 [&_.rdp-day_button:focus:not([disabled])]:text-emerald-700 [&_.rdp-day_button.rdp-day_selected]:bg-emerald-600 [&_.rdp-day_button.rdp-day_selected]:text-white [&_.rdp-day_button.rdp-day_selected:hover]:bg-emerald-700"
                 />
               </PopoverContent>
             </Popover>
 
             <Select value={statusFilter || 'all'} onValueChange={(val) => setStatusFilter(val === 'all' ? null : val)}>
-              <SelectTrigger className="w-[120px] text-sm border-gray-300">
+              <SelectTrigger className="w-[120px] text-sm border-gray-300 hover:bg-emerald-100 hover:text-emerald-700 focus:border-gray-300 focus:ring-0">
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All</SelectItem>
-                <SelectItem value="present">Present</SelectItem>
-                <SelectItem value="absent">Absent</SelectItem>
-                <SelectItem value="half-day">Half Day</SelectItem>
-                <SelectItem value="late">Late</SelectItem>
+              <SelectContent className="[&>*:hover]:bg-emerald-100 [&>*:hover]:text-emerald-700 [&>*.data-[state=checked]]:bg-emerald-100 [&>*.data-[state=checked]]:text-emerald-700">
+                <SelectItem value="all" className="data-[highlighted]:bg-emerald-100 data-[highlighted]:text-emerald-700">All</SelectItem>
+                <SelectItem value="present" className="data-[highlighted]:bg-emerald-100 data-[highlighted]:text-emerald-700">Present</SelectItem>
+                <SelectItem value="absent" className="data-[highlighted]:bg-emerald-100 data-[highlighted]:text-emerald-700">Absent</SelectItem>
+                <SelectItem value="half-day" className="data-[highlighted]:bg-emerald-100 data-[highlighted]:text-emerald-700">Half Day</SelectItem>
+                <SelectItem value="late" className="data-[highlighted]:bg-emerald-100 data-[highlighted]:text-emerald-700">Late</SelectItem>
               </SelectContent>
             </Select>
 
             <Button
               variant="outline"
-              className="text-sm border-gray-300"
+              className="text-sm border-gray-300 hover:bg-emerald-100 hover:text-emerald-700 focus:border-gray-300 focus:ring-0"
               onClick={() => {
                 setStatusFilter(null);
                 setDateRange({ startDate: null, endDate: null });
