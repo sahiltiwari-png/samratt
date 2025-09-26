@@ -53,7 +53,7 @@ export const updateAttendance = async (employeeId: string, attendanceId: string,
   date: string;
 }) => {
   try {
-    const response = await API.put(`/attendance/${employeeId}/${attendanceId}`, data);
+    const response = await API.patch(`/attendance/${employeeId}/${attendanceId}`, data);
     return response.data;
   } catch (error) {
     console.error("Error updating attendance:", error);
