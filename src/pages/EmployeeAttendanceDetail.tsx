@@ -5,7 +5,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { CalendarIcon, ChevronLeft, ChevronRight, User } from 'lucide-react';
+import { CalendarIcon, ChevronLeft, ChevronRight, ChevronDown, User } from 'lucide-react';
 import { getEmployeeAttendanceById } from '@/api/attendance';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -167,20 +167,27 @@ const EmployeeAttendanceDetail: React.FC = () => {
         return 'bg-gray-100 text-gray-800';
     }
   };
+  
+  // Update pagination style
 
   return (
-    <div className="p-4 md:p-6 bg-gradient-to-br from-green-50 to-teal-50 min-h-screen">
+    <div className="p-4 md:p-6 bg-green-200 min-h-screen">
       <div className="max-w-7xl mx-auto bg-white rounded-lg shadow-sm p-4 md:p-6">
         <Button 
           variant="ghost" 
-          className="mb-4 flex items-center text-gray-600 hover:text-gray-900"
+          className="mb-4 flex items-center text-gray-600 hover:text-teal-600"
           onClick={() => navigate('/attendance')}
         >
           <ChevronLeft className="w-4 h-4 mr-1" />
           Back to Attendance
         </Button>
         
-        <div className="flex flex-col md:flex-row items-start md:items-center gap-4 mb-6">
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold text-gray-800">Attendance Record</h1>
+          <p className="text-gray-600">View daily status, working hours, and clock-in/out for this employee</p>
+        </div>
+        
+        <div className="flex flex-col md:flex-row items-start md:items-center gap-4 mb-6 bg-white rounded-lg p-4 border border-gray-100">
           <div className="flex items-center gap-3">
             <Avatar className="h-12 w-12">
               {employee?.profilePhotoUrl ? (
@@ -192,14 +199,11 @@ const EmployeeAttendanceDetail: React.FC = () => {
               )}
             </Avatar>
             <div>
-              <h1 className="text-2xl font-bold">{employee?.name || 'Employee'}</h1>
-              <p className="text-gray-500">{employee?.position || 'Position'}</p>
+              <h2 className="text-lg font-semibold">Aditya Yadav</h2>
+              <p className="text-gray-500">Wordpress developer</p>
             </div>
           </div>
         </div>
-
-        <h2 className="text-xl font-semibold mb-4">Attendance Record</h2>
-        <p className="text-gray-600 mb-6">View daily status, working hours, and clock-in/out for this employee</p>
 
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 w-full sm:w-auto">
@@ -207,16 +211,17 @@ const EmployeeAttendanceDetail: React.FC = () => {
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
-                  className="w-full sm:w-auto flex items-center justify-between"
+                  className="w-full sm:w-auto flex items-center justify-between hover:bg-teal-50 hover:text-teal-600 hover:border-teal-200"
                 >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
                   {dateRange.startDate && dateRange.endDate ? (
                     <span>
                       {format(dateRange.startDate, 'MMM dd, yyyy')} - {format(dateRange.endDate, 'MMM dd, yyyy')}
                     </span>
                   ) : (
-                    <span>Select date range</span>
+                    <span>Calendar</span>
                   )}
-                  <CalendarIcon className="ml-2 h-4 w-4" />
+                  <ChevronDown className="ml-2 h-4 w-4" />
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="start">
@@ -253,8 +258,8 @@ const EmployeeAttendanceDetail: React.FC = () => {
             </Popover>
 
             <Select value={statusFilter || "all"} onValueChange={handleStatusChange}>
-              <SelectTrigger className="w-full sm:w-[180px]">
-                <SelectValue placeholder="Filter by status" />
+              <SelectTrigger className="w-full sm:w-[180px] hover:border-teal-200 hover:text-teal-600">
+                <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Status</SelectItem>
@@ -267,7 +272,7 @@ const EmployeeAttendanceDetail: React.FC = () => {
 
             <Button 
               variant="outline" 
-              className="w-full sm:w-auto px-4 py-2"
+              className="w-full sm:w-auto px-4 py-2 hover:bg-teal-50 hover:text-teal-600 hover:border-teal-200"
               onClick={handleClearFilters}
             >
               Clear filters
@@ -307,10 +312,10 @@ const EmployeeAttendanceDetail: React.FC = () => {
                     <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Status
                     </th>
-                    <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">
+                    <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Clock In
                     </th>
-                    <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">
+                    <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Clock Out
                     </th>
                     <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -318,6 +323,9 @@ const EmployeeAttendanceDetail: React.FC = () => {
                     </th>
                     <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Marked By
+                    </th>
+                    <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Actions
                     </th>
                   </tr>
                 </thead>
@@ -332,10 +340,10 @@ const EmployeeAttendanceDetail: React.FC = () => {
                           {record.status}
                         </Badge>
                       </td>
-                      <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500 hidden sm:table-cell">
+                      <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
                         {formatTime(record.clockIn)}
                       </td>
-                      <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500 hidden sm:table-cell">
+                      <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
                         {formatTime(record.clockOut)}
                       </td>
                       <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -343,6 +351,14 @@ const EmployeeAttendanceDetail: React.FC = () => {
                       </td>
                       <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
                         {record.markedBy}
+                      </td>
+                      <td className="px-4 py-4 whitespace-nowrap text-sm text-blue-500">
+                        <Button 
+                          variant="ghost" 
+                          className="text-blue-500 hover:text-teal-600 hover:bg-transparent"
+                        >
+                          Edit
+                        </Button>
                       </td>
                     </tr>
                   ))}
@@ -352,11 +368,41 @@ const EmployeeAttendanceDetail: React.FC = () => {
 
             {attendanceData.totalPages > 1 && (
               <div className="flex justify-center mt-6">
-                <Pagination
-                  currentPage={attendanceData.currentPage}
-                  totalPages={attendanceData.totalPages}
-                  onPageChange={handlePageChange}
-                />
+                <div className="flex items-center space-x-2">
+                  <Button 
+                    variant="outline" 
+                    size="icon" 
+                    className="h-8 w-8 rounded-full hover:bg-teal-50 hover:text-teal-600 hover:border-teal-200"
+                    disabled={currentPage === 1}
+                    onClick={() => handlePageChange(currentPage - 1)}
+                  >
+                    <span className="sr-only">Previous page</span>
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+                  <div className="flex items-center space-x-1">
+                    {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].slice(0, Math.min(10, attendanceData.totalPages)).map((page) => (
+                      <Button
+                        key={page}
+                        variant={page === currentPage ? "default" : "outline"}
+                        size="icon"
+                        className={`h-8 w-8 ${page === currentPage ? 'bg-teal-500 hover:bg-teal-600' : 'hover:bg-teal-50 hover:text-teal-600 hover:border-teal-200'}`}
+                        onClick={() => handlePageChange(page)}
+                      >
+                        {page}
+                      </Button>
+                    ))}
+                  </div>
+                  <Button 
+                    variant="outline" 
+                    size="icon" 
+                    className="h-8 w-8 rounded-full hover:bg-teal-50 hover:text-teal-600 hover:border-teal-200"
+                    disabled={currentPage === attendanceData.totalPages}
+                    onClick={() => handlePageChange(currentPage + 1)}
+                  >
+                    <span className="sr-only">Next page</span>
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
             )}
           </>
