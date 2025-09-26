@@ -346,7 +346,12 @@ const Attendance = () => {
                             variant="link" 
                             size="icon" 
                             className="text-blue-600 h-8 w-8 p-0"
-                            onClick={() => navigate(`/attendance/employee/${record.employee._id}`)}
+                            onClick={() => navigate(`/attendance/employee/${record.employee._id}`, {
+                              state: {
+                                employeeName: record.employee.name,
+                                employeeDesignation: record.employee.designation
+                              }
+                            })}
                           >
                             <Eye className="w-4 h-4 md:w-5 md:h-5" />
                           </Button>

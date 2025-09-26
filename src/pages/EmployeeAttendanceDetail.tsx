@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { format } from 'date-fns';
 import { Calendar } from '@/components/ui/calendar';
 import { Button } from '@/components/ui/button';
@@ -39,6 +39,7 @@ interface AttendanceResponse {
 const EmployeeAttendanceDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -46,6 +47,10 @@ const EmployeeAttendanceDetail: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [employee, setEmployee] = useState<Employee | null>(null);
+  
+  // Get employee data from location state
+  const employeeName = location.state?.employeeName || 'Employee';
+  const employeeDesignation = location.state?.employeeDesignation || 'Position';
   const [dateRange, setDateRange] = useState<{
     startDate: Date | null;
     endDate: Date | null;
@@ -199,8 +204,8 @@ const EmployeeAttendanceDetail: React.FC = () => {
               )}
             </Avatar>
             <div>
-              <h2 className="text-lg font-semibold">Aditya Yadav</h2>
-              <p className="text-gray-500">Wordpress developer</p>
+              <h2 className="text-lg font-semibold">{employeeName}</h2>
+              <p className="text-gray-500">{employeeDesignation}</p>
             </div>
           </div>
         </div>
