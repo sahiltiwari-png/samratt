@@ -46,10 +46,6 @@ export const getEmployeeAttendanceById = async (employeeId: string, params?: any
 export const updateAttendance = async (employeeId: string, attendanceId: string, data: {
   clockIn: string;
   clockOut: string;
-  latitudeIn: number;
-  longitudeIn: number;
-  latitudeOut: number;
-  longitudeOut: number;
   date: string;
 }) => {
   try {

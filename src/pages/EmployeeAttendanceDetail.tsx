@@ -269,68 +269,6 @@ const EmployeeAttendanceDetail: React.FC = () => {
                     }}
                   />
                 </div>
-                
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-sm font-medium text-gray-500 mb-1">Latitude In</p>
-                    <Input 
-                      type="number" 
-                      step="0.0001"
-                      value={selectedAttendance.latitudeIn}
-                      onChange={(e) => {
-                        setSelectedAttendance({
-                          ...selectedAttendance,
-                          latitudeIn: parseFloat(e.target.value)
-                        });
-                      }}
-                    />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-500 mb-1">Longitude In</p>
-                    <Input 
-                      type="number" 
-                      step="0.0001"
-                      value={selectedAttendance.longitudeIn}
-                      onChange={(e) => {
-                        setSelectedAttendance({
-                          ...selectedAttendance,
-                          longitudeIn: parseFloat(e.target.value)
-                        });
-                      }}
-                    />
-                  </div>
-                </div>
-                
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-sm font-medium text-gray-500 mb-1">Latitude Out</p>
-                    <Input 
-                      type="number" 
-                      step="0.0001"
-                      value={selectedAttendance.latitudeOut}
-                      onChange={(e) => {
-                        setSelectedAttendance({
-                          ...selectedAttendance,
-                          latitudeOut: parseFloat(e.target.value)
-                        });
-                      }}
-                    />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-500 mb-1">Longitude Out</p>
-                    <Input 
-                      type="number" 
-                      step="0.0001"
-                      value={selectedAttendance.longitudeOut}
-                      onChange={(e) => {
-                        setSelectedAttendance({
-                          ...selectedAttendance,
-                          longitudeOut: parseFloat(e.target.value)
-                        });
-                      }}
-                    />
-                  </div>
-                </div>
               </div>
             )}
             
@@ -344,10 +282,6 @@ const EmployeeAttendanceDetail: React.FC = () => {
                     const payload = {
                       clockIn: selectedAttendance.clockIn,
                       clockOut: selectedAttendance.clockOut,
-                      latitudeIn: selectedAttendance.latitudeIn,
-                      longitudeIn: selectedAttendance.longitudeIn,
-                      latitudeOut: selectedAttendance.latitudeOut,
-                      longitudeOut: selectedAttendance.longitudeOut,
                       date: selectedAttendance.date
                     };
                     
