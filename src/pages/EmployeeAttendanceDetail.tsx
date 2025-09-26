@@ -61,33 +61,55 @@ const EmployeeAttendanceDetail: React.FC = () => {
     const fetchAttendanceData = async () => {
       setLoading(true);
       try {
-        // Only add parameters if they are actually set
-        const params: any = {};
+        // Prepare API parameters
+        const params: any = {
+          page: currentPage,
+          limit: 10,
+          status: statusFilter
+        };
         
-        // Only add page and limit by default
-        params.page = currentPage;
-        params.limit = 10;
-        
-        // Only add status filter if it's set
-        if (statusFilter) {
-          params.status = statusFilter;
-        }
-        
-        // Only add date range if both dates are set
+        // Use date range if available
         if (dateRange.startDate && dateRange.endDate) {
           params.startDate = format(dateRange.startDate, 'yyyy-MM-dd');
           params.endDate = format(dateRange.endDate, 'yyyy-MM-dd');
         }
         
-        const data = await getEmployeeAttendanceById(id, params);
-        setAttendanceData(data);
+        const response = await getEmployeeAttendanceById(id, params);
         
-        // Set employee data from the first record if available
-        if (data.data.length > 0 && !employee) {
-          setEmployee(data.data[0].employee);
+        if (response && response.attendance) {
+          // Create a formatted record from the attendance data
+          const formattedRecord: AttendanceRecord = {
+            id: response.attendance._id,
+            date: response.attendance.date,
+            status: response.attendance.status,
+            clockIn: response.attendance.clockIn,
+            clockOut: response.attendance.clockOut,
+            workingHours: response.attendance.totalWorkingHours,
+            markedBy: response.attendance.markedBy,
+            employee: {
+              id: response.attendance.employeeId,
+              name: 'Employee', // This will be updated if we have employee details
+              position: 'Position'
+            }
+          };
+          
+          // Create a mock response structure that matches the component's expected format
+          const formattedData: AttendanceResponse = {
+            data: [formattedRecord],
+            totalPages: 1,
+            currentPage: 1,
+            totalItems: 1
+          };
+          
+          setAttendanceData(formattedData);
+          setError(null);
+          
+          // For debugging
+          console.log("Successfully loaded attendance data:", response);
+        } else {
+          console.error("Invalid response format:", response);
+          throw new Error("Invalid response format");
         }
-        
-        setError(null);
       } catch (err) {
         console.error("Failed to fetch attendance data:", err);
         setError("Failed to load attendance data");
@@ -98,7 +120,7 @@ const EmployeeAttendanceDetail: React.FC = () => {
     };
 
     fetchAttendanceData();
-  }, [id, currentPage, statusFilter, dateRange, employee]);
+  }, [id, currentPage, statusFilter, dateRange]);
 
   // Format time from ISO string
   const formatTime = (isoString: string | null) => {
@@ -254,14 +276,26 @@ const EmployeeAttendanceDetail: React.FC = () => {
         </div>
 
         {loading ? (
-          <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-green-500"></div>
+          <div className="flex justify-center items-center py-20">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-teal-500"></div>
           </div>
         ) : error ? (
-          <div className="bg-red-50 text-red-800 p-4 rounded-md">
-            {error}
+          <div className="text-center py-20">
+            <p className="text-red-500">{error}</p>
+            <Button 
+              variant="outline" 
+              className="mt-4"
+              onClick={() => {
+                setError(null);
+                setCurrentPage(1);
+                setStatusFilter(null);
+                setDateRange({ startDate: null, endDate: null });
+              }}
+            >
+              Try Again
+            </Button>
           </div>
-        ) : attendanceData && attendanceData.data.length > 0 ? (
+        ) : attendanceData && attendanceData.data && attendanceData.data.length > 0 ? (
           <>
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
