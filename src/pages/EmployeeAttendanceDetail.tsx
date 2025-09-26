@@ -245,12 +245,21 @@ const EmployeeAttendanceDetail: React.FC = () => {
                 <div>
                   <p className="text-sm font-medium text-gray-500 mb-1">Clock In</p>
                   <Input 
-                    type="datetime-local" 
-                    value={selectedAttendance.clockIn ? new Date(selectedAttendance.clockIn).toISOString().slice(0, 16) : ''}
+                    type="time" 
+                    value={selectedAttendance.clockIn ? new Date(selectedAttendance.clockIn).toTimeString().slice(0, 5) : ''}
                     onChange={(e) => {
+                      if (!e.target.value) return;
+                      
+                      // Preserve the original date, only update the time
+                      const originalDate = new Date(selectedAttendance.clockIn || selectedAttendance.date);
+                      const [hours, minutes] = e.target.value.split(':').map(Number);
+                      
+                      const newDate = new Date(originalDate);
+                      newDate.setHours(hours, minutes, 0);
+                      
                       setSelectedAttendance({
                         ...selectedAttendance,
-                        clockIn: e.target.value ? new Date(e.target.value).toISOString() : null
+                        clockIn: newDate.toISOString()
                       });
                     }}
                   />
@@ -259,12 +268,21 @@ const EmployeeAttendanceDetail: React.FC = () => {
                 <div>
                   <p className="text-sm font-medium text-gray-500 mb-1">Clock Out</p>
                   <Input 
-                    type="datetime-local" 
-                    value={selectedAttendance.clockOut ? new Date(selectedAttendance.clockOut).toISOString().slice(0, 16) : ''}
+                    type="time" 
+                    value={selectedAttendance.clockOut ? new Date(selectedAttendance.clockOut).toTimeString().slice(0, 5) : ''}
                     onChange={(e) => {
+                      if (!e.target.value) return;
+                      
+                      // Preserve the original date, only update the time
+                      const originalDate = new Date(selectedAttendance.clockOut || selectedAttendance.date);
+                      const [hours, minutes] = e.target.value.split(':').map(Number);
+                      
+                      const newDate = new Date(originalDate);
+                      newDate.setHours(hours, minutes, 0);
+                      
                       setSelectedAttendance({
                         ...selectedAttendance,
-                        clockOut: e.target.value ? new Date(e.target.value).toISOString() : null
+                        clockOut: newDate.toISOString()
                       });
                     }}
                   />
