@@ -128,12 +128,12 @@ const EmployeeAttendanceDetail: React.FC = () => {
               <SelectTrigger className="w-[120px] text-sm border-gray-300 hover:bg-emerald-100 hover:text-emerald-700 focus:border-gray-300 focus:ring-0">
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
-              <SelectContent className="[&>*:hover]:bg-emerald-100 [&>*:hover]:text-emerald-700 [&>*.data-[state=checked]]:bg-emerald-100 [&>*.data-[state=checked]]:text-emerald-700">
-                <SelectItem value="all" className="data-[highlighted]:bg-emerald-100 data-[highlighted]:text-emerald-700">All</SelectItem>
-                <SelectItem value="present" className="data-[highlighted]:bg-emerald-100 data-[highlighted]:text-emerald-700">Present</SelectItem>
-                <SelectItem value="absent" className="data-[highlighted]:bg-emerald-100 data-[highlighted]:text-emerald-700">Absent</SelectItem>
-                <SelectItem value="half-day" className="data-[highlighted]:bg-emerald-100 data-[highlighted]:text-emerald-700">Half Day</SelectItem>
-                <SelectItem value="late" className="data-[highlighted]:bg-emerald-100 data-[highlighted]:text-emerald-700">Late</SelectItem>
+              <SelectContent className="bg-white">
+                <SelectItem value="all" className="hover:bg-emerald-100 hover:text-emerald-700 data-[highlighted]:bg-emerald-100 data-[highlighted]:text-emerald-700 data-[state=checked]:bg-emerald-100 data-[state=checked]:text-emerald-700">All</SelectItem>
+                <SelectItem value="present" className="hover:bg-emerald-100 hover:text-emerald-700 data-[highlighted]:bg-emerald-100 data-[highlighted]:text-emerald-700 data-[state=checked]:bg-emerald-100 data-[state=checked]:text-emerald-700">Present</SelectItem>
+                <SelectItem value="absent" className="hover:bg-emerald-100 hover:text-emerald-700 data-[highlighted]:bg-emerald-100 data-[highlighted]:text-emerald-700 data-[state=checked]:bg-emerald-100 data-[state=checked]:text-emerald-700">Absent</SelectItem>
+                <SelectItem value="half-day" className="hover:bg-emerald-100 hover:text-emerald-700 data-[highlighted]:bg-emerald-100 data-[highlighted]:text-emerald-700 data-[state=checked]:bg-emerald-100 data-[state=checked]:text-emerald-700">Half Day</SelectItem>
+                <SelectItem value="late" className="hover:bg-emerald-100 hover:text-emerald-700 data-[highlighted]:bg-emerald-100 data-[highlighted]:text-emerald-700 data-[state=checked]:bg-emerald-100 data-[state=checked]:text-emerald-700">Late</SelectItem>
               </SelectContent>
             </Select>
 
