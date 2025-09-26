@@ -145,9 +145,9 @@ const Attendance = () => {
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
-                  className="flex items-center gap-2 text-sm border-gray-300 hover:bg-emerald-100 hover:text-emerald-700 hover:border-emerald-300 focus:border-gray-300 focus:ring-0"
+                  className="flex items-center gap-2 text-sm border-emerald-300 bg-emerald-100 text-emerald-700 hover:bg-emerald-200 hover:text-emerald-800 focus:border-emerald-400 focus:ring-0"
                 >
-                  <CalendarIcon className="h-4 w-4 text-gray-500" />
+                  <CalendarIcon className="h-4 w-4 text-emerald-600" />
                   <span>{format(date, "MMM d, yyyy")}</span>
                 </Button>
               </PopoverTrigger>
@@ -170,7 +170,7 @@ const Attendance = () => {
               value={statusFilter || "all"}
               onValueChange={(val) => setStatusFilter(val === "all" ? null : val)}
             >
-              <SelectTrigger className="w-[120px] text-sm border-gray-300 hover:bg-emerald-100 hover:text-emerald-700 hover:border-emerald-300 focus:border-gray-300 focus:ring-0">
+              <SelectTrigger className="w-[120px] text-sm border-emerald-300 bg-emerald-100 text-emerald-700 hover:bg-emerald-200 hover:text-emerald-800 focus:border-emerald-400 focus:ring-0">
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent className="bg-white">
@@ -184,7 +184,7 @@ const Attendance = () => {
 
             <Button
               variant="outline"
-              className="text-sm border-gray-300 hover:bg-emerald-100 hover:text-emerald-700"
+              className="text-sm border-emerald-300 bg-emerald-100 text-emerald-700 hover:bg-emerald-200 hover:text-emerald-800"
               onClick={handleClearFilters}
             >
               Clear filters
