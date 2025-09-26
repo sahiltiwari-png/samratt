@@ -161,7 +161,7 @@ const Attendance = () => {
                   }
                 }}
                 initialFocus
-                className="rounded-md border"
+                className="rounded-md border [&_.rdp-day_button:hover:not([disabled])]:bg-emerald-100 [&_.rdp-day_button:hover:not([disabled])]:text-emerald-700 [&_.rdp-day_button:focus:not([disabled])]:bg-emerald-100 [&_.rdp-day_button:focus:not([disabled])]:text-emerald-700 [&_.rdp-day_button.rdp-day_selected]:bg-emerald-600 [&_.rdp-day_button.rdp-day_selected]:text-white"
               />
               </PopoverContent>
             </Popover>
