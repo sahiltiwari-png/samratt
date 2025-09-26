@@ -152,19 +152,20 @@ const EmployeeAttendanceDetail: React.FC = () => {
 
         {/* Table */}
         <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-          <table className="min-w-full text-sm">
-            <thead className="bg-gray-50 border-b">
-              <tr>
-                <th className="px-4 py-2 text-left font-medium text-gray-600">Date</th>
-                <th className="px-4 py-2 text-left font-medium text-gray-600">Status</th>
-                <th className="px-4 py-2 text-left font-medium text-gray-600">Clock In</th>
-                <th className="px-4 py-2 text-left font-medium text-gray-600">Clock Out</th>
-                <th className="px-4 py-2 text-left font-medium text-gray-600">Working Hours</th>
-                <th className="px-4 py-2 text-left font-medium text-gray-600">Marked By</th>
-                <th className="px-4 py-2 text-left font-medium text-gray-600">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
+          <div className="overflow-x-auto" style={{ WebkitOverflowScrolling: 'touch' }}>
+            <table className="min-w-full text-sm">
+              <thead className="bg-gray-50 border-b">
+                <tr>
+                  <th className="px-4 py-2 text-left font-medium text-gray-600">Date</th>
+                  <th className="px-4 py-2 text-left font-medium text-gray-600">Status</th>
+                  <th className="px-4 py-2 text-left font-medium text-gray-600">Clock In</th>
+                  <th className="px-4 py-2 text-left font-medium text-gray-600">Clock Out</th>
+                  <th className="px-4 py-2 text-left font-medium text-gray-600">Working Hours</th>
+                  <th className="px-4 py-2 text-left font-medium text-gray-600">Marked By</th>
+                  <th className="px-4 py-2 text-left font-medium text-gray-600">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
               {attendanceData?.data?.map((rec: any) => (
                 <tr key={rec._id} className="border-b last:border-0">
                   <td className="px-4 py-2">{format(new Date(rec.date), 'dd/MM/yyyy')}</td>
@@ -180,6 +181,7 @@ const EmployeeAttendanceDetail: React.FC = () => {
               ))}
             </tbody>
           </table>
+          </div>
 
           {/* Pagination */}
           <div className="flex items-center justify-between p-3 border-t bg-white">

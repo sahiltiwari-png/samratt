@@ -203,17 +203,18 @@ const Attendance = () => {
               <p>{error}</p>
             </div>
           ) : attendanceData && attendanceData.items.length > 0 ? (
-            <table className="min-w-full text-sm">
-              <thead className="bg-gray-50 border-b">
-                <tr>
-                  <th className="px-4 py-2 text-left font-medium text-gray-600">Employee</th>
-                  <th className="px-4 py-2 text-left font-medium text-gray-600">Status</th>
-                  <th className="px-4 py-2 text-left font-medium text-gray-600">Clock In</th>
-                  <th className="px-4 py-2 text-left font-medium text-gray-600">Clock Out</th>
-                  <th className="px-4 py-2 text-left font-medium text-gray-600">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
+            <div className="overflow-x-auto" style={{ WebkitOverflowScrolling: 'touch' }}>
+              <table className="min-w-full text-sm">
+                <thead className="bg-gray-50 border-b">
+                  <tr>
+                    <th className="px-4 py-2 text-left font-medium text-gray-600">Employee</th>
+                    <th className="px-4 py-2 text-left font-medium text-gray-600">Status</th>
+                    <th className="px-4 py-2 text-left font-medium text-gray-600">Clock In</th>
+                    <th className="px-4 py-2 text-left font-medium text-gray-600">Clock Out</th>
+                    <th className="px-4 py-2 text-left font-medium text-gray-600">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
                 {attendanceData.items.map((record) => (
                   <tr key={record._id} className="border-b last:border-0 hover:bg-emerald-50 transition-colors">
                     <td className="px-4 py-2">
@@ -260,6 +261,7 @@ const Attendance = () => {
                 ))}
               </tbody>
             </table>
+            </div>
           ) : (
             <div className="flex justify-center items-center p-8">
               <p>No attendance records found</p>
