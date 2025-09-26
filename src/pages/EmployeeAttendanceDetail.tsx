@@ -5,10 +5,11 @@ import { Calendar } from '@/components/ui/calendar';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { CalendarIcon, ChevronDown, ChevronRight, User } from 'lucide-react';
+import { CalendarIcon, ChevronDown, ChevronRight, User, Edit } from 'lucide-react';
 import { getEmployeeAttendanceById } from '@/api/attendance';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 
 const EmployeeAttendanceDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -19,6 +20,8 @@ const EmployeeAttendanceDetail: React.FC = () => {
   const [attendanceData, setAttendanceData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedAttendance, setSelectedAttendance] = useState<any>(null);
   const employeeName = location.state?.employeeName || 'Aditya Yadav';
   const employeeDesignation = location.state?.employeeDesignation || 'Wordpress developer';
   const profilePhotoUrl = location.state?.profilePhotoUrl;
@@ -176,7 +179,20 @@ const EmployeeAttendanceDetail: React.FC = () => {
                   <td className="px-4 py-2">{formatTime(rec.clockOut)}</td>
                   <td className="px-4 py-2">{rec.totalWorkingHours || '-'}</td>
                   <td className="px-4 py-2">{rec.markedBy}</td>
-                  <td className="px-4 py-2 text-blue-600 cursor-pointer">Edit</td>
+                  <td className="px-4 py-2">
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="text-blue-600 hover:text-blue-800 p-0 flex items-center gap-1"
+                      onClick={() => {
+                        setSelectedAttendance(rec);
+                        setIsEditModalOpen(true);
+                      }}
+                    >
+                      <Edit className="h-4 w-4" />
+                      Edit
+                    </Button>
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -201,6 +217,78 @@ const EmployeeAttendanceDetail: React.FC = () => {
             <span className="flex items-center text-sm text-gray-600">Next <ChevronRight className="h-4 w-4 ml-1" /></span>
           </div>
         </div>
+
+        {/* Edit Attendance Modal */}
+        <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Attendance Details</DialogTitle>
+            </DialogHeader>
+            
+            {selectedAttendance && (
+              <div className="space-y-4 py-2">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-sm font-medium text-gray-500">Date</p>
+                    <p className="text-sm">{format(new Date(selectedAttendance.date), 'dd/MM/yyyy')}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-500">Status</p>
+                    <Badge className={`${getStatusColor(selectedAttendance.status)} capitalize`}>{selectedAttendance.status}</Badge>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-500">Clock In</p>
+                    <p className="text-sm">{formatTime(selectedAttendance.clockIn)}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-500">Clock Out</p>
+                    <p className="text-sm">{formatTime(selectedAttendance.clockOut) || '-'}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-500">Working Hours</p>
+                    <p className="text-sm">{selectedAttendance.totalWorkingHours || '-'}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-500">Marked By</p>
+                    <p className="text-sm capitalize">{selectedAttendance.markedBy}</p>
+                  </div>
+                </div>
+
+                <div>
+                  <p className="text-sm font-medium text-gray-500">Location In</p>
+                  <p className="text-sm">
+                    {selectedAttendance.locationIn?.coordinates?.length > 0 
+                      ? `Lat: ${selectedAttendance.locationIn.coordinates[1]}, Long: ${selectedAttendance.locationIn.coordinates[0]}` 
+                      : 'Not available'}
+                  </p>
+                </div>
+
+                <div>
+                  <p className="text-sm font-medium text-gray-500">Location Out</p>
+                  <p className="text-sm">
+                    {selectedAttendance.locationOut?.coordinates?.length > 0 
+                      ? `Lat: ${selectedAttendance.locationOut.coordinates[1]}, Long: ${selectedAttendance.locationOut.coordinates[0]}` 
+                      : 'Not available'}
+                  </p>
+                </div>
+
+                <div>
+                  <p className="text-sm font-medium text-gray-500">Created At</p>
+                  <p className="text-sm">{format(new Date(selectedAttendance.createdAt), 'dd/MM/yyyy HH:mm:ss')}</p>
+                </div>
+
+                <div>
+                  <p className="text-sm font-medium text-gray-500">Updated At</p>
+                  <p className="text-sm">{format(new Date(selectedAttendance.updatedAt), 'dd/MM/yyyy HH:mm:ss')}</p>
+                </div>
+              </div>
+            )}
+            
+            <DialogFooter>
+              <Button onClick={() => setIsEditModalOpen(false)}>Close</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
