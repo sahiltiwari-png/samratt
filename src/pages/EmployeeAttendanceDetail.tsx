@@ -6,10 +6,12 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { CalendarIcon, ChevronDown, ChevronRight, User, Edit } from 'lucide-react';
-import { getEmployeeAttendanceById } from '@/api/attendance';
+import { getEmployeeAttendanceById, updateAttendance } from '@/api/attendance';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { toast } from '@/hooks/use-toast';
 
 const EmployeeAttendanceDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -31,28 +33,30 @@ const EmployeeAttendanceDetail: React.FC = () => {
     endDate: null,
   });
 
+  const fetchAttendanceData = async () => {
+    if (!id) return;
+    setLoading(true);
+    try {
+      const params: any = { page: currentPage, limit: 10, status: statusFilter };
+      if (dateRange.startDate && dateRange.endDate) {
+        params.startDate = format(dateRange.startDate, 'yyyy-MM-dd');
+        params.endDate = format(dateRange.endDate, 'yyyy-MM-dd');
+      }
+      const response = await getEmployeeAttendanceById(id, params);
+      if (response && response.attendance) {
+        setAttendanceData({ data: [response.attendance], totalPages: 1, currentPage: 1 });
+        setError(null);
+      } else throw new Error('Invalid response');
+    } catch (err) {
+      setError('Failed to load attendance data');
+      setAttendanceData(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (!id) return;
-    const fetchAttendanceData = async () => {
-      setLoading(true);
-      try {
-        const params: any = { page: currentPage, limit: 10, status: statusFilter };
-        if (dateRange.startDate && dateRange.endDate) {
-          params.startDate = format(dateRange.startDate, 'yyyy-MM-dd');
-          params.endDate = format(dateRange.endDate, 'yyyy-MM-dd');
-        }
-        const response = await getEmployeeAttendanceById(id, params);
-        if (response && response.attendance) {
-          setAttendanceData({ data: [response.attendance], totalPages: 1, currentPage: 1 });
-          setError(null);
-        } else throw new Error('Invalid response');
-      } catch (err) {
-        setError('Failed to load attendance data');
-        setAttendanceData(null);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchAttendanceData();
   }, [id, currentPage, statusFilter, dateRange]);
 
@@ -183,9 +187,15 @@ const EmployeeAttendanceDetail: React.FC = () => {
                     <Button 
                       variant="ghost" 
                       size="sm" 
-                      className="text-blue-600 hover:text-blue-800 p-0 flex items-center gap-1"
+                      className="text-blue-600 hover:text-blue-800 p-0 flex items-center gap-1 hover:bg-blue-50"
                       onClick={() => {
-                        setSelectedAttendance(rec);
+                        setSelectedAttendance({
+                          ...rec,
+                          latitudeIn: rec.locationIn?.coordinates?.[1] || 0,
+                          longitudeIn: rec.locationIn?.coordinates?.[0] || 0,
+                          latitudeOut: rec.locationOut?.coordinates?.[1] || 0,
+                          longitudeOut: rec.locationOut?.coordinates?.[0] || 0,
+                        });
                         setIsEditModalOpen(true);
                       }}
                     >
@@ -222,70 +232,147 @@ const EmployeeAttendanceDetail: React.FC = () => {
         <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
-              <DialogTitle>Attendance Details</DialogTitle>
+              <DialogTitle>Edit Attendance</DialogTitle>
             </DialogHeader>
             
             {selectedAttendance && (
               <div className="space-y-4 py-2">
+                <div>
+                  <p className="text-sm font-medium text-gray-500 mb-1">Date (Not Editable)</p>
+                  <p className="text-sm">{format(new Date(selectedAttendance.date), 'dd/MM/yyyy')}</p>
+                </div>
+                
+                <div>
+                  <p className="text-sm font-medium text-gray-500 mb-1">Clock In</p>
+                  <Input 
+                    type="datetime-local" 
+                    value={selectedAttendance.clockIn ? new Date(selectedAttendance.clockIn).toISOString().slice(0, 16) : ''}
+                    onChange={(e) => {
+                      setSelectedAttendance({
+                        ...selectedAttendance,
+                        clockIn: e.target.value ? new Date(e.target.value).toISOString() : null
+                      });
+                    }}
+                  />
+                </div>
+                
+                <div>
+                  <p className="text-sm font-medium text-gray-500 mb-1">Clock Out</p>
+                  <Input 
+                    type="datetime-local" 
+                    value={selectedAttendance.clockOut ? new Date(selectedAttendance.clockOut).toISOString().slice(0, 16) : ''}
+                    onChange={(e) => {
+                      setSelectedAttendance({
+                        ...selectedAttendance,
+                        clockOut: e.target.value ? new Date(e.target.value).toISOString() : null
+                      });
+                    }}
+                  />
+                </div>
+                
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <p className="text-sm font-medium text-gray-500">Date</p>
-                    <p className="text-sm">{format(new Date(selectedAttendance.date), 'dd/MM/yyyy')}</p>
+                    <p className="text-sm font-medium text-gray-500 mb-1">Latitude In</p>
+                    <Input 
+                      type="number" 
+                      step="0.0001"
+                      value={selectedAttendance.latitudeIn}
+                      onChange={(e) => {
+                        setSelectedAttendance({
+                          ...selectedAttendance,
+                          latitudeIn: parseFloat(e.target.value)
+                        });
+                      }}
+                    />
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-gray-500">Status</p>
-                    <Badge className={`${getStatusColor(selectedAttendance.status)} capitalize`}>{selectedAttendance.status}</Badge>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-500">Clock In</p>
-                    <p className="text-sm">{formatTime(selectedAttendance.clockIn)}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-500">Clock Out</p>
-                    <p className="text-sm">{formatTime(selectedAttendance.clockOut) || '-'}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-500">Working Hours</p>
-                    <p className="text-sm">{selectedAttendance.totalWorkingHours || '-'}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-gray-500">Marked By</p>
-                    <p className="text-sm capitalize">{selectedAttendance.markedBy}</p>
+                    <p className="text-sm font-medium text-gray-500 mb-1">Longitude In</p>
+                    <Input 
+                      type="number" 
+                      step="0.0001"
+                      value={selectedAttendance.longitudeIn}
+                      onChange={(e) => {
+                        setSelectedAttendance({
+                          ...selectedAttendance,
+                          longitudeIn: parseFloat(e.target.value)
+                        });
+                      }}
+                    />
                   </div>
                 </div>
-
-                <div>
-                  <p className="text-sm font-medium text-gray-500">Location In</p>
-                  <p className="text-sm">
-                    {selectedAttendance.locationIn?.coordinates?.length > 0 
-                      ? `Lat: ${selectedAttendance.locationIn.coordinates[1]}, Long: ${selectedAttendance.locationIn.coordinates[0]}` 
-                      : 'Not available'}
-                  </p>
-                </div>
-
-                <div>
-                  <p className="text-sm font-medium text-gray-500">Location Out</p>
-                  <p className="text-sm">
-                    {selectedAttendance.locationOut?.coordinates?.length > 0 
-                      ? `Lat: ${selectedAttendance.locationOut.coordinates[1]}, Long: ${selectedAttendance.locationOut.coordinates[0]}` 
-                      : 'Not available'}
-                  </p>
-                </div>
-
-                <div>
-                  <p className="text-sm font-medium text-gray-500">Created At</p>
-                  <p className="text-sm">{format(new Date(selectedAttendance.createdAt), 'dd/MM/yyyy HH:mm:ss')}</p>
-                </div>
-
-                <div>
-                  <p className="text-sm font-medium text-gray-500">Updated At</p>
-                  <p className="text-sm">{format(new Date(selectedAttendance.updatedAt), 'dd/MM/yyyy HH:mm:ss')}</p>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-sm font-medium text-gray-500 mb-1">Latitude Out</p>
+                    <Input 
+                      type="number" 
+                      step="0.0001"
+                      value={selectedAttendance.latitudeOut}
+                      onChange={(e) => {
+                        setSelectedAttendance({
+                          ...selectedAttendance,
+                          latitudeOut: parseFloat(e.target.value)
+                        });
+                      }}
+                    />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-500 mb-1">Longitude Out</p>
+                    <Input 
+                      type="number" 
+                      step="0.0001"
+                      value={selectedAttendance.longitudeOut}
+                      onChange={(e) => {
+                        setSelectedAttendance({
+                          ...selectedAttendance,
+                          longitudeOut: parseFloat(e.target.value)
+                        });
+                      }}
+                    />
+                  </div>
                 </div>
               </div>
             )}
             
-            <DialogFooter>
-              <Button onClick={() => setIsEditModalOpen(false)}>Close</Button>
+            <DialogFooter className="flex gap-2 justify-end">
+              <Button variant="outline" onClick={() => setIsEditModalOpen(false)}>Cancel</Button>
+              <Button 
+                onClick={async () => {
+                  if (!selectedAttendance) return;
+                  
+                  try {
+                    const payload = {
+                      clockIn: selectedAttendance.clockIn,
+                      clockOut: selectedAttendance.clockOut,
+                      latitudeIn: selectedAttendance.latitudeIn,
+                      longitudeIn: selectedAttendance.longitudeIn,
+                      latitudeOut: selectedAttendance.latitudeOut,
+                      longitudeOut: selectedAttendance.longitudeOut,
+                      date: selectedAttendance.date
+                    };
+                    
+                    await updateAttendance(id as string, selectedAttendance._id, payload);
+                    toast({
+                      title: "Success",
+                      description: "Attendance updated successfully",
+                      variant: "default",
+                    });
+                    
+                    // Refresh attendance data
+                    fetchAttendanceData();
+                    setIsEditModalOpen(false);
+                  } catch (error) {
+                    console.error("Error updating attendance:", error);
+                    toast({
+                      title: "Error",
+                      description: "Failed to update attendance",
+                      variant: "destructive",
+                    });
+                  }
+                }}
+              >
+                Update
+              </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>

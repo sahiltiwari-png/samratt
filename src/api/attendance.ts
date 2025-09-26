@@ -42,3 +42,21 @@ export const getEmployeeAttendanceById = async (employeeId: string, params?: any
     throw error;
   }
 };
+
+export const updateAttendance = async (employeeId: string, attendanceId: string, data: {
+  clockIn: string;
+  clockOut: string;
+  latitudeIn: number;
+  longitudeIn: number;
+  latitudeOut: number;
+  longitudeOut: number;
+  date: string;
+}) => {
+  try {
+    const response = await API.put(`/attendance/${employeeId}/${attendanceId}`, data);
+    return response.data;
+  } catch (error) {
+    console.error("Error updating attendance:", error);
+    throw error;
+  }
+};
