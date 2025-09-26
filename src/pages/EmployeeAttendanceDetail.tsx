@@ -51,6 +51,7 @@ const EmployeeAttendanceDetail: React.FC = () => {
   // Get employee data from location state
   const employeeName = location.state?.employeeName || 'Employee';
   const employeeDesignation = location.state?.employeeDesignation || 'Position';
+  const profilePhotoUrl = location.state?.profilePhotoUrl;
   const [dateRange, setDateRange] = useState<{
     startDate: Date | null;
     endDate: Date | null;
@@ -195,8 +196,8 @@ const EmployeeAttendanceDetail: React.FC = () => {
         <div className="flex flex-col md:flex-row items-start md:items-center gap-4 mb-6 bg-white rounded-lg p-4 border border-gray-100">
           <div className="flex items-center gap-3">
             <Avatar className="h-12 w-12">
-              {employee?.profilePhotoUrl ? (
-                <AvatarImage src={employee.profilePhotoUrl} alt={employee?.name || 'Employee'} />
+              {profilePhotoUrl ? (
+                <AvatarImage src={profilePhotoUrl} alt={employeeName} />
               ) : (
                 <AvatarFallback>
                   <User className="h-6 w-6" />

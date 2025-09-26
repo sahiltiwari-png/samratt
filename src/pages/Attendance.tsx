@@ -349,7 +349,8 @@ const Attendance = () => {
                             onClick={() => navigate(`/attendance/employee/${record.employee._id}`, {
                               state: {
                                 employeeName: record.employee.name,
-                                employeeDesignation: record.employee.designation
+                                employeeDesignation: record.employee.designation,
+                                profilePhotoUrl: record.employee.profilePhotoUrl
                               }
                             })}
                           >
