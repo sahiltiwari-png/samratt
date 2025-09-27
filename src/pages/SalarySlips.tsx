@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Eye, Edit, Trash2, User } from "lucide-react";
+import { Eye, Edit, Trash2, User, X } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Dialog,
@@ -478,27 +478,53 @@ const SalarySlip = () => {
           <div className="grid gap-3">
             <div className="grid gap-1 relative">
               <Label>Employee</Label>
-              <Input
-                type="text"
-                placeholder="Search employee by name or code"
-                value={employeeSearch}
-                onChange={(e) => {
-                  const v = e.target.value;
-                  setEmployeeSearch(v);
-                  if (v.trim().length >= 1) {
-                    searchEmployees(v.trim());
-                  } else {
-                    setEmployeeResults([]);
-                    setEmployeeDropdownOpen(false);
-                  }
-                }}
-                onFocus={() => {
-                  if (employeeResults.length > 0) setEmployeeDropdownOpen(true);
-                }}
-                className="focus:outline-none focus:ring-0 focus:border-gray-300"
-              />
+              <div className="relative">
+                {createForm.employeeId ? (
+                  <div className="flex items-center justify-between border border-gray-300 rounded-md px-3 py-2 bg-white">
+                    <div className="flex items-center gap-2">
+                      <div className="inline-flex items-center gap-2 rounded-full bg-emerald-50 text-emerald-700 px-3 py-1">
+                        <User className="h-4 w-4" />
+                        <span className="text-sm font-medium">{employeeSearch}</span>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      aria-label="Clear selected employee"
+                      className="text-gray-500 hover:text-gray-700"
+                      onClick={() => {
+                        setCreateForm((prev: any) => ({ ...prev, employeeId: "" }));
+                        setEmployeeSearch("");
+                        setEmployeeDropdownOpen(false);
+                      }}
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+                ) : (
+                  <Input
+                    type="text"
+                    placeholder="Search employee by name or code"
+                    value={employeeSearch}
+                    onChange={(e) => {
+                      const v = e.target.value;
+                      setEmployeeSearch(v);
+                      if (v.trim().length >= 1) {
+                        searchEmployees(v.trim());
+                      } else {
+                        setEmployeeResults([]);
+                        setEmployeeDropdownOpen(false);
+                      }
+                    }}
+                    onClick={() => {
+                      const q = employeeSearch.trim();
+                      searchEmployees(q.length >= 1 ? q : "");
+                    }}
+                    className="focus:outline-none focus:ring-0 focus:border-gray-300 pr-8"
+                  />
+                )}
+              </div>
               {employeeDropdownOpen && (
-                <div className="absolute z-20 mt-1 w-full bg-white border rounded shadow max-h-60 overflow-y-auto">
+                <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-md shadow-lg ring-1 ring-black/5 max-h-60 overflow-y-auto p-1">
                   {employeeLoading ? (
                     <div className="p-3 text-sm text-gray-500">Loading...</div>
                   ) : employeeResults.length > 0 ? (
@@ -506,19 +532,24 @@ const SalarySlip = () => {
                       <button
                         key={emp._id}
                         type="button"
-                        className="w-full text-left px-3 py-2 hover:bg-emerald-50 flex items-center gap-2"
+                        className="w-full text-left px-3 py-2.5 hover:bg-emerald-50 flex items-center justify-between rounded-md"
                         onClick={() => selectEmployee(emp)}
                       >
-                        <Avatar className="h-8 w-8">
-                          {emp.profilePhotoUrl ? (
-                            <AvatarImage src={emp.profilePhotoUrl} alt={`${emp.firstName} ${emp.lastName}`} />
-                          ) : null}
-                          <AvatarFallback>
-                            <User className="h-4 w-4 text-gray-500" />
-                          </AvatarFallback>
-                        </Avatar>
-                        <span className="text-sm text-gray-900">{emp.firstName} {emp.lastName}</span>
-                        <span className="ml-auto text-xs text-gray-600">{emp.employeeCode}</span>
+                        <div className="flex items-center gap-3">
+                          <Avatar className="h-8 w-8">
+                            {emp.profilePhotoUrl ? (
+                              <AvatarImage src={emp.profilePhotoUrl} alt={`${emp.firstName} ${emp.lastName}`} />
+                            ) : null}
+                            <AvatarFallback>
+                              <User className="h-4 w-4 text-gray-500" />
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="flex flex-col">
+                            <span className="text-sm font-medium text-gray-900">{emp.firstName} {emp.lastName}</span>
+                          </div>
+                        </div>
+                        <span className="text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-700">{emp.employeeCode}</span>
+                        
                       </button>
                     ))
                   ) : (
@@ -527,30 +558,31 @@ const SalarySlip = () => {
                 </div>
               )}
             </div>
-
-            {[
-              "ctc",
-              "basic",
-              "gross",
-              "hra",
-              "conveyance",
-              "specialAllowance",
-              "pf",
-              "esi",
-              "tds",
-              "professionalTax",
-              "otherDeductions",
-            ].map((field) => (
-              <div key={field} className="grid gap-1">
-                <Label className="capitalize">{field}</Label>
-                <Input
-                  type="number"
-                  value={createForm[field] ?? ""}
-                  onChange={(e) => handleCreateEditChange(field, e.target.value)}
-                  className="focus:outline-none focus:ring-0 focus:border-gray-300"
-                />
-              </div>
-            ))}
+            <div className="grid gap-3 sm:grid-cols-2">
+              {[
+                "ctc",
+                "basic",
+                "gross",
+                "hra",
+                "conveyance",
+                "specialAllowance",
+                "pf",
+                "esi",
+                "tds",
+                "professionalTax",
+                "otherDeductions",
+              ].map((field) => (
+                <div key={field} className="grid gap-1">
+                  <Label className="capitalize">{field}</Label>
+                  <Input
+                    type="number"
+                    value={createForm[field] ?? ""}
+                    onChange={(e) => handleCreateEditChange(field, e.target.value)}
+                    className="focus:outline-none focus:ring-0 focus:border-gray-300"
+                  />
+                </div>
+              ))}
+            </div>
           </div>
           <DialogFooter className="pt-4 flex gap-2 justify-end">
             <DialogClose asChild>
