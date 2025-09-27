@@ -67,6 +67,12 @@ const Payroll = () => {
     return Array.from({ length: end - start + 1 }, (_, i) => start + i);
   }, []);
 
+  const visibleRows = useMemo(() => {
+    const rows = payrollData?.data ?? [];
+    // Fallback client-side filter in case backend ignores query params
+    return rows.filter((r) => Number(r.month) === month + 1 && Number(r.year) === year);
+  }, [payrollData, month, year]);
+
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -96,7 +102,7 @@ const Payroll = () => {
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
           <div>
             <h2 className="text-2xl font-semibold text-gray-900">
-              Payroll processed - {payrollData?.data?.length ?? 0}
+              Payroll processed - {visibleRows.length}
             </h2>
             <p className="text-sm text-gray-700">
               Payroll runs overview — manage and send payrolls
@@ -196,12 +202,12 @@ const Payroll = () => {
                     <td colSpan={9} className="px-4 py-6 text-center text-gray-600">Loading...</td>
                   </tr>
                 )}
-                {!loading && (payrollData?.data?.length ?? 0) === 0 && (
+                {!loading && visibleRows.length === 0 && (
                   <tr>
-                    <td colSpan={9} className="px-4 py-6 text-center text-gray-600">No payroll available</td>
+                    <td colSpan={9} className="px-4 py-6 text-center text-gray-600">No data available</td>
                   </tr>
                 )}
-                {!loading && payrollData?.data?.map((p) => (
+                {!loading && visibleRows.map((p) => (
                   <tr
                     key={p._id}
                     className="border-b last:border-0 hover:bg-emerald-50 transition-colors"
