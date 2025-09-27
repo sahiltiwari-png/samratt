@@ -22,6 +22,7 @@ import {
   createSalaryStructure,
 } from "@/api/salaryStructures";
 import { getEmployees } from "@/api/employees";
+import { toast } from "@/hooks/use-toast";
 
 interface SalaryResponseShape {
   page: number;
@@ -94,22 +95,36 @@ const SalarySlip = () => {
   const openView = async (record: SalaryStructure) => {
     try {
       setSelectedRecord(record);
-      const detail = await getSalaryStructureByEmployee(record.employeeId._id);
+      const empId = (record as any)?.employeeId?._id ?? (record as any)?.employeeId;
+      const detail = await getSalaryStructureByEmployee(empId);
       setViewDetail(detail.data);
       setViewOpen(true);
     } catch (e) {
       setError("Failed to load salary structure details");
+      toast({
+        title: "Error",
+        description:
+          (e as any)?.response?.data?.message || "Failed to load salary structure details",
+        variant: "destructive",
+      });
     }
   };
 
   const openEdit = async (record: SalaryStructure) => {
     try {
       setSelectedRecord(record);
-      const detail = await getSalaryStructureByEmployee(record.employeeId._id);
+      const empId = (record as any)?.employeeId?._id ?? (record as any)?.employeeId;
+      const detail = await getSalaryStructureByEmployee(empId);
       setEditForm({ ...detail.data });
       setEditOpen(true);
     } catch (e) {
       setError("Failed to load salary structure for edit");
+      toast({
+        title: "Error",
+        description:
+          (e as any)?.response?.data?.message || "Failed to load salary structure for edit",
+        variant: "destructive",
+      });
     }
   };
 
@@ -182,6 +197,12 @@ const SalarySlip = () => {
       setSalaryData({ page: res.page, limit: res.limit, total: res.total, totalPages: res.totalPages, items: res.data });
     } catch (e) {
       setError("Failed to update salary structure");
+      toast({
+        title: "Error",
+        description:
+          (e as any)?.response?.data?.message || "Failed to update salary structure",
+        variant: "destructive",
+      });
     }
   };
 
@@ -195,6 +216,12 @@ const SalarySlip = () => {
       setSalaryData({ page: res.page, limit: res.limit, total: res.total, totalPages: res.totalPages, items: res.data });
     } catch (e) {
       setError("Failed to delete salary structure");
+      toast({
+        title: "Error",
+        description:
+          (e as any)?.response?.data?.message || "Failed to delete salary structure",
+        variant: "destructive",
+      });
     }
   };
 
@@ -202,6 +229,11 @@ const SalarySlip = () => {
     try {
       if (!createForm.employeeId) {
         setError("Please select an employee");
+        toast({
+          title: "Validation Error",
+          description: "Please select an employee before creating.",
+          variant: "destructive",
+        });
         return;
       }
       const toNumber = (v: any, def = 0) => {
@@ -246,6 +278,12 @@ const SalarySlip = () => {
       setError(null);
     } catch (e) {
       setError("Failed to create salary structure");
+      toast({
+        title: "Error",
+        description:
+          (e as any)?.response?.data?.message || "Failed to create salary structure",
+        variant: "destructive",
+      });
     }
   };
 
@@ -303,7 +341,7 @@ const SalarySlip = () => {
                               {record.employeeId?.profilePhotoUrl ? (
                                 <AvatarImage
                                   src={record.employeeId.profilePhotoUrl}
-                                  alt={`${record.employeeId.firstName} ${record.employeeId.lastName}`}
+                                  alt={`${record.employeeId?.firstName ?? ""} ${record.employeeId?.lastName ?? ""}`}
                                 />
                               ) : null}
                               <AvatarFallback>
@@ -311,16 +349,16 @@ const SalarySlip = () => {
                               </AvatarFallback>
                             </Avatar>
                             <div>
-                              <div className="text-sm font-medium text-gray-900">{record.employeeId.firstName} {record.employeeId.lastName}</div>
+                              <div className="text-sm font-medium text-gray-900">{record.employeeId?.firstName ?? ""} {record.employeeId?.lastName ?? ""}</div>
                             </div>
                           </div>
                         </td>
-                        <td className="px-4 py-2">{record.employeeId.employeeCode}</td>
-                        <td className="px-4 py-2">₹{record.ctc.toLocaleString()}</td>
-                        <td className="px-4 py-2">₹{record.hra.toLocaleString()}</td>
-                        <td className="px-4 py-2">₹{record.conveyance.toLocaleString()}</td>
-                        <td className="px-4 py-2">₹{record.specialAllowance.toLocaleString()}</td>
-                        <td className="px-4 py-2 font-semibold">₹{record.gross.toLocaleString()}</td>
+                        <td className="px-4 py-2">{record.employeeId?.employeeCode ?? ""}</td>
+                        <td className="px-4 py-2">₹{Number(record.ctc ?? 0).toLocaleString()}</td>
+                        <td className="px-4 py-2">₹{Number(record.hra ?? 0).toLocaleString()}</td>
+                        <td className="px-4 py-2">₹{Number(record.conveyance ?? 0).toLocaleString()}</td>
+                        <td className="px-4 py-2">₹{Number(record.specialAllowance ?? 0).toLocaleString()}</td>
+                        <td className="px-4 py-2 font-semibold">₹{Number(record.gross ?? 0).toLocaleString()}</td>
                         <td className="px-4 py-2 flex gap-2">
                           <Button
                             variant="link"
@@ -369,19 +407,19 @@ const SalarySlip = () => {
           </DialogHeader>
           {viewDetail && (
             <div className="space-y-2 text-sm text-gray-700">
-              <p><strong>Name:</strong> {viewDetail.employeeId.firstName} {viewDetail.employeeId.lastName}</p>
-              <p><strong>Code:</strong> {viewDetail.employeeId.employeeCode}</p>
-              <p><strong>Basic:</strong> ₹{viewDetail.basic}</p>
-              <p><strong>CTC:</strong> ₹{viewDetail.ctc}</p>
-              <p><strong>Gross:</strong> ₹{viewDetail.gross}</p>
-              <p><strong>HRA:</strong> ₹{viewDetail.hra}</p>
-              <p><strong>Conveyance:</strong> ₹{viewDetail.conveyance}</p>
-              <p><strong>Special Allowance:</strong> ₹{viewDetail.specialAllowance}</p>
-              <p><strong>PF:</strong> ₹{viewDetail.pf}</p>
-              <p><strong>ESI:</strong> ₹{viewDetail.esi}</p>
-              <p><strong>TDS:</strong> ₹{viewDetail.tds}</p>
-              <p><strong>Professional Tax:</strong> ₹{viewDetail.professionalTax}</p>
-              <p><strong>Other Deductions:</strong> ₹{viewDetail.otherDeductions}</p>
+              <p><strong>Name:</strong> {viewDetail.employeeId?.firstName ?? ""} {viewDetail.employeeId?.lastName ?? ""}</p>
+              <p><strong>Code:</strong> {viewDetail.employeeId?.employeeCode ?? ""}</p>
+              <p><strong>Basic:</strong> ₹{Number(viewDetail.basic ?? 0).toLocaleString()}</p>
+              <p><strong>CTC:</strong> ₹{Number(viewDetail.ctc ?? 0).toLocaleString()}</p>
+              <p><strong>Gross:</strong> ₹{Number(viewDetail.gross ?? 0).toLocaleString()}</p>
+              <p><strong>HRA:</strong> ₹{Number(viewDetail.hra ?? 0).toLocaleString()}</p>
+              <p><strong>Conveyance:</strong> ₹{Number(viewDetail.conveyance ?? 0).toLocaleString()}</p>
+              <p><strong>Special Allowance:</strong> ₹{Number(viewDetail.specialAllowance ?? 0).toLocaleString()}</p>
+              <p><strong>PF:</strong> ₹{Number(viewDetail.pf ?? 0).toLocaleString()}</p>
+              <p><strong>ESI:</strong> ₹{Number(viewDetail.esi ?? 0).toLocaleString()}</p>
+              <p><strong>TDS:</strong> ₹{Number(viewDetail.tds ?? 0).toLocaleString()}</p>
+              <p><strong>Professional Tax:</strong> ₹{Number(viewDetail.professionalTax ?? 0).toLocaleString()}</p>
+              <p><strong>Other Deductions:</strong> ₹{Number(viewDetail.otherDeductions ?? 0).toLocaleString()}</p>
             </div>
           )}
           <DialogFooter>
