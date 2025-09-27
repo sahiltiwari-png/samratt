@@ -20,7 +20,7 @@ import NotFound from "./pages/NotFound";
 import AddEmployeeStepper from "./pages/AddEmployeeStepper";
 import HR from "./pages/HR";
 import Payroll from "./pages/Payroll";
-import SalarySlips from "./pages/SalarySlips";
+import SalarySlips from "./pages/SalarySlips";  
 import Reports from "./pages/Reports";
 import CreateOrganization from "./pages/CreateOrganization";
 import OrganizationDetails from "./pages/OrganizationDetails";
