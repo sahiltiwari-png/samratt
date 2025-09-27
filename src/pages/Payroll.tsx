@@ -27,7 +27,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
-import { getPayroll, createPayroll, getPayrollByEmployee, type PayrollResponse, type PayrollItem } from "@/api/payroll";
+import { getPayroll, createPayroll, getPayrollByEmployee, updatePayrollById, type PayrollResponse, type PayrollItem } from "@/api/payroll";
 import { getEmployees } from "@/api/employees";
 import { toast } from "@/hooks/use-toast";
 
@@ -61,6 +61,12 @@ const Payroll = () => {
   const [viewOpen, setViewOpen] = useState(false);
   const [viewLoading, setViewLoading] = useState(false);
   const [viewDetail, setViewDetail] = useState<PayrollItem | null>(null);
+
+  // Edit Payroll modal state
+  const [editOpen, setEditOpen] = useState(false);
+  const [editLoading, setEditLoading] = useState(false);
+  const [editForm, setEditForm] = useState<any | null>(null);
+  const [editPayrollId, setEditPayrollId] = useState<string>("");
 
   const clearFilters = () => {
     const d = new Date();
@@ -187,6 +193,43 @@ const Payroll = () => {
       });
     } finally {
       setViewLoading(false);
+    }
+  };
+  const openEdit = async (record: PayrollItem) => {
+    try {
+      setEditLoading(true);
+      const empId = (record as any)?.employeeId?._id ?? (record as any)?.employeeId;
+      const detail = await getPayrollByEmployee(String(empId));
+      const d = detail.data as any;
+      setEditPayrollId(String(d?._id || (record as any)?._id));
+      setEditForm({
+        month: d?.month ?? record.month,
+        year: d?.year ?? record.year,
+        grossEarnings: d?.grossEarnings ?? record.grossEarnings,
+        basic: d?.basic ?? record.basic,
+        hra: d?.hra ?? record.hra,
+        conveyance: d?.conveyance ?? record.conveyance ?? 0,
+        specialAllowance: d?.specialAllowance ?? record.specialAllowance ?? 0,
+        pf: d?.pf ?? record.pf ?? 0,
+        esi: d?.esi ?? record.esi ?? 0,
+        tds: d?.tds ?? record.tds ?? 0,
+        professionalTax: d?.professionalTax ?? record.professionalTax ?? 0,
+        otherDeductions: d?.otherDeductions ?? record.otherDeductions ?? 0,
+        lossOfPayDays: d?.lossOfPayDays ?? record.lossOfPayDays ?? 0,
+        leaveDeductions: d?.leaveDeductions ?? record.leaveDeductions ?? 0,
+        netPayable: d?.netPayable ?? record.netPayable,
+        status: d?.status ?? record.status,
+        totalWorkedDays: d?.totalWorkedDays ?? record.totalWorkedDays ?? 0,
+      });
+      setEditOpen(true);
+    } catch (e: any) {
+      toast({
+        title: "Error",
+        description: e?.response?.data?.message || "Failed to load payroll for edit",
+        variant: "destructive",
+      });
+    } finally {
+      setEditLoading(false);
     }
   };
   const handleEdit = (id: string) => navigate(`/payroll/edit/${id}`);
@@ -358,7 +401,7 @@ const Payroll = () => {
                     <td className="px-2 py-2">
                       <div className="flex items-center gap-1.5">
                         <button
-                          onClick={() => handleEdit(p._id)}
+                          onClick={() => openEdit(p)}
                           className="h-7 w-7 flex items-center justify-center rounded text-emerald-600 hover:bg-emerald-100 focus:outline-none focus:ring-0"
                         >
                           <Edit className="w-3.5 h-3.5" />
@@ -532,6 +575,101 @@ const Payroll = () => {
             </DialogClose>
             <Button className="bg-emerald-600 text-white hover:bg-emerald-700 focus:outline-none focus:ring-0 focus:border-0" onClick={submitCreatePayroll}>
               Create Payroll
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      {/* Edit Payroll Modal */}
+      <Dialog open={editOpen} onOpenChange={setEditOpen}>
+        <DialogContent className="sm:max-w-xl max-h-[85vh] overflow-y-auto focus:outline-none focus:ring-0 focus:border-0">
+          <DialogHeader className="mb-2">
+            <DialogTitle className="text-emerald-700">Edit Payroll</DialogTitle>
+          </DialogHeader>
+          {editLoading ? (
+            <div className="p-4 text-sm text-gray-600">Loading...</div>
+          ) : editForm ? (
+            <div className="grid gap-3">
+              {[
+                { key: "basic", label: "Basic" },
+                { key: "hra", label: "HRA" },
+                { key: "conveyance", label: "Conveyance" },
+                { key: "specialAllowance", label: "Special Allowance" },
+                { key: "grossEarnings", label: "Gross Earnings" },
+                { key: "pf", label: "PF" },
+                { key: "esi", label: "ESI" },
+                { key: "tds", label: "TDS" },
+                { key: "professionalTax", label: "Professional Tax" },
+                { key: "otherDeductions", label: "Other Deductions" },
+                { key: "lossOfPayDays", label: "Loss Of Pay Days" },
+                { key: "leaveDeductions", label: "Leave Deductions" },
+                { key: "totalWorkedDays", label: "Total Worked Days" },
+                { key: "netPayable", label: "Net Payable" },
+              ].map(({ key, label }) => (
+                <div key={key} className="grid gap-1">
+                  <Label>{label}</Label>
+                  <Input
+                    type="number"
+                    value={editForm[key] ?? ""}
+                    onChange={(e) => {
+                      const v = e.target.value;
+                      setEditForm((prev: any) => ({ ...prev, [key]: v }));
+                    }}
+                    className="focus:outline-none focus:ring-0 focus:border-gray-300"
+                  />
+                </div>
+              ))}
+              <div className="grid gap-1">
+                <Label>Status</Label>
+                <Select
+                  value={String(editForm.status ?? "processed")}
+                  onValueChange={(v) => setEditForm((prev: any) => ({ ...prev, status: v }))}
+                >
+                  <SelectTrigger className="w-full text-sm border-gray-300 bg-white text-gray-700 focus:outline-none focus:ring-0">
+                    <SelectValue placeholder="Status" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white">
+                    <SelectItem value="pending">Pending</SelectItem>
+                    <SelectItem value="processed">Processed</SelectItem>
+                    <SelectItem value="failed">Failed</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          ) : null}
+          <DialogFooter className="pt-4 flex gap-2 justify-end">
+            <DialogClose asChild>
+              <Button variant="outline" className="hover:bg-gray-100 focus:outline-none focus:ring-0 focus:border-0">Cancel</Button>
+            </DialogClose>
+            <Button
+              className="bg-emerald-600 text-white hover:bg-emerald-700 focus:outline-none focus:ring-0 focus:border-0"
+              onClick={async () => {
+                try {
+                  if (!editPayrollId) {
+                    toast({ title: "Error", description: "Missing payroll id", variant: "destructive" });
+                    return;
+                  }
+                  const numericKeys = [
+                    "grossEarnings","basic","hra","conveyance","specialAllowance","pf","esi","tds","professionalTax","otherDeductions","lossOfPayDays","leaveDeductions","netPayable","totalWorkedDays"
+                  ] as const;
+                  const payload: any = { status: editForm.status };
+                  for (const k of numericKeys) {
+                    const val = editForm[k];
+                    if (val === null || val === undefined || val === "") continue;
+                    const num = typeof val === "number" ? val : Number(val);
+                    if (!Number.isNaN(num)) payload[k] = num;
+                  }
+                  const res = await updatePayrollById(editPayrollId, payload);
+                  toast({ title: "Success", description: res?.message || "Payroll updated successfully" });
+                  setEditOpen(false);
+                  // Refresh list
+                  const refreshed = await getPayroll({ page: currentPage, limit: 10, month: month + 1, year });
+                  setPayrollData(refreshed);
+                } catch (e: any) {
+                  toast({ title: "Error", description: e?.response?.data?.message || "Failed to update payroll", variant: "destructive" });
+                }
+              }}
+            >
+              Update Payroll
             </Button>
           </DialogFooter>
         </DialogContent>

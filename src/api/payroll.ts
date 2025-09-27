@@ -73,3 +73,34 @@ export const getPayrollByEmployee = async (employeeId: string) => {
   const res = await API.get(`/payroll/${employeeId}`);
   return res.data as PayrollDetailResponse;
 };
+
+export interface UpdatePayrollPayload {
+  month?: number;
+  year?: number;
+  grossEarnings?: number;
+  basic?: number;
+  hra?: number;
+  conveyance?: number;
+  specialAllowance?: number;
+  pf?: number;
+  esi?: number;
+  tds?: number;
+  professionalTax?: number;
+  otherDeductions?: number;
+  lossOfPayDays?: number;
+  leaveDeductions?: number;
+  netPayable?: number;
+  status?: string;
+  totalWorkedDays?: number;
+}
+
+export interface UpdatePayrollResponse {
+  success: boolean;
+  message: string;
+  payroll: PayrollItem;
+}
+
+export const updatePayrollById = async (payrollId: string, payload: UpdatePayrollPayload) => {
+  const res = await API.put(`/payroll/updateById/${payrollId}`, payload);
+  return res.data as UpdatePayrollResponse;
+};
