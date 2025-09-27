@@ -61,6 +61,28 @@ const SalarySlip = () => {
     professionalTax: "",
     otherDeductions: "",
   });
+  const [grossEdited, setGrossEdited] = useState(false);
+
+  const toNum = (v: any) => {
+    if (v === "" || v === null || v === undefined) return 0;
+    const n = typeof v === "number" ? v : Number(v);
+    return Number.isFinite(n) ? n : 0;
+  };
+
+  const computeGrossFromForm = (form: any) => {
+    // Sum all fields except ctc and gross
+    return (
+      toNum(form.basic) +
+      toNum(form.hra) +
+      toNum(form.conveyance) +
+      toNum(form.specialAllowance) +
+      toNum(form.pf) +
+      toNum(form.esi) +
+      toNum(form.tds) +
+      toNum(form.professionalTax) +
+      toNum(form.otherDeductions)
+    );
+  };
   const [employeeSearch, setEmployeeSearch] = useState("");
   const [employeeResults, setEmployeeResults] = useState<any[]>([]);
   const [employeeLoading, setEmployeeLoading] = useState(false);
@@ -136,10 +158,26 @@ const SalarySlip = () => {
   const openCreate = () => {
     setCreateOpen(true);
     setEmployeeDropdownOpen(false);
+    // Initialize gross based on current fields if not manually edited
+    setCreateForm((prev: any) => ({ ...prev, gross: computeGrossFromForm(prev) }));
+    setGrossEdited(false);
   };
 
   const handleCreateEditChange = (field: string, value: string | number) => {
-    setCreateForm((prev: any) => ({ ...prev, [field]: value }));
+    // If user edits gross, mark it as manually edited
+    if (field === "gross") {
+      setGrossEdited(true);
+      setCreateForm((prev: any) => ({ ...prev, gross: value }));
+      return;
+    }
+    // Update field; if gross not edited by user, auto-recompute
+    setCreateForm((prev: any) => {
+      const next = { ...prev, [field]: value };
+      if (!grossEdited) {
+        next.gross = computeGrossFromForm(next);
+      }
+      return next;
+    });
   };
 
   const searchEmployees = async (query: string) => {
@@ -510,11 +548,11 @@ const SalarySlip = () => {
       {/* Create Modal */}
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
         <DialogContent className="sm:max-w-lg max-h-[80vh] overflow-y-auto focus:outline-none focus:ring-0 focus:border-0">
-          <DialogHeader>
+          <DialogHeader className="mb-6">
             <DialogTitle className="text-emerald-700">Create Salary Structure</DialogTitle>
           </DialogHeader>
           <div className="grid gap-3">
-            <div className="grid gap-1 relative">
+            <div className="grid gap-2 relative">
               <Label>Employee</Label>
               <div className="relative">
                 {createForm.employeeId ? (
@@ -557,7 +595,7 @@ const SalarySlip = () => {
                       const q = employeeSearch.trim();
                       searchEmployees(q.length >= 1 ? q : "");
                     }}
-                    className="focus:outline-none focus:ring-0 focus:border-gray-300 pr-8"
+                    className="pr-8 focus:outline-none focus:ring-0 focus:border-gray-300 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-gray-300"
                   />
                 )}
               </div>
@@ -600,7 +638,6 @@ const SalarySlip = () => {
               {[
                 "ctc",
                 "basic",
-                "gross",
                 "hra",
                 "conveyance",
                 "specialAllowance",
@@ -609,14 +646,15 @@ const SalarySlip = () => {
                 "tds",
                 "professionalTax",
                 "otherDeductions",
+                "gross",
               ].map((field) => (
-                <div key={field} className="grid gap-1">
+                <div key={field} className="grid gap-2">
                   <Label className="capitalize">{field}</Label>
                   <Input
                     type="number"
                     value={createForm[field] ?? ""}
                     onChange={(e) => handleCreateEditChange(field, e.target.value)}
-                    className="focus:outline-none focus:ring-0 focus:border-gray-300"
+                    className="focus:outline-none focus:ring-0 focus:border-gray-300 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-gray-300"
                   />
                 </div>
               ))}
