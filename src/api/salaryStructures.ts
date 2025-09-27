@@ -67,3 +67,23 @@ export const deleteSalaryStructure = async (id: string) => {
   const res = await API.delete(`/salary-structures/${id}`);
   return res.data as { success: boolean };
 };
+
+export interface CreateSalaryStructurePayload {
+  employeeId: string;
+  basic: number;
+  hra: number;
+  gross: number;
+  ctc: number;
+  conveyance: number;
+  specialAllowance: number;
+  pf: number;
+  esi: number;
+  tds: number;
+  professionalTax: number;
+  otherDeductions: number;
+}
+
+export const createSalaryStructure = async (payload: CreateSalaryStructurePayload) => {
+  const res = await API.post(`/salary-structures`, payload);
+  return res.data as SalaryStructureDetailResponse;
+};

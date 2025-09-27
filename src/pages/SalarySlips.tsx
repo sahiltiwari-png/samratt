@@ -19,7 +19,9 @@ import {
   deleteSalaryStructure,
   type SalaryStructure,
   type SalaryStructuresResponse,
+  createSalaryStructure,
 } from "@/api/salaryStructures";
+import { getEmployees } from "@/api/employees";
 
 interface SalaryResponseShape {
   page: number;
@@ -39,10 +41,29 @@ const SalarySlip = () => {
   const [viewOpen, setViewOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [createOpen, setCreateOpen] = useState(false);
 
   const [selectedRecord, setSelectedRecord] = useState<SalaryStructure | null>(null);
   const [viewDetail, setViewDetail] = useState<SalaryStructure | null>(null);
   const [editForm, setEditForm] = useState<any>({});
+  const [createForm, setCreateForm] = useState<any>({
+    employeeId: "",
+    ctc: "",
+    basic: "",
+    gross: "",
+    hra: "",
+    conveyance: "",
+    specialAllowance: "",
+    pf: "",
+    esi: "",
+    tds: "",
+    professionalTax: "",
+    otherDeductions: "",
+  });
+  const [employeeSearch, setEmployeeSearch] = useState("");
+  const [employeeResults, setEmployeeResults] = useState<any[]>([]);
+  const [employeeLoading, setEmployeeLoading] = useState(false);
+  const [employeeDropdownOpen, setEmployeeDropdownOpen] = useState(false);
 
   useEffect(() => {
     const fetchSalaryData = async () => {
@@ -97,6 +118,34 @@ const SalarySlip = () => {
     setDeleteOpen(true);
   };
 
+  const openCreate = () => {
+    setCreateOpen(true);
+    setEmployeeDropdownOpen(false);
+  };
+
+  const handleCreateEditChange = (field: string, value: string | number) => {
+    setCreateForm((prev: any) => ({ ...prev, [field]: value }));
+  };
+
+  const searchEmployees = async (query: string) => {
+    try {
+      setEmployeeLoading(true);
+      const res = await getEmployees({ page: 1, limit: 10, search: query });
+      setEmployeeResults(res.items || res.data || []);
+      setEmployeeDropdownOpen(true);
+    } catch (e) {
+      setEmployeeResults([]);
+    } finally {
+      setEmployeeLoading(false);
+    }
+  };
+
+  const selectEmployee = (emp: any) => {
+    setCreateForm((prev: any) => ({ ...prev, employeeId: emp._id }));
+    setEmployeeSearch(`${emp.firstName} ${emp.lastName} (${emp.employeeCode})`);
+    setEmployeeDropdownOpen(false);
+  };
+
   const handleEditChange = (field: string, value: string | number) => {
     setEditForm((prev: any) => ({ ...prev, [field]: value }));
   };
@@ -149,14 +198,76 @@ const SalarySlip = () => {
     }
   };
 
+  const handleCreate = async () => {
+    try {
+      if (!createForm.employeeId) {
+        setError("Please select an employee");
+        return;
+      }
+      const toNumber = (v: any, def = 0) => {
+        if (v === "" || v === null || v === undefined) return def;
+        const n = typeof v === "number" ? v : Number(v);
+        return Number.isNaN(n) ? def : n;
+      };
+      const payload = {
+        employeeId: createForm.employeeId,
+        ctc: toNumber(createForm.ctc),
+        basic: toNumber(createForm.basic),
+        gross: toNumber(createForm.gross),
+        hra: toNumber(createForm.hra),
+        conveyance: toNumber(createForm.conveyance),
+        specialAllowance: toNumber(createForm.specialAllowance),
+        pf: toNumber(createForm.pf),
+        esi: toNumber(createForm.esi),
+        tds: toNumber(createForm.tds),
+        professionalTax: toNumber(createForm.professionalTax),
+        otherDeductions: toNumber(createForm.otherDeductions),
+      };
+      await createSalaryStructure(payload);
+      setCreateOpen(false);
+      setCreateForm({
+        employeeId: "",
+        ctc: "",
+        basic: "",
+        gross: "",
+        hra: "",
+        conveyance: "",
+        specialAllowance: "",
+        pf: "",
+        esi: "",
+        tds: "",
+        professionalTax: "",
+        otherDeductions: "",
+      });
+      setEmployeeSearch("");
+      // refresh list
+      const res: SalaryStructuresResponse = await getSalaryStructures({ page: currentPage, limit: 10 });
+      setSalaryData({ page: res.page, limit: res.limit, total: res.total, totalPages: res.totalPages, items: res.data });
+      setError(null);
+    } catch (e) {
+      setError("Failed to create salary structure");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-200 via-emerald-100 to-emerald-50 p-6">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
-        <h1 className="text-2xl font-semibold text-gray-900 mb-1">Salary Structure</h1>
-        <p className="text-sm text-gray-700 mb-6">
-          Overview of employee salary structures with detailed breakdown
-        </p>
+        <div className="flex items-start justify-between mb-1">
+          <div>
+            <h1 className="text-2xl font-semibold text-gray-900">Salary Structure</h1>
+            <p className="text-sm text-gray-700">
+              Overview of employee salary structures with detailed breakdown
+            </p>
+          </div>
+          <Button
+            className="bg-emerald-600 text-white hover:bg-emerald-700"
+            onClick={openCreate}
+          >
+            Create Salary Structure
+          </Button>
+        </div>
+        <div className="h-4" />
 
         {/* Table */}
         <div className="bg-white rounded-lg shadow-sm overflow-hidden">
@@ -353,6 +464,105 @@ const SalarySlip = () => {
               className="bg-red-600 text-white hover:bg-red-700 focus:outline-none focus:ring-0 focus:border-0"
             >
               Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Create Modal */}
+      <Dialog open={createOpen} onOpenChange={setCreateOpen}>
+        <DialogContent className="sm:max-w-lg max-h-[80vh] overflow-y-auto focus:outline-none focus:ring-0 focus:border-0">
+          <DialogHeader>
+            <DialogTitle className="text-emerald-700">Create Salary Structure</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-3">
+            <div className="grid gap-1 relative">
+              <Label>Employee</Label>
+              <Input
+                type="text"
+                placeholder="Search employee by name or code"
+                value={employeeSearch}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  setEmployeeSearch(v);
+                  if (v.trim().length >= 1) {
+                    searchEmployees(v.trim());
+                  } else {
+                    setEmployeeResults([]);
+                    setEmployeeDropdownOpen(false);
+                  }
+                }}
+                onFocus={() => {
+                  if (employeeResults.length > 0) setEmployeeDropdownOpen(true);
+                }}
+                className="focus:outline-none focus:ring-0 focus:border-gray-300"
+              />
+              {employeeDropdownOpen && (
+                <div className="absolute z-20 mt-1 w-full bg-white border rounded shadow max-h-60 overflow-y-auto">
+                  {employeeLoading ? (
+                    <div className="p-3 text-sm text-gray-500">Loading...</div>
+                  ) : employeeResults.length > 0 ? (
+                    employeeResults.map((emp: any) => (
+                      <button
+                        key={emp._id}
+                        type="button"
+                        className="w-full text-left px-3 py-2 hover:bg-emerald-50 flex items-center gap-2"
+                        onClick={() => selectEmployee(emp)}
+                      >
+                        <Avatar className="h-8 w-8">
+                          {emp.profilePhotoUrl ? (
+                            <AvatarImage src={emp.profilePhotoUrl} alt={`${emp.firstName} ${emp.lastName}`} />
+                          ) : null}
+                          <AvatarFallback>
+                            <User className="h-4 w-4 text-gray-500" />
+                          </AvatarFallback>
+                        </Avatar>
+                        <span className="text-sm text-gray-900">{emp.firstName} {emp.lastName}</span>
+                        <span className="ml-auto text-xs text-gray-600">{emp.employeeCode}</span>
+                      </button>
+                    ))
+                  ) : (
+                    <div className="p-3 text-sm text-gray-500">No employees found</div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {[
+              "ctc",
+              "basic",
+              "gross",
+              "hra",
+              "conveyance",
+              "specialAllowance",
+              "pf",
+              "esi",
+              "tds",
+              "professionalTax",
+              "otherDeductions",
+            ].map((field) => (
+              <div key={field} className="grid gap-1">
+                <Label className="capitalize">{field}</Label>
+                <Input
+                  type="number"
+                  value={createForm[field] ?? ""}
+                  onChange={(e) => handleCreateEditChange(field, e.target.value)}
+                  className="focus:outline-none focus:ring-0 focus:border-gray-300"
+                />
+              </div>
+            ))}
+          </div>
+          <DialogFooter className="pt-4 flex gap-2 justify-end">
+            <DialogClose asChild>
+              <Button variant="outline" className="hover:bg-gray-100 focus:outline-none focus:ring-0 focus:border-0">
+                Cancel
+              </Button>
+            </DialogClose>
+            <Button
+              className="bg-emerald-600 text-white hover:bg-emerald-700 focus:outline-none focus:ring-0 focus:border-0"
+              onClick={handleCreate}
+            >
+              Add Salary Structure
             </Button>
           </DialogFooter>
         </DialogContent>
