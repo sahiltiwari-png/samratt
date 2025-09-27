@@ -45,7 +45,7 @@ const navigation: NavigationItem[] = [
   { title: "Employees", url: "/employees", icon: Users },
   { title: "HR", url: "/hr", icon: User },
   { title: "Payroll", url: "/payroll", icon: FileText },
-  { title: "Salary Slips", url: "/salary-slips", icon: FileText },
+  { title: "Salary Structure", url: "/salary-slips", icon: FileText },
   { title: "Attendance", url: "/attendance", icon: Clock },
   { title: "Leaves", url: "/leaves", icon: Calendar, hasSubmenu: true, submenu: [
     { title: "Leave Policy", url: "/leaves/policy" },
