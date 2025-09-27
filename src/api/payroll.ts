@@ -45,11 +45,13 @@ export interface PayrollResponse {
   data: PayrollItem[];
 }
 
-export const getPayroll = async (params?: { page?: number; limit?: number }) => {
+export const getPayroll = async (params?: { page?: number; limit?: number; month?: number; year?: number }) => {
   const query: string[] = [];
   if (params) {
     if (params.page) query.push(`page=${params.page}`);
     if (params.limit) query.push(`limit=${params.limit}`);
+    if (params.month) query.push(`month=${params.month}`);
+    if (params.year) query.push(`year=${params.year}`);
   }
   const qs = query.length ? `?${query.join('&')}` : '';
   const res = await API.get(`/payroll${qs}`);

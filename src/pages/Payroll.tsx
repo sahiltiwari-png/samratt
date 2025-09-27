@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
@@ -25,7 +25,9 @@ const computeDeductions = (p: PayrollItem) => {
 };
 
 const Payroll = () => {
-  const [month, setMonth] = useState("this_month");
+  const now = new Date();
+  const [month, setMonth] = useState<number>(now.getMonth()); // 0-11
+  const [year, setYear] = useState<number>(now.getFullYear());
   const [search] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [payrollData, setPayrollData] = useState<PayrollResponse | null>(null);
@@ -34,7 +36,9 @@ const Payroll = () => {
   const navigate = useNavigate();
 
   const clearFilters = () => {
-    setMonth("this_month");
+    const d = new Date();
+    setMonth(d.getMonth());
+    setYear(d.getFullYear());
     setCurrentPage(1);
   };
 
@@ -42,11 +46,32 @@ const Payroll = () => {
     navigate("/payroll/create");
   };
 
+  const monthNames = useMemo(() => [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ], []);
+
+  const years = useMemo(() => {
+    const start = 2002;
+    const end = 2030;
+    return Array.from({ length: end - start + 1 }, (_, i) => start + i);
+  }, []);
+
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const res = await getPayroll({ page: currentPage, limit: 10 });
+        const res = await getPayroll({ page: currentPage, limit: 10, month: month + 1, year });
         setPayrollData(res);
         setError(null);
       } catch (e: any) {
@@ -57,7 +82,7 @@ const Payroll = () => {
       }
     };
     fetchData();
-  }, [currentPage]);
+  }, [currentPage, month, year]);
 
   const handleView = (id: string) => navigate(`/payroll/view/${id}`);
   const handleEdit = (id: string) => navigate(`/payroll/edit/${id}`);
@@ -80,20 +105,36 @@ const Payroll = () => {
 
           <div className="flex items-center gap-3">
             <Select
-              value={month}
+              value={String(month)}
               onValueChange={(val) => {
-                setMonth(val);
+                setMonth(Number(val));
+                setCurrentPage(1);
+              }}
+            >
+              <SelectTrigger className="w-[160px] text-sm border-emerald-300 bg-emerald-100 text-emerald-700 hover:bg-emerald-200 focus:outline-none focus:ring-0">
+                <SelectValue placeholder="Month" />
+              </SelectTrigger>
+              <SelectContent className="bg-white">
+                {monthNames.map((m, idx) => (
+                  <SelectItem key={m} value={String(idx)}>{m}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <Select
+              value={String(year)}
+              onValueChange={(val) => {
+                setYear(Number(val));
                 setCurrentPage(1);
               }}
             >
               <SelectTrigger className="w-[140px] text-sm border-emerald-300 bg-emerald-100 text-emerald-700 hover:bg-emerald-200 focus:outline-none focus:ring-0">
-                <SelectValue placeholder="Month" />
+                <SelectValue placeholder="Year" />
               </SelectTrigger>
               <SelectContent className="bg-white">
-                <SelectItem value="this_month">This month</SelectItem>
-                <SelectItem value="last_month">Last month</SelectItem>
-                <SelectItem value="jan">January</SelectItem>
-                <SelectItem value="feb">February</SelectItem>
+                {years.map((y) => (
+                  <SelectItem key={y} value={String(y)}>{y}</SelectItem>
+                ))}
               </SelectContent>
             </Select>
 
