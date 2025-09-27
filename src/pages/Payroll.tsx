@@ -27,7 +27,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
-import { getPayroll, createPayroll, type PayrollResponse, type PayrollItem } from "@/api/payroll";
+import { getPayroll, createPayroll, getPayrollByEmployee, type PayrollResponse, type PayrollItem } from "@/api/payroll";
 import { getEmployees } from "@/api/employees";
 import { toast } from "@/hooks/use-toast";
 
@@ -56,6 +56,11 @@ const Payroll = () => {
   const [selectedEmployeeId, setSelectedEmployeeId] = useState<string>("");
   const [modalMonth, setModalMonth] = useState<number>(now.getMonth()); // 0-11
   const [modalYear, setModalYear] = useState<number>(now.getFullYear());
+
+  // View Payroll modal state
+  const [viewOpen, setViewOpen] = useState(false);
+  const [viewLoading, setViewLoading] = useState(false);
+  const [viewDetail, setViewDetail] = useState<PayrollItem | null>(null);
 
   const clearFilters = () => {
     const d = new Date();
@@ -167,7 +172,23 @@ const Payroll = () => {
     fetchData();
   }, [currentPage, month, year]);
 
-  const handleView = (id: string) => navigate(`/payroll/view/${id}`);
+  const openView = async (record: PayrollItem) => {
+    try {
+      setViewLoading(true);
+      const empId = (record as any)?.employeeId?._id ?? (record as any)?.employeeId;
+      const detail = await getPayrollByEmployee(String(empId));
+      setViewDetail(detail.data);
+      setViewOpen(true);
+    } catch (e: any) {
+      toast({
+        title: "Error",
+        description: e?.response?.data?.message || "Failed to load payroll details",
+        variant: "destructive",
+      });
+    } finally {
+      setViewLoading(false);
+    }
+  };
   const handleEdit = (id: string) => navigate(`/payroll/edit/${id}`);
   const handleSend = (id: string) => alert(`Send payroll message for ${id}`);
   const handleDownload = (id: string) => alert(`Download payroll for ${id}`);
@@ -343,7 +364,7 @@ const Payroll = () => {
                           <Edit className="w-3.5 h-3.5" />
                         </button>
                         <button
-                          onClick={() => handleView(p._id)}
+                          onClick={() => openView(p)}
                           className="h-7 w-7 flex items-center justify-center rounded text-blue-600 hover:bg-emerald-100 focus:outline-none focus:ring-0"
                         >
                           <Eye className="w-3.5 h-3.5" />
@@ -513,6 +534,127 @@ const Payroll = () => {
               Create Payroll
             </Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      {/* View Payroll Modal */}
+      <Dialog open={viewOpen} onOpenChange={setViewOpen}>
+        <DialogContent className="sm:max-w-xl max-h-[85vh] overflow-y-auto focus:outline-none focus:ring-0 focus:border-0">
+          <DialogHeader className="mb-2">
+            <DialogTitle className="text-emerald-700">Payroll Details</DialogTitle>
+          </DialogHeader>
+          {viewLoading ? (
+            <div className="p-4 text-sm text-gray-600">Loading...</div>
+          ) : viewDetail ? (
+            <div className="space-y-4">
+              {/* Employee header */}
+              <div className="flex items-center gap-3">
+                <Avatar className="h-10 w-10">
+                  {viewDetail.employeeId?.profilePhotoUrl ? (
+                    <AvatarImage src={viewDetail.employeeId.profilePhotoUrl} alt={`${viewDetail.employeeId?.firstName ?? ''} ${viewDetail.employeeId?.lastName ?? ''}`} />
+                  ) : (
+                    <AvatarFallback>
+                      <User className="h-4 w-4 text-gray-500" />
+                    </AvatarFallback>
+                  )}
+                </Avatar>
+                <div className="leading-tight">
+                  <div className="font-medium text-gray-900 text-sm">
+                    {viewDetail.employeeId?.firstName ?? ''} {viewDetail.employeeId?.lastName ?? ''}
+                  </div>
+                  <div className="text-xs text-gray-600">
+                    {viewDetail.employeeId?.designation ?? ''} • {viewDetail.employeeId?.employeeCode ?? ''}
+                  </div>
+                </div>
+              </div>
+
+              {/* Core info */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                <div className="bg-gray-50 rounded-md p-3">
+                  <div className="text-gray-500">Month</div>
+                  <div className="font-semibold">{monthNames[(Number(viewDetail.month) || 1) - 1]}</div>
+                </div>
+                <div className="bg-gray-50 rounded-md p-3">
+                  <div className="text-gray-500">Year</div>
+                  <div className="font-semibold">{viewDetail.year}</div>
+                </div>
+                <div className="bg-gray-50 rounded-md p-3">
+                  <div className="text-gray-500">Status</div>
+                  <div className="font-semibold capitalize">{viewDetail.status}</div>
+                </div>
+                <div className="bg-gray-50 rounded-md p-3">
+                  <div className="text-gray-500">Total Worked Days</div>
+                  <div className="font-semibold">{Number(viewDetail.totalWorkedDays ?? 0)}</div>
+                </div>
+              </div>
+
+              {/* Earnings */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                <div className="bg-white border rounded-md p-3">
+                  <div className="text-gray-500">Basic</div>
+                  <div className="font-semibold">₹{Number(viewDetail.basic || 0).toLocaleString()}</div>
+                </div>
+                <div className="bg-white border rounded-md p-3">
+                  <div className="text-gray-500">HRA</div>
+                  <div className="font-semibold">₹{Number(viewDetail.hra || 0).toLocaleString()}</div>
+                </div>
+                {typeof viewDetail.conveyance !== 'undefined' && (
+                  <div className="bg-white border rounded-md p-3">
+                    <div className="text-gray-500">Conveyance</div>
+                    <div className="font-semibold">₹{Number(viewDetail.conveyance || 0).toLocaleString()}</div>
+                  </div>
+                )}
+                {typeof viewDetail.specialAllowance !== 'undefined' && (
+                  <div className="bg-white border rounded-md p-3">
+                    <div className="text-gray-500">Special Allowance</div>
+                    <div className="font-semibold">₹{Number(viewDetail.specialAllowance || 0).toLocaleString()}</div>
+                  </div>
+                )}
+                <div className="bg-white border rounded-md p-3 sm:col-span-2">
+                  <div className="text-gray-500">Gross Earnings</div>
+                  <div className="font-semibold">₹{Number(viewDetail.grossEarnings || 0).toLocaleString()}</div>
+                </div>
+              </div>
+
+              {/* Deductions and Net */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                <div className="bg-white border rounded-md p-3">
+                  <div className="text-gray-500">PF</div>
+                  <div className="font-semibold">₹{Number(viewDetail.pf || 0).toLocaleString()}</div>
+                </div>
+                <div className="bg-white border rounded-md p-3">
+                  <div className="text-gray-500">ESI</div>
+                  <div className="font-semibold">₹{Number(viewDetail.esi || 0).toLocaleString()}</div>
+                </div>
+                <div className="bg-white border rounded-md p-3">
+                  <div className="text-gray-500">TDS</div>
+                  <div className="font-semibold">₹{Number(viewDetail.tds || 0).toLocaleString()}</div>
+                </div>
+                <div className="bg-white border rounded-md p-3">
+                  <div className="text-gray-500">Professional Tax</div>
+                  <div className="font-semibold">₹{Number(viewDetail.professionalTax || 0).toLocaleString()}</div>
+                </div>
+                <div className="bg-white border rounded-md p-3">
+                  <div className="text-gray-500">Other Deductions</div>
+                  <div className="font-semibold">₹{Number(viewDetail.otherDeductions || 0).toLocaleString()}</div>
+                </div>
+                <div className="bg-white border rounded-md p-3">
+                  <div className="text-gray-500">Leave Deductions</div>
+                  <div className="font-semibold">₹{Number(viewDetail.leaveDeductions || 0).toLocaleString()}</div>
+                </div>
+                <div className="bg-white border rounded-md p-3 sm:col-span-2">
+                  <div className="text-gray-500">Net Payable</div>
+                  <div className="font-semibold">₹{Number(viewDetail.netPayable || 0).toLocaleString()}</div>
+                </div>
+              </div>
+
+              {/* Generated at */}
+              <div className="text-xs text-gray-500">
+                Generated at: {viewDetail.generatedAt ? new Date(viewDetail.generatedAt).toLocaleString() : '-'}
+              </div>
+            </div>
+          ) : (
+            <div className="p-4 text-sm text-gray-600">No details available</div>
+          )}
         </DialogContent>
       </Dialog>
     </div>

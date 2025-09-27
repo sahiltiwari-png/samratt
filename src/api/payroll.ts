@@ -62,3 +62,14 @@ export const createPayroll = async (payload: { employeeId: string; month: number
   const res = await API.post('/payroll', payload);
   return res.data;
 };
+
+export interface PayrollDetailResponse {
+  message: string;
+  success: boolean;
+  data: PayrollItem;
+}
+
+export const getPayrollByEmployee = async (employeeId: string) => {
+  const res = await API.get(`/payroll/${employeeId}`);
+  return res.data as PayrollDetailResponse;
+};
