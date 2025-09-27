@@ -10,7 +10,7 @@ import {
   User,
   Shield,
   LogOut,
-} from "lucide-react";;
+} from "lucide-react";
 
 type SubMenuItem = {
   title: string;
