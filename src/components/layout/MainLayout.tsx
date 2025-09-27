@@ -41,13 +41,15 @@ const MainLayout = ({ children }: MainLayoutProps) => {
           <div className="container flex h-14 items-center justify-between px-4">
             <div className="flex items-center gap-4 w-full">
               <SidebarTrigger />
-              <Input
-                type="text"
-                placeholder="Search organizations..."
-                className="w-full max-w-2xl bg-background shadow-sm border-0 focus:border-0 focus-visible:border-0 focus:ring-0 focus-visible:ring-0 outline-none"
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-              />
+              {user?.role === 'superAdmin' ? (
+                <Input
+                  type="text"
+                  placeholder="Search organizations..."
+                  className="w-full max-w-2xl bg-background shadow-sm border-0 focus:border-0 focus-visible:border-0 focus:ring-0 focus-visible:ring-0 outline-none"
+                  value={search}
+                  onChange={e => setSearch(e.target.value)}
+                />
+              ) : null}
             </div>
 
             <div className="flex items-center gap-4">
