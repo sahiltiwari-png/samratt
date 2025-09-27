@@ -104,19 +104,29 @@ const SalarySlip = () => {
   const handleUpdate = async () => {
     if (!selectedRecord?._id) return;
     try {
-      await updateSalaryStructure(selectedRecord._id, {
-        basic: editForm.basic,
-        hra: editForm.hra,
-        gross: editForm.gross,
-        ctc: editForm.ctc,
-        conveyance: editForm.conveyance,
-        specialAllowance: editForm.specialAllowance,
-        pf: editForm.pf,
-        esi: editForm.esi,
-        tds: editForm.tds,
-        professionalTax: editForm.professionalTax,
-        otherDeductions: editForm.otherDeductions,
-      });
+      const numericFields = [
+        "basic",
+        "hra",
+        "gross",
+        "ctc",
+        "conveyance",
+        "specialAllowance",
+        "pf",
+        "esi",
+        "tds",
+        "professionalTax",
+        "otherDeductions",
+      ] as const;
+
+      const payload: any = {};
+      for (const key of numericFields) {
+        const val = editForm[key];
+        if (val === "" || val === null || val === undefined) continue; // skip empty so backend preserves existing
+        const num = typeof val === "number" ? val : Number(val);
+        if (!Number.isNaN(num)) payload[key] = num;
+      }
+
+      await updateSalaryStructure(selectedRecord._id, payload);
       setEditOpen(false);
       // refresh list
       const res: SalaryStructuresResponse = await getSalaryStructures({ page: currentPage, limit: 10 });
@@ -154,13 +164,9 @@ const SalarySlip = () => {
             <div className="flex justify-center items-center p-8">
               <p>Loading salary slip data...</p>
             </div>
-          ) : error ? (
-            <div className="flex justify-center items-center p-8 text-red-500">
-              <p>{error}</p>
-            </div>
-          ) : salaryData && salaryData.items.length > 0 ? (
-            <div className="overflow-x-auto w-full" style={{ WebkitOverflowScrolling: "touch" }}>
-              <table className="min-w-max w-full text-sm">
+          ) : (
+            <div className="overflow-x-hidden w-full">
+              <table className="min-w-full w-full text-sm">
                 <thead className="bg-gray-50 border-b">
                   <tr>
                     <th className="px-4 py-2 text-left font-medium text-gray-600">Employee</th>
@@ -174,65 +180,71 @@ const SalarySlip = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {salaryData.items.map((record) => (
-                    <tr
-                      key={record._id}
-                      className="border-b last:border-0 hover:bg-emerald-50 transition-colors"
-                    >
-                      <td className="px-4 py-2">
-                        <div className="flex items-center gap-3">
-                          <Avatar className="h-10 w-10">
-                            {(
+                  {salaryData && salaryData.items.length > 0 ? (
+                    salaryData.items.map((record) => (
+                      <tr
+                        key={record._id}
+                        className="border-b last:border-0 hover:bg-emerald-50 transition-colors"
+                      >
+                        <td className="px-4 py-2">
+                          <div className="flex items-center gap-3">
+                            <Avatar className="h-10 w-10">
+                              {record.employeeId?.profilePhotoUrl ? (
+                                <AvatarImage
+                                  src={record.employeeId.profilePhotoUrl}
+                                  alt={`${record.employeeId.firstName} ${record.employeeId.lastName}`}
+                                />
+                              ) : null}
                               <AvatarFallback>
                                 <User className="h-5 w-5 text-gray-500" />
                               </AvatarFallback>
-                            )}
-                          </Avatar>
-                          <div>
-                            <div className="text-sm font-medium text-gray-900">{record.employeeId.firstName} {record.employeeId.lastName}</div>
+                            </Avatar>
+                            <div>
+                              <div className="text-sm font-medium text-gray-900">{record.employeeId.firstName} {record.employeeId.lastName}</div>
+                            </div>
                           </div>
-                        </div>
-                      </td>
-                      <td className="px-4 py-2">{record.employeeId.employeeCode}</td>
-                      <td className="px-4 py-2">₹{record.ctc.toLocaleString()}</td>
-                      <td className="px-4 py-2">₹{record.hra.toLocaleString()}</td>
-                      <td className="px-4 py-2">₹{record.conveyance.toLocaleString()}</td>
-                      <td className="px-4 py-2">₹{record.specialAllowance.toLocaleString()}</td>
-                      <td className="px-4 py-2 font-semibold">₹{record.gross.toLocaleString()}</td>
-                      <td className="px-4 py-2 flex gap-2">
-                        <Button
-                          variant="link"
-                          size="icon"
-                          className="text-blue-600 h-8 w-8 p-0 hover:bg-emerald-100 focus:outline-none focus:ring-0 focus:border-0"
-                          onClick={() => openView(record)}
-                        >
-                          <Eye className="w-5 h-5" />
-                        </Button>
-                        <Button
-                          variant="link"
-                          size="icon"
-                          className="text-emerald-600 h-8 w-8 p-0 hover:bg-emerald-100 focus:outline-none focus:ring-0 focus:border-0"
-                          onClick={() => openEdit(record)}
-                        >
-                          <Edit className="w-5 h-5" />
-                        </Button>
-                        <Button
-                          variant="link"
-                          size="icon"
-                          className="text-red-600 h-8 w-8 p-0 hover:bg-red-100 focus:outline-none focus:ring-0 focus:border-0"
-                          onClick={() => openDelete(record)}
-                        >
-                          <Trash2 className="w-5 h-5" />
-                        </Button>
-                      </td>
+                        </td>
+                        <td className="px-4 py-2">{record.employeeId.employeeCode}</td>
+                        <td className="px-4 py-2">₹{record.ctc.toLocaleString()}</td>
+                        <td className="px-4 py-2">₹{record.hra.toLocaleString()}</td>
+                        <td className="px-4 py-2">₹{record.conveyance.toLocaleString()}</td>
+                        <td className="px-4 py-2">₹{record.specialAllowance.toLocaleString()}</td>
+                        <td className="px-4 py-2 font-semibold">₹{record.gross.toLocaleString()}</td>
+                        <td className="px-4 py-2 flex gap-2">
+                          <Button
+                            variant="link"
+                            size="icon"
+                            className="text-blue-600 h-8 w-8 p-0 hover:bg-emerald-100 focus:outline-none focus:ring-0 focus:border-0"
+                            onClick={() => openView(record)}
+                          >
+                            <Eye className="w-5 h-5" />
+                          </Button>
+                          <Button
+                            variant="link"
+                            size="icon"
+                            className="text-emerald-600 h-8 w-8 p-0 hover:bg-emerald-100 focus:outline-none focus:ring-0 focus:border-0"
+                            onClick={() => openEdit(record)}
+                          >
+                            <Edit className="w-5 h-5" />
+                          </Button>
+                          <Button
+                            variant="link"
+                            size="icon"
+                            className="text-red-600 h-8 w-8 p-0 hover:bg-red-100 focus:outline-none focus:ring-0 focus:border-0"
+                            onClick={() => openDelete(record)}
+                          >
+                            <Trash2 className="w-5 h-5" />
+                          </Button>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={8} className="px-4 py-6 text-center text-gray-600">No data found</td>
                     </tr>
-                  ))}
+                  )}
                 </tbody>
               </table>
-            </div>
-          ) : (
-            <div className="flex justify-center items-center p-8">
-              <p>No salary slips found</p>
             </div>
           )}
         </div>
@@ -248,6 +260,7 @@ const SalarySlip = () => {
             <div className="space-y-2 text-sm text-gray-700">
               <p><strong>Name:</strong> {viewDetail.employeeId.firstName} {viewDetail.employeeId.lastName}</p>
               <p><strong>Code:</strong> {viewDetail.employeeId.employeeCode}</p>
+              <p><strong>Basic:</strong> ₹{viewDetail.basic}</p>
               <p><strong>CTC:</strong> ₹{viewDetail.ctc}</p>
               <p><strong>Gross:</strong> ₹{viewDetail.gross}</p>
               <p><strong>HRA:</strong> ₹{viewDetail.hra}</p>
@@ -279,10 +292,10 @@ const SalarySlip = () => {
           {editForm && (
             <div className="grid gap-3">
               {[
+                "ctc",
                 "basic",
                 "hra",
                 "gross",
-                "ctc",
                 "conveyance",
                 "specialAllowance",
                 "pf",
@@ -296,7 +309,7 @@ const SalarySlip = () => {
                   <Input
                     type="number"
                     value={editForm[field] ?? ""}
-                    onChange={(e) => handleEditChange(field, Number(e.target.value))}
+                    onChange={(e) => handleEditChange(field, e.target.value)}
                     className="focus:outline-none focus:ring-0 focus:border-gray-300"
                   />
                 </div>
