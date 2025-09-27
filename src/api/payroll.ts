@@ -57,3 +57,8 @@ export const getPayroll = async (params?: { page?: number; limit?: number; month
   const res = await API.get(`/payroll${qs}`);
   return res.data as PayrollResponse;
 };
+
+export const createPayroll = async (payload: { employeeId: string; month: number; year: number }) => {
+  const res = await API.post('/payroll', payload);
+  return res.data;
+};

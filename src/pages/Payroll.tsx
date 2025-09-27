@@ -8,7 +8,7 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
-import { Eye, Edit, Send, DownloadCloud, User } from "lucide-react";
+import { Eye, Edit, Send, DownloadCloud, User, X } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Tooltip,
@@ -16,8 +16,20 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from "@/components/ui/tooltip";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogClose,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
-import { getPayroll, type PayrollResponse, type PayrollItem } from "@/api/payroll";
+import { getPayroll, createPayroll, type PayrollResponse, type PayrollItem } from "@/api/payroll";
+import { getEmployees } from "@/api/employees";
+import { toast } from "@/hooks/use-toast";
 
 const computeDeductions = (p: PayrollItem) => {
   const values = [p.pf, p.esi, p.tds, p.professionalTax, p.otherDeductions, p.leaveDeductions];
@@ -35,6 +47,16 @@ const Payroll = () => {
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
+  // Create Payroll modal state
+  const [createOpen, setCreateOpen] = useState(false);
+  const [employeeSearch, setEmployeeSearch] = useState("");
+  const [employeeResults, setEmployeeResults] = useState<any[]>([]);
+  const [employeeLoading, setEmployeeLoading] = useState(false);
+  const [employeeDropdownOpen, setEmployeeDropdownOpen] = useState(false);
+  const [selectedEmployeeId, setSelectedEmployeeId] = useState<string>("");
+  const [modalMonth, setModalMonth] = useState<number>(now.getMonth()); // 0-11
+  const [modalYear, setModalYear] = useState<number>(now.getFullYear());
+
   const clearFilters = () => {
     const d = new Date();
     setMonth(d.getMonth());
@@ -43,7 +65,62 @@ const Payroll = () => {
   };
 
   const handleCreatePayroll = () => {
-    navigate("/payroll/create");
+    setCreateOpen(true);
+    setEmployeeDropdownOpen(false);
+    setSelectedEmployeeId("");
+    setEmployeeSearch("");
+    setModalMonth(now.getMonth());
+    setModalYear(now.getFullYear());
+  };
+
+  const searchEmployees = async (query: string) => {
+    try {
+      setEmployeeLoading(true);
+      const res = await getEmployees({ page: 1, limit: 10, search: query });
+      setEmployeeResults(res.items || res.data || []);
+      setEmployeeDropdownOpen(true);
+    } catch (e) {
+      setEmployeeResults([]);
+    } finally {
+      setEmployeeLoading(false);
+    }
+  };
+
+  const selectEmployee = (emp: any) => {
+    setSelectedEmployeeId(emp._id);
+    setEmployeeSearch(`${emp.firstName} ${emp.lastName} (${emp.employeeCode})`);
+    setEmployeeDropdownOpen(false);
+  };
+
+  const submitCreatePayroll = async () => {
+    try {
+      if (!selectedEmployeeId) {
+        toast({
+          title: "Validation Error",
+          description: "Please select an employee.",
+          variant: "destructive",
+        });
+        return;
+      }
+      const payload = {
+        employeeId: selectedEmployeeId,
+        month: modalMonth + 1,
+        year: modalYear,
+      };
+      await createPayroll(payload);
+      setCreateOpen(false);
+      // Refresh current list
+      setCurrentPage(1);
+      const res = await getPayroll({ page: 1, limit: 10, month: month + 1, year });
+      setPayrollData(res);
+      toast({ title: "Success", description: "Payroll created successfully." });
+    } catch (e: any) {
+      toast({
+        title: "Error",
+        description: e?.response?.data?.message || "Failed to create payroll",
+        variant: "destructive",
+      });
+    }
   };
 
   const monthNames = useMemo(() => [
@@ -308,6 +385,136 @@ const Payroll = () => {
           </div>
         </div>
       </div>
+      {/* Create Payroll Modal */}
+      <Dialog open={createOpen} onOpenChange={setCreateOpen}>
+        <DialogContent className="sm:max-w-lg focus:outline-none focus:ring-0 focus:border-0">
+          <DialogHeader className="mb-4">
+            <DialogTitle className="text-emerald-700">Create Payroll</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-3">
+            {/* Employee field */}
+            <div className="grid gap-2 relative">
+              <Label>Employee</Label>
+              <div className="relative">
+                {selectedEmployeeId ? (
+                  <div className="flex items-center justify-between border border-gray-300 rounded-md px-3 py-2 bg-white">
+                    <div className="flex items-center gap-2">
+                      <div className="inline-flex items-center gap-2 rounded-full bg-emerald-50 text-emerald-700 px-3 py-1">
+                        <User className="h-4 w-4" />
+                        <span className="text-sm font-medium">{employeeSearch}</span>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      aria-label="Clear selected employee"
+                      className="text-gray-500 hover:text-gray-700"
+                      onClick={() => {
+                        setSelectedEmployeeId("");
+                        setEmployeeSearch("");
+                        setEmployeeDropdownOpen(false);
+                      }}
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+                ) : (
+                  <Input
+                    type="text"
+                    placeholder="Search employee by name or code"
+                    value={employeeSearch}
+                    onChange={(e) => {
+                      const v = e.target.value;
+                      setEmployeeSearch(v);
+                      if (v.trim().length >= 1) {
+                        searchEmployees(v.trim());
+                      } else {
+                        setEmployeeResults([]);
+                        setEmployeeDropdownOpen(false);
+                      }
+                    }}
+                    onClick={() => {
+                      const q = employeeSearch.trim();
+                      searchEmployees(q.length >= 1 ? q : "");
+                    }}
+                    className="pr-8 focus:outline-none focus:ring-0 focus:border-gray-300 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-gray-300"
+                  />
+                )}
+              </div>
+              {employeeDropdownOpen && (
+                <div className="absolute z-20 mt-1 w-full bg-white border border-gray-200 rounded-md shadow-lg ring-1 ring-black/5 max-h-60 overflow-y-auto p-1">
+                  {employeeLoading ? (
+                    <div className="p-3 text-sm text-gray-500">Loading...</div>
+                  ) : employeeResults.length > 0 ? (
+                    employeeResults.map((emp: any) => (
+                      <button
+                        key={emp._id}
+                        type="button"
+                        className="w-full text-left px-3 py-2.5 hover:bg-emerald-50 flex items-center justify-between rounded-md"
+                        onClick={() => selectEmployee(emp)}
+                      >
+                        <div className="flex items-center gap-3">
+                          <Avatar className="h-8 w-8">
+                            {emp.profilePhotoUrl ? (
+                              <AvatarImage src={emp.profilePhotoUrl} alt={`${emp.firstName} ${emp.lastName}`} />
+                            ) : null}
+                            <AvatarFallback>
+                              <User className="h-4 w-4 text-gray-500" />
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="flex flex-col">
+                            <span className="text-sm font-medium text-gray-900">{emp.firstName} {emp.lastName}</span>
+                          </div>
+                        </div>
+                        <span className="text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-700">{emp.employeeCode}</span>
+                      </button>
+                    ))
+                  ) : (
+                    <div className="p-3 text-sm text-gray-500">No employees found</div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Month and Year */}
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="grid gap-2">
+                <Label>Month</Label>
+                <Select value={String(modalMonth)} onValueChange={(v) => setModalMonth(Number(v))}>
+                  <SelectTrigger className="w-full text-sm border-gray-300 bg-white text-gray-700 focus:outline-none focus:ring-0">
+                    <SelectValue placeholder="Month" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white">
+                    {monthNames.map((m, idx) => (
+                      <SelectItem key={m} value={String(idx)}>{m}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid gap-2">
+                <Label>Year</Label>
+                <Select value={String(modalYear)} onValueChange={(v) => setModalYear(Number(v))}>
+                  <SelectTrigger className="w-full text-sm border-gray-300 bg-white text-gray-700 focus:outline-none focus:ring-0">
+                    <SelectValue placeholder="Year" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white">
+                    {years.map((y) => (
+                      <SelectItem key={y} value={String(y)}>{y}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </div>
+          <DialogFooter className="pt-4 flex gap-2 justify-end">
+            <DialogClose asChild>
+              <Button variant="outline" className="hover:bg-gray-100 focus:outline-none focus:ring-0 focus:border-0">Cancel</Button>
+            </DialogClose>
+            <Button className="bg-emerald-600 text-white hover:bg-emerald-700 focus:outline-none focus:ring-0 focus:border-0" onClick={submitCreatePayroll}>
+              Create Payroll
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
