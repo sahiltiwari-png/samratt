@@ -27,7 +27,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
-import { getPayroll, createPayroll, getPayrollByEmployee, updatePayrollById, sendPayslip, type PayrollResponse, type PayrollItem } from "@/api/payroll";
+import { getPayroll, createPayroll, getPayrollByEmployee, updatePayrollById, sendPayslip, downloadPayroll, type PayrollResponse, type PayrollItem } from "@/api/payroll";
 import { getEmployees } from "@/api/employees";
 import { toast } from "@/hooks/use-toast";
 
@@ -248,7 +248,48 @@ const Payroll = () => {
       setSendingId(null);
     }
   };
-  const handleDownload = (id: string) => alert(`Download payroll for ${id}`);
+  const handleDownload = async (record: PayrollItem) => {
+    try {
+      const empId = (record as any)?.employeeId?._id ?? (record as any)?.employeeId;
+      const m = month + 1; // API expects 1-12
+      const y = year;
+      
+      const response = await downloadPayroll(String(empId), m, y);
+      
+      // Create blob and download file
+      const blob = new Blob([response.data], { type: response.headers['content-type'] || 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      
+      // Extract filename from response headers or create default
+      const contentDisposition = response.headers['content-disposition'];
+      let filename = `payroll_${empId}_${m}_${y}.pdf`;
+      if (contentDisposition) {
+        const filenameMatch = contentDisposition.match(/filename="(.+)"/);
+        if (filenameMatch) {
+          filename = filenameMatch[1];
+        }
+      }
+      
+      link.setAttribute('download', filename);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+      
+      toast({ 
+        title: "Download Started", 
+        description: `Payroll for ${m}/${y} is being downloaded` 
+      });
+    } catch (e: any) {
+      toast({ 
+        title: "Download Failed", 
+        description: e?.response?.data?.message || "Failed to download payroll", 
+        variant: "destructive" 
+      });
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-200 via-emerald-100 to-emerald-50 p-6">
@@ -446,7 +487,7 @@ const Payroll = () => {
                           <Tooltip>
                             <TooltipTrigger asChild>
                               <button
-                                onClick={() => handleDownload(p._id)}
+                                onClick={() => handleDownload(p)}
                                 className="h-7 w-7 flex items-center justify-center rounded text-gray-700 hover:bg-emerald-100 focus:outline-none focus:ring-0"
                               >
                                 <DownloadCloud className="w-3.5 h-3.5" />

@@ -109,3 +109,10 @@ export const sendPayslip = async (employeeId: string, month: number, year: numbe
   const res = await API.post(`/payroll/send-payslip/${employeeId}/${month}/${year}`);
   return res.data;
 };
+
+export const downloadPayroll = async (employeeId: string, month: number, year: number) => {
+  const res = await API.get(`/payroll/download/${employeeId}/${month}/${year}`, {
+    responseType: 'blob'
+  });
+  return res;
+};
