@@ -12,6 +12,8 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Attendance from "./pages/Attendance";
 import Leaves from "./pages/Leaves";
+import LeavePolicy from "./pages/LeavePolicy";
+import LeaveRequests from "./pages/LeaveRequests";
 import Employees from "./pages/Employees";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
@@ -20,7 +22,7 @@ import NotFound from "./pages/NotFound";
 import AddEmployeeStepper from "./pages/AddEmployeeStepper";
 import HR from "./pages/HR";
 import Payroll from "./pages/Payroll";
-import SalarySlips from "./pages/SalarySlips";
+import SalarySlips from "./pages/SalarySlips";  
 import Reports from "./pages/Reports";
 import CreateOrganization from "./pages/CreateOrganization";
 import OrganizationDetails from "./pages/OrganizationDetails";
@@ -57,6 +59,8 @@ const App = () => (
                       <Route path="/attendance" element={<Attendance />} />
                       <Route path="/attendance/employee/:id" element={<EmployeeAttendanceDetail />} />
                       <Route path="/leaves" element={<Leaves />} />
+                      <Route path="/leaves/policy" element={<LeavePolicy />} />
+                      <Route path="/leaves/requests" element={<LeaveRequests />} />
                       <Route path="/reports" element={<Reports />} />
                       <Route path="/settings" element={<Settings />} />
                   <Route path="/profile" element={<Profile />} />
