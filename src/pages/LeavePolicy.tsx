@@ -29,10 +29,15 @@ import { Plus, Edit, Trash2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import {
   getLeavePolicies,
+  getLeavePolicy,
   createLeavePolicy,
+  updateLeavePolicy,
+  updateLeaveType,
   LeavePolicy,
   LeaveType,
   CreateLeavePolicyPayload,
+  UpdateLeavePolicyPayload,
+  UpdateLeaveTypePayload,
 } from "@/api/leavePolicy";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -41,6 +46,9 @@ const LeavePolicy = () => {
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isFormMode, setIsFormMode] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedPolicy, setSelectedPolicy] = useState<LeavePolicy | null>(null);
+  const [editingLeaveType, setEditingLeaveType] = useState<LeaveType | null>(null);
   const { organizationId } = useAuth();
 
   const [policyForm, setPolicyForm] = useState({
@@ -54,22 +62,45 @@ const LeavePolicy = () => {
   const [leaveTypeForm, setLeaveTypeForm] = useState({
     type: "",
     interval: "",
-    intervalValue: 0,
+    intervalValue: "",
     carryForward: false,
-    maxCarryForward: 0,
+    maxCarryForward: "",
     encashable: false,
-    maxEncashable: 0,
+    maxEncashable: "",
     probationApplicable: true,
     expireMonthly: false,
-    minContinuousWorkDays: 0,
+    minContinuousWorkDays: "",
     allowNegativeBalance: false,
-    maxNegativeBalance: 0,
+    maxNegativeBalance: "",
     allowUnpaidLeave: false,
   });
 
   const [currentLeaveTypes, setCurrentLeaveTypes] = useState<
     Omit<LeaveType, "_id">[]
   >([]);
+
+  const [editPolicyForm, setEditPolicyForm] = useState({
+    name: "",
+    effectiveFrom: "",
+    effectiveTo: "",
+    isDefault: false,
+    isActive: true,
+  });
+
+  const [editLeaveTypeForm, setEditLeaveTypeForm] = useState({
+    interval: "",
+    intervalValue: "",
+    carryForward: false,
+    maxCarryForward: "",
+    encashable: false,
+    maxEncashable: "",
+    probationApplicable: true,
+    expireMonthly: false,
+    minContinuousWorkDays: "",
+    allowNegativeBalance: false,
+    maxNegativeBalance: "",
+    allowUnpaidLeave: false,
+  });
 
   const leaveTypeOptions = [
     { value: "annual", label: "Annual Leave" },
@@ -170,7 +201,7 @@ const LeavePolicy = () => {
   };
 
   const handleAddLeaveType = () => {
-    if (!leaveTypeForm.type || !leaveTypeForm.interval || leaveTypeForm.intervalValue <= 0) {
+    if (!leaveTypeForm.type || !leaveTypeForm.interval || !leaveTypeForm.intervalValue || parseInt(leaveTypeForm.intervalValue) <= 0) {
       toast({
         title: "Error",
         description: "Please fill all required fields",
@@ -179,22 +210,29 @@ const LeavePolicy = () => {
       return;
     }
 
-    const newLeaveType: Omit<LeaveType, "_id"> = { ...leaveTypeForm };
+    const newLeaveType: Omit<LeaveType, "_id"> = { 
+      ...leaveTypeForm,
+      intervalValue: parseInt(leaveTypeForm.intervalValue) || 0,
+      minContinuousWorkDays: parseInt(leaveTypeForm.minContinuousWorkDays) || 0,
+      maxCarryForward: parseInt(leaveTypeForm.maxCarryForward) || 0,
+      maxEncashable: parseInt(leaveTypeForm.maxEncashable) || 0,
+      maxNegativeBalance: parseInt(leaveTypeForm.maxNegativeBalance) || 0,
+    };
     setCurrentLeaveTypes([...currentLeaveTypes, newLeaveType]);
 
     setLeaveTypeForm({
       type: "",
       interval: "",
-      intervalValue: 0,
+      intervalValue: "",
       carryForward: false,
-      maxCarryForward: 0,
+      maxCarryForward: "",
       encashable: false,
-      maxEncashable: 0,
+      maxEncashable: "",
       probationApplicable: true,
       expireMonthly: false,
-      minContinuousWorkDays: 0,
+      minContinuousWorkDays: "",
       allowNegativeBalance: false,
-      maxNegativeBalance: 0,
+      maxNegativeBalance: "",
       allowUnpaidLeave: false,
     });
 
@@ -214,6 +252,107 @@ const LeavePolicy = () => {
     });
   };
 
+  const handleEditPolicy = async (policyId: string) => {
+    try {
+      const response = await getLeavePolicy(policyId);
+      if (response.success) {
+        setSelectedPolicy(response.data);
+        setEditPolicyForm({
+          name: response.data.name,
+          effectiveFrom: response.data.effectiveFrom,
+          effectiveTo: response.data.effectiveTo,
+          isDefault: response.data.isDefault,
+          isActive: response.data.isActive,
+        });
+        setIsEditModalOpen(true);
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to fetch policy data",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleUpdatePolicy = async () => {
+    if (!selectedPolicy) return;
+
+    try {
+      const payload: UpdateLeavePolicyPayload = {
+        name: editPolicyForm.name,
+        effectiveFrom: editPolicyForm.effectiveFrom,
+        effectiveTo: editPolicyForm.effectiveTo,
+        isDefault: editPolicyForm.isDefault,
+        isActive: editPolicyForm.isActive,
+      };
+
+      await updateLeavePolicy(selectedPolicy._id, payload);
+      toast({
+        title: "Success",
+        description: "Policy updated successfully!",
+      });
+
+      setIsEditModalOpen(false);
+      setSelectedPolicy(null);
+      fetchPolicies();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update policy",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleEditLeaveType = (leaveType: LeaveType) => {
+    setEditingLeaveType(leaveType);
+    setEditLeaveTypeForm({
+      interval: leaveType.interval,
+      intervalValue: leaveType.intervalValue.toString(),
+      carryForward: leaveType.carryForward,
+      maxCarryForward: leaveType.maxCarryForward.toString(),
+      encashable: leaveType.encashable,
+      maxEncashable: leaveType.maxEncashable.toString(),
+      probationApplicable: leaveType.probationApplicable,
+      expireMonthly: leaveType.expireMonthly,
+      minContinuousWorkDays: leaveType.minContinuousWorkDays.toString(),
+      allowNegativeBalance: leaveType.allowNegativeBalance,
+      maxNegativeBalance: leaveType.maxNegativeBalance.toString(),
+      allowUnpaidLeave: leaveType.allowUnpaidLeave,
+    });
+  };
+
+  const handleUpdateLeaveType = async () => {
+    if (!selectedPolicy || !editingLeaveType) return;
+
+    try {
+      const payload: UpdateLeaveTypePayload = { 
+        ...editLeaveTypeForm,
+        intervalValue: parseInt(editLeaveTypeForm.intervalValue) || 0,
+        minContinuousWorkDays: parseInt(editLeaveTypeForm.minContinuousWorkDays) || 0,
+        maxCarryForward: parseInt(editLeaveTypeForm.maxCarryForward) || 0,
+        maxEncashable: parseInt(editLeaveTypeForm.maxEncashable) || 0,
+        maxNegativeBalance: parseInt(editLeaveTypeForm.maxNegativeBalance) || 0,
+      };
+      await updateLeaveType(selectedPolicy._id, editingLeaveType._id!, payload);
+      
+      toast({
+        title: "Success",
+        description: "Leave type updated successfully!",
+      });
+
+      setEditingLeaveType(null);
+      fetchPolicies();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update leave type",
+        variant: "destructive",
+      });
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -226,7 +365,7 @@ const LeavePolicy = () => {
     <div className="min-h-screen bg-gradient-to-br from-emerald-200 via-emerald-100 to-emerald-50 p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
-          <h1 className="text-2xl font-bold">Leave Policy Management</h1>
+          <h1 className="text-2xl font-bold">Leave Policy creation</h1>
           {!isFormMode && (
             <Button
               onClick={() => setIsModalOpen(true)}
@@ -242,7 +381,7 @@ const LeavePolicy = () => {
         {isFormMode ? (
           <Card className="w-full max-w-3xl mx-auto shadow-lg rounded-2xl">
             <CardHeader>
-              <CardTitle>Create New Leave Policy</CardTitle>
+              <CardTitle>Policy Basics</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               {/* form fields */}
@@ -416,15 +555,12 @@ const LeavePolicy = () => {
                           </TableCell>
                           <TableCell>
                             <div className="flex space-x-2">
-                              <Button variant="outline" size="sm">
-                                <Edit className="w-4 h-4" />
-                              </Button>
-                              <Button
-                                variant="outline"
+                              <Button 
+                                variant="outline" 
                                 size="sm"
-                                className="text-red-500"
+                                onClick={() => handleEditPolicy(policy._id)}
                               >
-                                <Trash2 className="w-4 h-4" />
+                                <Edit className="w-4 h-4" />
                               </Button>
                             </div>
                           </TableCell>
@@ -499,7 +635,7 @@ const LeavePolicy = () => {
                   onChange={(e) =>
                     setLeaveTypeForm({
                       ...leaveTypeForm,
-                      intervalValue: parseInt(e.target.value) || 0,
+                      intervalValue: e.target.value,
                     })
                   }
                   placeholder="e.g. 2"
@@ -514,10 +650,10 @@ const LeavePolicy = () => {
                   onChange={(e) =>
                     setLeaveTypeForm({
                       ...leaveTypeForm,
-                      minContinuousWorkDays: parseInt(e.target.value) || 0,
+                      minContinuousWorkDays: e.target.value,
                     })
                   }
-                  placeholder="0"
+                  placeholder="Enter min work days"
                 />
               </div>
 
@@ -541,10 +677,11 @@ const LeavePolicy = () => {
                   <Input
                     type="number"
                     value={leaveTypeForm.maxCarryForward}
+                    placeholder="Enter max carry forward days"
                     onChange={(e) =>
                       setLeaveTypeForm({
                         ...leaveTypeForm,
-                        maxCarryForward: parseInt(e.target.value) || 0,
+                        maxCarryForward: e.target.value,
                       })
                     }
                   />
@@ -570,10 +707,11 @@ const LeavePolicy = () => {
                   <Input
                     type="number"
                     value={leaveTypeForm.maxEncashable}
+                    placeholder="Enter max encashable days"
                     onChange={(e) =>
                       setLeaveTypeForm({
                         ...leaveTypeForm,
-                        maxEncashable: parseInt(e.target.value) || 0,
+                        maxEncashable: e.target.value,
                       })
                     }
                   />
@@ -599,10 +737,11 @@ const LeavePolicy = () => {
                   <Input
                     type="number"
                     value={leaveTypeForm.maxNegativeBalance}
+                    placeholder="Enter max negative balance days"
                     onChange={(e) =>
                       setLeaveTypeForm({
                         ...leaveTypeForm,
-                        maxNegativeBalance: parseInt(e.target.value) || 0,
+                        maxNegativeBalance: e.target.value,
                       })
                     }
                   />
@@ -659,6 +798,325 @@ const LeavePolicy = () => {
                   style={{ backgroundColor: '#4CDC9C' }}
                 >
                 Save
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* Edit Policy Modal */}
+        <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl shadow-xl">
+            <DialogHeader>
+              <DialogTitle>Edit Policy</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-6 py-4">
+              {/* Policy Basic Information */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="edit-name">Policy Name *</Label>
+                  <Input
+                    id="edit-name"
+                    value={editPolicyForm.name}
+                    onChange={(e) =>
+                      setEditPolicyForm({ ...editPolicyForm, name: e.target.value })
+                    }
+                    placeholder="Enter policy name"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="edit-effective-from">Effective From *</Label>
+                  <Input
+                    id="edit-effective-from"
+                    type="date"
+                    value={editPolicyForm.effectiveFrom}
+                    onChange={(e) =>
+                      setEditPolicyForm({ ...editPolicyForm, effectiveFrom: e.target.value })
+                    }
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="edit-effective-to">Effective To (Optional)</Label>
+                  <Input
+                    id="edit-effective-to"
+                    type="date"
+                    value={editPolicyForm.effectiveTo}
+                    onChange={(e) =>
+                      setEditPolicyForm({ ...editPolicyForm, effectiveTo: e.target.value })
+                    }
+                  />
+                </div>
+              </div>
+
+              <div className="flex flex-col space-y-3">
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    checked={editPolicyForm.isDefault}
+                    onCheckedChange={(checked) =>
+                      setEditPolicyForm({ ...editPolicyForm, isDefault: checked as boolean })
+                    }
+                  />
+                  <Label>Use as Default Policy</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    checked={editPolicyForm.isActive}
+                    onCheckedChange={(checked) =>
+                      setEditPolicyForm({ ...editPolicyForm, isActive: checked as boolean })
+                    }
+                  />
+                  <Label>Active</Label>
+                </div>
+              </div>
+
+              {/* Leave Types List */}
+              {selectedPolicy && selectedPolicy.leaveTypes.length > 0 && (
+                <div className="space-y-3">
+                  <h3 className="font-semibold">Leave Types</h3>
+                  <div className="space-y-2">
+                    {selectedPolicy.leaveTypes.map((leaveType, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center justify-between p-3 border rounded-lg bg-white shadow-sm"
+                      >
+                        <div>
+                          <span className="font-medium capitalize">
+                            {leaveType.type}
+                          </span>
+                          <span className="text-sm text-gray-500 ml-2">
+                            {leaveType.intervalValue} / {leaveType.interval}
+                          </span>
+                        </div>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleEditLeaveType(leaveType)}
+                          className="text-blue-500 hover:text-blue-700"
+                        >
+                          <Edit className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div className="flex justify-end gap-3 pt-4">
+                <Button variant="outline" onClick={() => setIsEditModalOpen(false)}>
+                  Cancel
+                </Button>
+                <Button
+                  onClick={handleUpdatePolicy}
+                  className="hover:opacity-90"
+                  style={{ backgroundColor: '#4CDC9C' }}
+                >
+                  Update Policy
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* Edit Leave Type Modal */}
+        <Dialog open={!!editingLeaveType} onOpenChange={() => setEditingLeaveType(null)}>
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl shadow-xl">
+            <DialogHeader>
+              <DialogTitle>Edit Leave Type - {editingLeaveType?.type}</DialogTitle>
+            </DialogHeader>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-2">
+              {/* Interval dropdown */}
+              <div className="space-y-2">
+                <Label>Interval *</Label>
+                <Select
+                  value={editLeaveTypeForm.interval}
+                  onValueChange={(value) =>
+                    setEditLeaveTypeForm({ ...editLeaveTypeForm, interval: value })
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select interval" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {intervalOptions.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Interval value */}
+              <div className="space-y-2">
+                <Label>Interval Value *</Label>
+                <Input
+                  type="number"
+                  value={editLeaveTypeForm.intervalValue}
+                  onChange={(e) =>
+                    setEditLeaveTypeForm({
+                      ...editLeaveTypeForm,
+                      intervalValue: e.target.value,
+                    })
+                  }
+                  placeholder="Enter interval value"
+                />
+              </div>
+
+              {/* Max Carry Forward */}
+              <div className="space-y-2">
+                <Label>Max Carry Forward</Label>
+                <Input
+                  type="number"
+                  value={editLeaveTypeForm.maxCarryForward}
+                  onChange={(e) =>
+                    setEditLeaveTypeForm({
+                      ...editLeaveTypeForm,
+                      maxCarryForward: e.target.value,
+                    })
+                  }
+                  placeholder="Enter max carry forward"
+                />
+              </div>
+
+              {/* Max Encashable */}
+              <div className="space-y-2">
+                <Label>Max Encashable</Label>
+                <Input
+                  type="number"
+                  value={editLeaveTypeForm.maxEncashable}
+                  onChange={(e) =>
+                    setEditLeaveTypeForm({
+                      ...editLeaveTypeForm,
+                      maxEncashable: e.target.value,
+                    })
+                  }
+                  placeholder="Enter max encashable"
+                />
+              </div>
+
+              {/* Min Continuous Work Days */}
+              <div className="space-y-2">
+                <Label>Min Continuous Work Days</Label>
+                <Input
+                  type="number"
+                  value={editLeaveTypeForm.minContinuousWorkDays}
+                  onChange={(e) =>
+                    setEditLeaveTypeForm({
+                      ...editLeaveTypeForm,
+                      minContinuousWorkDays: e.target.value,
+                    })
+                  }
+                  placeholder="Enter min work days"
+                />
+              </div>
+
+              {/* Max Negative Balance */}
+              <div className="space-y-2">
+                <Label>Max Negative Balance</Label>
+                <Input
+                  type="number"
+                  value={editLeaveTypeForm.maxNegativeBalance}
+                  onChange={(e) =>
+                    setEditLeaveTypeForm({
+                      ...editLeaveTypeForm,
+                      maxNegativeBalance: e.target.value,
+                    })
+                  }
+                  placeholder="Enter max negative balance"
+                />
+              </div>
+            </div>
+
+            {/* Checkboxes */}
+            <div className="grid grid-cols-2 gap-4 py-4">
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  checked={editLeaveTypeForm.carryForward}
+                  onCheckedChange={(checked) =>
+                    setEditLeaveTypeForm({
+                      ...editLeaveTypeForm,
+                      carryForward: checked as boolean,
+                    })
+                  }
+                />
+                <Label>Carry Forward</Label>
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  checked={editLeaveTypeForm.allowNegativeBalance}
+                  onCheckedChange={(checked) =>
+                    setEditLeaveTypeForm({
+                      ...editLeaveTypeForm,
+                      allowNegativeBalance: checked as boolean,
+                    })
+                  }
+                />
+                <Label>Allow Negative balance</Label>
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  checked={editLeaveTypeForm.encashable}
+                  onCheckedChange={(checked) =>
+                    setEditLeaveTypeForm({
+                      ...editLeaveTypeForm,
+                      encashable: checked as boolean,
+                    })
+                  }
+                />
+                <Label>Encashable</Label>
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  checked={editLeaveTypeForm.expireMonthly}
+                  onCheckedChange={(checked) =>
+                    setEditLeaveTypeForm({
+                      ...editLeaveTypeForm,
+                      expireMonthly: checked as boolean,
+                    })
+                  }
+                />
+                <Label>Expire Monthly</Label>
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  checked={editLeaveTypeForm.probationApplicable}
+                  onCheckedChange={(checked) =>
+                    setEditLeaveTypeForm({
+                      ...editLeaveTypeForm,
+                      probationApplicable: checked as boolean,
+                    })
+                  }
+                />
+                <Label>Applicable in Probation</Label>
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  checked={editLeaveTypeForm.allowUnpaidLeave}
+                  onCheckedChange={(checked) =>
+                    setEditLeaveTypeForm({
+                      ...editLeaveTypeForm,
+                      allowUnpaidLeave: checked as boolean,
+                    })
+                  }
+                />
+                <Label>Allow Unpaid Leave</Label>
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-3 pt-4">
+              <Button variant="outline" onClick={() => setEditingLeaveType(null)}>
+                Cancel
+              </Button>
+              <Button
+                onClick={handleUpdateLeaveType}
+                className="hover:opacity-90"
+                style={{ backgroundColor: '#4CDC9C' }}
+              >
+                Update Leave Type
               </Button>
             </div>
           </DialogContent>
