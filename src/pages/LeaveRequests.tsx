@@ -183,17 +183,17 @@ const LeaveRequests = () => {
                             </AvatarFallback>
                           )}
                         </Avatar>
-                        <span className="font-medium text-gray-900">
-                          {`${req.employeeId.firstName} ${req.employeeId.lastName}`}
-                        </span>
+                        <span className="font-medium text-gray-900" style={{ fontFamily: 'Montserrat', fontWeight: 500, fontSize: '12px', lineHeight: '12.09px' }}>
+                            {`${req.employeeId.firstName} ${req.employeeId.lastName}`}
+                          </span>
                       </div>
                     </td>
 
-                    <td className="px-4 py-3 capitalize">{req.leaveType}</td>
-                    <td className="px-4 py-3">{formatDate(req.startDate)}</td>
-                    <td className="px-4 py-3">{formatDate(req.endDate)}</td>
-                    <td className="px-4 py-3">{req.reason}</td>
-                    <td className="px-4 py-3 font-medium">{req.days}</td>
+                    <td className="px-4 py-3 capitalize" style={{ fontFamily: 'Montserrat', fontWeight: 500, fontSize: '12px', lineHeight: '12.09px' }}>{req.leaveType}</td>
+                      <td className="px-4 py-3" style={{ fontFamily: 'Montserrat', fontWeight: 500, fontSize: '12px', lineHeight: '12.09px' }}>{formatDate(req.startDate)}</td>
+                      <td className="px-4 py-3" style={{ fontFamily: 'Montserrat', fontWeight: 500, fontSize: '12px', lineHeight: '12.09px' }}>{formatDate(req.endDate)}</td>
+                      <td className="px-4 py-3" style={{ fontFamily: 'Montserrat', fontWeight: 500, fontSize: '12px', lineHeight: '12.09px' }}>{req.reason}</td>
+                      <td className="px-4 py-3" style={{ fontFamily: 'Montserrat', fontWeight: 500, fontSize: '12px', lineHeight: '12.09px' }}>{req.days}</td>
 
                     {/* Status badge */}
                      <td className="px-4 py-3">
@@ -205,9 +205,9 @@ const LeaveRequests = () => {
                      </td>
 
                      {/* Remarks */}
-                     <td className="px-4 py-3 text-gray-600">
-                       {req.remarks || "Empty remarks"}
-                     </td>
+                       <td className="px-4 py-3 text-gray-600" style={{ fontFamily: 'Montserrat', fontWeight: 500, fontSize: '12px', lineHeight: '12.09px' }}>
+                         {req.remarks || "Empty remarks"}
+                       </td>
 
                      {/* Actions */}
                      <td className="px-4 py-3">
