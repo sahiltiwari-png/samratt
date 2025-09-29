@@ -230,7 +230,8 @@ const LeavePolicy = () => {
           {!isFormMode && (
             <Button
               onClick={() => setIsModalOpen(true)}
-              className="bg-green-500 hover:bg-green-600"
+              className="hover:opacity-90"
+              style={{ backgroundColor: '#4CDC9C' }}
             >
               <Plus className="w-4 h-4 mr-2" />
               Add Leave Type
@@ -353,14 +354,16 @@ const LeavePolicy = () => {
                 <Button
                   variant="outline"
                   onClick={() => setIsModalOpen(true)}
-                  className="bg-green-100 text-green-700 hover:bg-green-200"
+                  className="hover:opacity-90"
+                  style={{ backgroundColor: '#E8F8F3', color: '#2D7A5A', borderColor: '#4CDC9C' }}
                 >
                   <Plus className="w-4 h-4 mr-2" />
                   Add Leave Type
                 </Button>
                 <Button
                   onClick={handleCreatePolicy}
-                  className="bg-green-500 hover:bg-green-600"
+                  className="hover:opacity-90"
+                  style={{ backgroundColor: '#4CDC9C' }}
                   disabled={currentLeaveTypes.length === 0}
                 >
                   Create Policy
@@ -651,9 +654,10 @@ const LeavePolicy = () => {
                 Cancel
               </Button>
               <Button
-                onClick={handleAddLeaveType}
-                className="bg-green-500 hover:bg-green-600"
-              >
+                  onClick={handleAddLeaveType}
+                  className="hover:opacity-90"
+                  style={{ backgroundColor: '#4CDC9C' }}
+                >
                 Save
               </Button>
             </div>
