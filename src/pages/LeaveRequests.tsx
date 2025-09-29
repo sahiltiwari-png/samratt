@@ -13,7 +13,7 @@ import {
   AvatarImage,
 } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
-import { User, ChevronDown, X, Search } from "lucide-react";
+import { User, ChevronDown, X, Search, ChevronLeft, ChevronRight } from "lucide-react";
 import { getLeaveRequests, LeaveRequest, Employee } from "@/api/leaves";
 import { getEmployees, Employee as EmployeeType, EmployeesResponse } from "@/api/employees";
 import { toast } from "@/components/ui/use-toast";
@@ -30,6 +30,10 @@ const LeaveRequests = () => {
   const [selectedEmployee, setSelectedEmployee] = useState<EmployeeType | null>(null);
   const [showEmployeeDropdown, setShowEmployeeDropdown] = useState(false);
   const [loadingEmployees, setLoadingEmployees] = useState(false);
+
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   useEffect(() => {
     fetchLeaveRequests();
@@ -141,6 +145,17 @@ const LeaveRequests = () => {
     });
   }, [requests, status]);
 
+  // Pagination calculations
+  const totalPages = Math.ceil(filteredRequests.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedRequests = filteredRequests.slice(startIndex, endIndex);
+
+  // Reset to first page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [status, selectedEmployee]);
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -195,7 +210,7 @@ const LeaveRequests = () => {
             {/* Employee Search Filter */}
             <div className="relative employee-search-container">
               <div 
-                className="flex items-center gap-2 border border-emerald-300 rounded-lg px-3 py-2 bg-white w-[320px] hover:border-emerald-400 focus-within:border-emerald-500 transition-colors min-h-[40px] cursor-pointer"
+                className="flex items-center gap-2 border border-emerald-300 rounded-lg px-3 py-2 bg-white w-[320px] hover:border-emerald-400 focus-within:border-emerald-500 transition-colors h-10 cursor-pointer"
                 onClick={handleSearchClick}
               >
                 <Search className="h-4 w-4 text-emerald-500 flex-shrink-0" />
@@ -336,7 +351,7 @@ const LeaveRequests = () => {
                    </tr>
                  )}
 
-                {filteredRequests.map((req) => (
+                {paginatedRequests.map((req) => (
                   <tr
                     key={req._id}
                     className="border-b last:border-0 hover:bg-emerald-50 transition-colors"
@@ -397,6 +412,76 @@ const LeaveRequests = () => {
             </table>
           </div>
         </div>
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-between mt-6">
+            <div className="text-sm text-gray-600">
+              Showing {startIndex + 1} to {Math.min(endIndex, filteredRequests.length)} of {filteredRequests.length} entries
+            </div>
+            
+            <div className="flex items-center gap-2">
+              {/* Previous Button */}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+                className="flex items-center gap-1"
+              >
+                <ChevronLeft className="h-4 w-4" />
+                Previous
+              </Button>
+
+              {/* Page Numbers */}
+              <div className="flex items-center gap-1">
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
+                  // Show first page, last page, current page, and pages around current page
+                  const showPage = 
+                    page === 1 || 
+                    page === totalPages || 
+                    (page >= currentPage - 1 && page <= currentPage + 1);
+                  
+                  if (!showPage) {
+                    // Show ellipsis for gaps
+                    if (page === currentPage - 2 || page === currentPage + 2) {
+                      return <span key={page} className="px-2 text-gray-400">...</span>;
+                    }
+                    return null;
+                  }
+
+                  return (
+                    <Button
+                      key={page}
+                      variant={currentPage === page ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setCurrentPage(page)}
+                      className={`min-w-[40px] ${
+                        currentPage === page 
+                          ? "bg-emerald-600 hover:bg-emerald-700 text-white" 
+                          : "hover:bg-emerald-50"
+                      }`}
+                    >
+                      {page}
+                    </Button>
+                  );
+                })}
+              </div>
+
+              {/* Next Button */}
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                disabled={currentPage === totalPages}
+                className="flex items-center gap-1"
+              >
+                Next
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        )}
 
         {/* Hide scrollbars */}
         <style jsx global>{`
