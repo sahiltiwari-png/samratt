@@ -12,6 +12,7 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Attendance from "./pages/Attendance";
 import Leaves from "./pages/Leaves";
+import LeavePolicy from "./pages/LeavePolicy";
 import Employees from "./pages/Employees";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
@@ -57,6 +58,7 @@ const App = () => (
                       <Route path="/attendance" element={<Attendance />} />
                       <Route path="/attendance/employee/:id" element={<EmployeeAttendanceDetail />} />
                       <Route path="/leaves" element={<Leaves />} />
+                      <Route path="/leaves/policy" element={<LeavePolicy />} />
                       <Route path="/reports" element={<Reports />} />
                       <Route path="/settings" element={<Settings />} />
                   <Route path="/profile" element={<Profile />} />
