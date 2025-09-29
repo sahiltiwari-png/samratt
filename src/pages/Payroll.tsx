@@ -27,7 +27,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
-import { getPayroll, createPayroll, getPayrollByEmployee, updatePayrollById, type PayrollResponse, type PayrollItem } from "@/api/payroll";
+import { getPayroll, createPayroll, getPayrollByEmployee, updatePayrollById, sendPayslip, type PayrollResponse, type PayrollItem } from "@/api/payroll";
 import { getEmployees } from "@/api/employees";
 import { toast } from "@/hooks/use-toast";
 
@@ -46,6 +46,7 @@ const Payroll = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const [sendingId, setSendingId] = useState<string | null>(null);
 
   // Create Payroll modal state
   const [createOpen, setCreateOpen] = useState(false);
@@ -233,7 +234,20 @@ const Payroll = () => {
     }
   };
   const handleEdit = (id: string) => navigate(`/payroll/edit/${id}`);
-  const handleSend = (id: string) => alert(`Send payroll message for ${id}`);
+  const handleSend = async (record: PayrollItem) => {
+    try {
+      const empId = (record as any)?.employeeId?._id ?? (record as any)?.employeeId;
+      const m = month + 1; // API expects 1-12
+      const y = year;
+      setSendingId(record._id);
+      const res = await sendPayslip(String(empId), m, y);
+      toast({ title: "Payslip Sent", description: res?.message || `Payslip sent for ${m}/${y}` });
+    } catch (e: any) {
+      toast({ title: "Error", description: e?.response?.data?.message || "Failed to send payslip", variant: "destructive" });
+    } finally {
+      setSendingId(null);
+    }
+  };
   const handleDownload = (id: string) => alert(`Download payroll for ${id}`);
 
   return (
@@ -416,7 +430,8 @@ const Payroll = () => {
                           <Tooltip>
                             <TooltipTrigger asChild>
                               <button
-                                onClick={() => handleSend(p._id)}
+                                onClick={() => handleSend(p)}
+                                disabled={sendingId === p._id}
                                 className="h-7 w-7 flex items-center justify-center rounded text-indigo-600 hover:bg-emerald-100 focus:outline-none focus:ring-0"
                               >
                                 <Send className="w-3.5 h-3.5" />

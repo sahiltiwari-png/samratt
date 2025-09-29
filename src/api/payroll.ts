@@ -104,3 +104,8 @@ export const updatePayrollById = async (payrollId: string, payload: UpdatePayrol
   const res = await API.put(`/payroll/updateById/${payrollId}`, payload);
   return res.data as UpdatePayrollResponse;
 };
+
+export const sendPayslip = async (employeeId: string, month: number, year: number) => {
+  const res = await API.post(`/payroll/send-payslip/${employeeId}/${month}/${year}`);
+  return res.data;
+};
