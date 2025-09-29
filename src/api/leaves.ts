@@ -57,7 +57,7 @@ export const getLeaveRequestById = async (id: string): Promise<{ success: boolea
   return res.data;
 };
 
-export const updateLeaveRequestStatus = async (id: string, status: string, remark?: string) => {
-  const res = await API.put(`/leaves/${id}/status`, { status, remark });
+export const updateLeaveRequestStatus = async (id: string, status: string, remarks?: string) => {
+  const res = await API.post(`/leaves/status/update/${id}`, { status, remarks });
   return res.data;
 };
