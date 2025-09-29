@@ -28,8 +28,27 @@ export interface LeaveRequestsResponse {
   items: LeaveRequest[];
 }
 
-export const getLeaveRequests = async (page: number = 1, limit: number = 10): Promise<LeaveRequestsResponse> => {
-  const res = await API.get(`/leaves?page=${page}&limit=${limit}`);
+export const getLeaveRequests = async (
+  page: number = 1, 
+  limit: number = 10, 
+  status?: string, 
+  userIds?: string[]
+): Promise<LeaveRequestsResponse> => {
+  const params = new URLSearchParams();
+  params.append('page', page.toString());
+  params.append('limit', limit.toString());
+  
+  if (status) {
+    params.append('status', status);
+  }
+  
+  if (userIds && userIds.length > 0) {
+    userIds.forEach(userId => {
+      params.append('userId', userId);
+    });
+  }
+  
+  const res = await API.get(`/leaves?${params.toString()}`);
   return res.data;
 };
 

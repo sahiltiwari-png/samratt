@@ -1,5 +1,47 @@
 import API from './auth';
 
+export interface Employee {
+  _id: string;
+  organizationId: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  employeeCode: string;
+  designation: string;
+  status: string;
+  loginEnabled: boolean;
+  isActive: boolean;
+  isSystemGenerated: boolean;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+  lastLoginAt?: string;
+  profilePhotoUrl?: string;
+  dateOfJoining?: string;
+  probationEndDate?: string;
+  department?: string;
+  employmentType?: string;
+  dob?: string;
+  gender?: string;
+  maritalStatus?: string;
+  nationality?: string;
+  addressLine1?: string;
+  country?: string;
+  state?: string;
+  city?: string;
+  zipCode?: string;
+  createdBy?: string;
+}
+
+export interface EmployeesResponse {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+  items: Employee[];
+}
+
 export const getEmployeeById = async (id: string) => {
   const response = await API.get(`/employees/${id}`);
   return response.data;
