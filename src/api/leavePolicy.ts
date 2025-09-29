@@ -101,6 +101,11 @@ export const updateLeaveType = async (policyId: string, leaveTypeId: string, pay
   return res.data;
 };
 
+export const createLeaveType = async (policyId: string, payload: Omit<LeaveType, '_id'>) => {
+  const res = await API.post(`/leave-policy/${policyId}/leave-type`, payload);
+  return res.data;
+};
+
 export const deleteLeavePolicy = async (id: string) => {
   const res = await API.delete(`/leave-policy/${id}`);
   return res.data;

@@ -33,6 +33,7 @@ import {
   createLeavePolicy,
   updateLeavePolicy,
   updateLeaveType,
+  createLeaveType,
   LeavePolicy,
   LeaveType,
   CreateLeavePolicyPayload,
@@ -44,6 +45,7 @@ import { useAuth } from "@/contexts/AuthContext";
 const LeavePolicy = () => {
   const [policies, setPolicies] = useState<LeavePolicy[]>([]);
   const [loading, setLoading] = useState(true);
+  const [addingLeaveType, setAddingLeaveType] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isFormMode, setIsFormMode] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -103,13 +105,12 @@ const LeavePolicy = () => {
   });
 
   const leaveTypeOptions = [
-    { value: "annual", label: "Annual Leave" },
-    { value: "sick", label: "Sick Leave" },
+    { value: "casual", label: "Casual Leave" },
+    { value: "medical", label: "Medical Leave" },
+    { value: "earned", label: "Earned Leave" },
     { value: "maternity", label: "Maternity Leave" },
     { value: "paternity", label: "Paternity Leave" },
-    { value: "medical", label: "Medical Leave" },
-    { value: "casual", label: "Casual Leave" },
-    { value: "emergency", label: "Emergency Leave" },
+    { value: "other", label: "Other Leave" },
   ];
 
   const intervalOptions = [
@@ -200,7 +201,7 @@ const LeavePolicy = () => {
     }
   };
 
-  const handleAddLeaveType = () => {
+  const handleAddLeaveType = async () => {
     if (!leaveTypeForm.type || !leaveTypeForm.interval || !leaveTypeForm.intervalValue || parseInt(leaveTypeForm.intervalValue) <= 0) {
       toast({
         title: "Error",
@@ -210,6 +211,8 @@ const LeavePolicy = () => {
       return;
     }
 
+    setAddingLeaveType(true);
+
     const newLeaveType: Omit<LeaveType, "_id"> = { 
       ...leaveTypeForm,
       intervalValue: parseInt(leaveTypeForm.intervalValue) || 0,
@@ -218,29 +221,55 @@ const LeavePolicy = () => {
       maxEncashable: parseInt(leaveTypeForm.maxEncashable) || 0,
       maxNegativeBalance: parseInt(leaveTypeForm.maxNegativeBalance) || 0,
     };
-    setCurrentLeaveTypes([...currentLeaveTypes, newLeaveType]);
 
-    setLeaveTypeForm({
-      type: "",
-      interval: "",
-      intervalValue: "",
-      carryForward: false,
-      maxCarryForward: "",
-      encashable: false,
-      maxEncashable: "",
-      probationApplicable: true,
-      expireMonthly: false,
-      minContinuousWorkDays: "",
-      allowNegativeBalance: false,
-      maxNegativeBalance: "",
-      allowUnpaidLeave: false,
-    });
+    try {
+      // If we have a selected policy (editing existing policy), call the API
+      if (selectedPolicy) {
+        await createLeaveType(selectedPolicy._id, newLeaveType);
+        
+        // Refresh the selected policy to show the new leave type
+        const response = await getLeavePolicy(selectedPolicy._id);
+        setSelectedPolicy(response.data);
+        
+        // Also refresh the policies list
+        const policiesResponse = await getLeavePolicies();
+        setPolicies(policiesResponse.data);
+      } else {
+        // If creating a new policy, just add to local state
+        setCurrentLeaveTypes([...currentLeaveTypes, newLeaveType]);
+      }
 
-    setIsModalOpen(false);
-    toast({
-      title: "Success",
-      description: "Leave type added successfully",
-    });
+      setLeaveTypeForm({
+        type: "",
+        interval: "",
+        intervalValue: "",
+        carryForward: false,
+        maxCarryForward: "",
+        encashable: false,
+        maxEncashable: "",
+        probationApplicable: true,
+        expireMonthly: false,
+        minContinuousWorkDays: "",
+        allowNegativeBalance: false,
+        maxNegativeBalance: "",
+        allowUnpaidLeave: false,
+      });
+
+      setIsModalOpen(false);
+      toast({
+        title: "Success",
+        description: "Leave type added successfully",
+      });
+    } catch (error) {
+      console.error("Error adding leave type:", error);
+      toast({
+        title: "Error",
+        description: "Failed to add leave type. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setAddingLeaveType(false);
+    }
   };
 
   const removeLeaveType = (index: number) => {
@@ -371,9 +400,10 @@ const LeavePolicy = () => {
               onClick={() => setIsModalOpen(true)}
               className="hover:opacity-90"
               style={{ backgroundColor: '#4CDC9C' }}
+              disabled={addingLeaveType}
             >
               <Plus className="w-4 h-4 mr-2" />
-              Add Leave Type
+              {addingLeaveType ? "Adding..." : "Add Leave Type"}
             </Button>
           )}
         </div>
@@ -495,9 +525,10 @@ const LeavePolicy = () => {
                   onClick={() => setIsModalOpen(true)}
                   className="hover:opacity-90"
                   style={{ backgroundColor: '#E8F8F3', color: '#2D7A5A', borderColor: '#4CDC9C' }}
+                  disabled={addingLeaveType}
                 >
                   <Plus className="w-4 h-4 mr-2" />
-                  Add Leave Type
+                  {addingLeaveType ? "Adding..." : "Add Leave Type"}
                 </Button>
                 <Button
                   onClick={handleCreatePolicy}
@@ -789,15 +820,20 @@ const LeavePolicy = () => {
             </div>
 
             <div className="flex justify-end gap-3 pt-4">
-              <Button variant="outline" onClick={() => setIsModalOpen(false)}>
+              <Button 
+                variant="outline" 
+                onClick={() => setIsModalOpen(false)}
+                disabled={addingLeaveType}
+              >
                 Cancel
               </Button>
               <Button
                   onClick={handleAddLeaveType}
                   className="hover:opacity-90"
                   style={{ backgroundColor: '#4CDC9C' }}
+                  disabled={addingLeaveType}
                 >
-                Save
+                {addingLeaveType ? "Adding..." : "Save"}
               </Button>
             </div>
           </DialogContent>
@@ -869,34 +905,51 @@ const LeavePolicy = () => {
               </div>
 
               {/* Leave Types List */}
-              {selectedPolicy && selectedPolicy.leaveTypes.length > 0 && (
+              {selectedPolicy && (
                 <div className="space-y-3">
-                  <h3 className="font-semibold">Leave Types</h3>
-                  <div className="space-y-2">
-                    {selectedPolicy.leaveTypes.map((leaveType, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center justify-between p-3 border rounded-lg bg-white shadow-sm"
-                      >
-                        <div>
-                          <span className="font-medium capitalize">
-                            {leaveType.type}
-                          </span>
-                          <span className="text-sm text-gray-500 ml-2">
-                            {leaveType.intervalValue} / {leaveType.interval}
-                          </span>
-                        </div>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleEditLeaveType(leaveType)}
-                          className="text-blue-500 hover:text-blue-700"
-                        >
-                          <Edit className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    ))}
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-semibold">Leave Types</h3>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setIsModalOpen(true)}
+                      className="hover:opacity-90"
+                      style={{ backgroundColor: '#E8F8F3', color: '#2D7A5A', borderColor: '#4CDC9C' }}
+                      disabled={addingLeaveType}
+                    >
+                      <Plus className="w-4 h-4 mr-2" />
+                      {addingLeaveType ? "Adding..." : "Add Leave Type"}
+                    </Button>
                   </div>
+                  {selectedPolicy.leaveTypes.length > 0 ? (
+                    <div className="space-y-2">
+                      {selectedPolicy.leaveTypes.map((leaveType, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center justify-between p-3 border rounded-lg bg-white shadow-sm"
+                        >
+                          <div>
+                            <span className="font-medium capitalize">
+                              {leaveType.type}
+                            </span>
+                            <span className="text-sm text-gray-500 ml-2">
+                              {leaveType.intervalValue} / {leaveType.interval}
+                            </span>
+                          </div>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleEditLeaveType(leaveType)}
+                            className="text-blue-500 hover:text-blue-700"
+                          >
+                            <Edit className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-gray-500 text-sm">No leave types added yet.</p>
+                  )}
                 </div>
               )}
 
