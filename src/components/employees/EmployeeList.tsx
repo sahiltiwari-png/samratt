@@ -10,6 +10,7 @@ import { Eye, Pencil } from "lucide-react";
 import { getEmployees, getEmployeeById } from "@/api/employees";
 import { uploadFile } from "@/api/uploadFile";
 import { getRoles } from "@/api/roles";
+import { assignRoleToUser } from "@/api/assignRole";
 import API from "@/api/auth";
 
 // Reusable filter bar component
@@ -572,22 +573,21 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
                               {key === 'role' ? 
                                 (() => {
                                   if (employeeDetails.roles && employeeDetails.roles.length > 0) {
-                                    return employeeDetails.roles.map((r: any) => {
-                                      if (typeof r === 'string') {
-                                        // If it's a string (role ID), find the role name from roles array
-                                        const roleObj = roles.find(role => role._id === r);
-                                        return roleObj ? roleObj.name : r;
-                                      } else {
-                                        // If it's an object, use the name property
-                                        return r.name || r;
-                                      }
-                                    }).join(', ');
+                                    // Show only the first (assigned) role, not all roles
+                                    const firstRole = employeeDetails.roles[0];
+                                    if (typeof firstRole === 'string') {
+                                      // If it's a string (role ID), find the role name from roles array
+                                      const roleObj = roles.find(role => role._id === firstRole);
+                                      return roleObj ? roleObj.name : firstRole;
+                                    } else {
+                                      // If it's an object, use the name property
+                                      return firstRole.name || firstRole;
+                                    }
                                   }
                                   return '-';
                                 })() : 
                                 (inputType === 'date' && value ? new Date(value).toLocaleDateString() : (value !== undefined && value !== null && value !== '' ? value.toString() : '-'))
-                              }
-                            </span>
+                              }</span>
                           )}
                         </div>
                       );
@@ -689,19 +689,25 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
                       try {
                         const submitData: any = { ...formData };
                         let currentSelectedRole: any = null;
+                        let roleChanged = false;
 
+                        // Check if role has changed
                         if (submitData.role) {
                           const foundRole = roles.find(r => r._id === submitData.role);
-
                           if (foundRole) {
-                            // Send role ID to backend for database storage
-                            submitData.roles = [foundRole._id];
                             currentSelectedRole = foundRole;
-
+                            
+                            // Check if role is different from current role
+                            const currentRoleId = employeeDetails?.roles?.[0]?._id || employeeDetails?.roles?.[0];
+                            if (currentRoleId !== foundRole._id) {
+                              roleChanged = true;
+                            }
+                            
+                            // For general employee update, ensure only one role is assigned
+                            submitData.roles = [foundRole._id]; // Single role assignment
                           }
                           delete submitData.role;
                         }
-                        
 
                         // Remove properties not expected by the backend or that cause issues
                         delete submitData.profilePhotoUrl; // Ensure profile photo is not sent
@@ -731,25 +737,66 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
                         delete submitData.panNumber; // Ensure panNumber is not sent
                         delete submitData.passportNumber; // Ensure passportNumber is not sent
 
+                        // If role changed, use auth/assign-role API
+                        if (roleChanged && currentSelectedRole && selectedEmployee?._id) {
+                          console.log('🔍 DEBUG: Assigning single role to user');
+                          console.log('🔍 DEBUG: userId:', selectedEmployee._id);
+                          console.log('🔍 DEBUG: roleId:', currentSelectedRole._id);
+                          console.log('🔍 DEBUG: roleName:', currentSelectedRole.name);
+                          
+                          try {
+                            const response = await assignRoleToUser(
+                              selectedEmployee._id,
+                              currentSelectedRole._id,
+                              true // isDefault = true
+                            );
+                            console.log('✅ Role assigned successfully to database via auth/assign-role API:', response);
+                            console.log('✅ Employee now has role:', currentSelectedRole.name);
+                          } catch (error) {
+                            console.error('❌ Error saving role to database:', error);
+                            console.error('❌ Error response:', error.response?.data);
+                            console.error('❌ Error status:', error.response?.status);
+                            throw error; // Re-throw to handle in outer catch
+                          }
+                        }
 
+                        // Update other employee details (excluding role as it's handled above)
+                        console.log('🔍 DEBUG: Updating other employee details:', submitData);
                         await API.put(`/auth/employees/${selectedEmployee?._id}`, submitData);
+                        console.log('✅ Employee details updated successfully in database');
 
                         setUpdateMessage('Update success!');
                         setEditMode(false);
                         setProfilePreview(null);
                         // After successful update, update the UI immediately
                         if (selectedEmployee?._id) {
+                          // If role was changed, update with the new role object
+                          let updatedRoles = submitData.roles;
+                          if (roleChanged && currentSelectedRole) {
+                            updatedRoles = [currentSelectedRole]; // Use the complete role object for UI
+                          }
+                          
                           // Update employeeDetails to reflect the changes immediately
-
-                          setEmployeeDetails(prev => ({ ...prev, roles: submitData.roles }));
+                          setEmployeeDetails(prev => ({ 
+                            ...prev, 
+                            roles: updatedRoles,
+                            designation: submitData.designation,
+                            status: submitData.status
+                          }));
+                          
                           // Update the main employee list to reflect the role change
                           setEmployees(prev => prev.map(emp => 
                             emp._id === selectedEmployee?._id 
-                              ? { ...emp, designation: submitData.designation, status: submitData.status, roles: submitData.roles } 
+                              ? { 
+                                  ...emp, 
+                                  designation: submitData.designation, 
+                                  status: submitData.status, 
+                                  roles: updatedRoles 
+                                } 
                               : emp
                           ));
-                          // Re-fetch employee details to ensure we have the latest data
-
+                          
+                          // Re-fetch employee details to ensure we have the latest data from server
                           await fetchEmployeeDetails(selectedEmployee._id);
                         }
                       } catch (e) {
