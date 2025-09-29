@@ -93,15 +93,12 @@ const LeaveRequests = () => {
     <div className="min-h-screen bg-gradient-to-br from-emerald-100 via-emerald-50 to-white p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div>
-            <h2 className="text-3xl font-bold text-gray-900">
-              Leave Requests
-            </h2>
-            <p className="text-sm text-gray-600">
-              Manage and review employee leave requests
-            </p>
-          </div>
+         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+           <div>
+             <h2 className="text-base font-medium text-gray-900">
+               Leave Request - {totalRequests}
+             </h2>
+           </div>
 
           <div className="flex items-center gap-3">
             <Select value={status} onValueChange={setStatus}>
@@ -143,25 +140,28 @@ const LeaveRequests = () => {
                     Total Days
                   </th>
                   <th className="px-4 py-3 text-left font-semibold text-gray-700">
-                    Status
-                  </th>
-                  <th className="px-4 py-3 text-left font-semibold text-gray-700">
-                    Actions
-                  </th>
+                     Status
+                   </th>
+                   <th className="px-4 py-3 text-left font-semibold text-gray-700">
+                     Remarks
+                   </th>
+                   <th className="px-4 py-3 text-left font-semibold text-gray-700">
+                     Actions
+                   </th>
                 </tr>
               </thead>
 
               <tbody>
                 {filteredRequests.length === 0 && (
-                  <tr>
-                    <td
-                      colSpan={8}
-                      className="px-4 py-6 text-center text-gray-600"
-                    >
-                      No leave requests found
-                    </td>
-                  </tr>
-                )}
+                   <tr>
+                     <td
+                       colSpan={9}
+                       className="px-4 py-6 text-center text-gray-600"
+                     >
+                       No leave requests found
+                     </td>
+                   </tr>
+                 )}
 
                 {filteredRequests.map((req) => (
                   <tr
@@ -196,23 +196,28 @@ const LeaveRequests = () => {
                     <td className="px-4 py-3 font-medium">{req.days}</td>
 
                     {/* Status badge */}
-                    <td className="px-4 py-3">
-                      <span
-                        className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(req.status)}`}
-                      >
-                        {req.status}
-                      </span>
-                    </td>
+                     <td className="px-4 py-3">
+                       <span
+                         className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(req.status)}`}
+                       >
+                         {req.status}
+                       </span>
+                     </td>
 
-                    {/* Actions */}
-                    <td className="px-4 py-3">
-                      <Button
-                        size="sm"
-                        className="bg-emerald-600 text-white hover:bg-emerald-700"
-                      >
-                        Update
-                      </Button>
-                    </td>
+                     {/* Remarks */}
+                     <td className="px-4 py-3 text-gray-600">
+                       {req.remarks || "Empty remarks"}
+                     </td>
+
+                     {/* Actions */}
+                     <td className="px-4 py-3">
+                       <Button
+                         size="sm"
+                         className="bg-emerald-600 text-white hover:bg-emerald-700"
+                       >
+                         Update
+                       </Button>
+                     </td>
                   </tr>
                 ))}
               </tbody>

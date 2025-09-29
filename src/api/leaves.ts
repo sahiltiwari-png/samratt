@@ -17,6 +17,7 @@ export interface LeaveRequest {
   reason: string;
   days: number;
   status: string;
+  remarks?: string;
 }
 
 export interface LeaveRequestsResponse {
