@@ -1,21 +1,13 @@
 
 import { useState, useEffect } from "react";
-import { Calendar, Check, ChevronRight } from "lucide-react";
+import { Calendar, Check, ChevronRight, ChevronDown, X as XIcon, Search as SearchIcon } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 
 
 import { uploadFile } from "../api/uploadFile";
 import API from "../api/auth";
-
-const getRoles = async () => {
-  // Mock roles data
-  return [
-    { id: 1, name: "Admin", value: "admin" },
-    { id: 2, name: "Manager", value: "manager" },
-    { id: 3, name: "Employee", value: "employee" },
-    { id: 4, name: "HR", value: "hr" }
-  ];
-};
+import { getRoles } from "../api/roles";
 
 
 
@@ -69,15 +61,133 @@ const Select = ({ label, value, onChange, options, placeholder = "Select..." }: 
   </div>
 );
 
+// Designation master list
+const DESIGNATION_OPTIONS = [
+    "Intern","Trainee","Associate","Junior Executive","Executive","Coordinator",
+  "Senior Executive","Specialist","Analyst","Consultant","Assistant Manager","Team Lead","Supervisor",
+  "Manager","Senior Manager","Project Manager","Program Manager","Product Manager","Operations Manager","Delivery Manager",
+  "General Manager","Associate Director","Director","Vice President","Senior Vice President","CEO","CTO","CIO","COO","CFO","CMO","CHRO","CSO",
+  "Software Engineer","Senior Software Engineer","Full Stack Developer","Backend Developer","Frontend Developer","Mobile App Developer","DevOps Engineer","Cloud Engineer","QA Engineer","Test Analyst","Automation Tester","UI/UX Designer","System Administrator","Database Administrator","Network Engineer","Security Analyst","Technical Lead","Solution Architect","Technical Project Manager","Engineering Manager","VP Engineering",
+  "Sales Executive","Business Development Executive","Business Development Manager","Inside Sales Executive","Sales Consultant","Relationship Manager","Key Account Manager","Territory Sales Manager","Regional Sales Manager","National Sales Manager","Head of Sales","Vice President Sales","Chief Sales Officer",
+  "Marketing Executive","Digital Marketing Executive","SEO Specialist","PPC Specialist","Content Writer","Copywriter","Social Media Executive","Brand Executive","Marketing Analyst","Marketing Manager","Product Marketing Manager","Campaign Manager","Growth Manager","Regional Marketing Manager","Head of Marketing","Vice President Marketing","Chief Marketing Officer",
+  "HR Executive","HR Generalist","Recruiter","Talent Acquisition Specialist","HR Manager","HR Business Partner","Training & Development Manager","Payroll Specialist","Admin Executive","Office Manager",
+  "Accounts Executive","Junior Accountant","Senior Accountant","Finance Analyst","Accounts Manager","Finance Manager","Internal Auditor","Financial Controller",
+  "Operations Executive","Operations Manager","Process Specialist","Customer Support Executive","Client Service Manager","Technical Support Engineer","Service Delivery Manager"
+];
+
+const DesignationSelect = ({ value, onChange }: { value: string; onChange: (v: string) => void }) => {
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const filtered = DESIGNATION_OPTIONS.filter(opt => opt.toLowerCase().includes(query.toLowerCase()));
+  return (
+    <div className="flex flex-col">
+      <label className="mb-2 text-sm font-medium text-gray-700">Designation</label>
+      <div className="relative">
+        <input 
+          value={value}
+          onChange={e => { onChange(e.target.value); setQuery(e.target.value); setOpen(true); }}
+          onClick={() => setOpen(o => !o)}
+          placeholder="Select designation" 
+          className="w-full rounded-md border border-gray-300 px-3 py-2.5 text-sm bg-white focus:border-green-500 focus:ring-2 focus:ring-green-100 placeholder-gray-400"
+        />
+        <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+        {open && (
+          <div className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-md shadow max-h-56 overflow-auto">
+            <div className="flex items-center gap-2 p-2 border-b">
+              <SearchIcon className="w-4 h-4 text-gray-400" />
+              <input
+                autoFocus
+                value={query}
+                onChange={e => setQuery(e.target.value)}
+                placeholder="Search..."
+                className="w-full text-sm outline-none"
+              />
+            </div>
+            {filtered.length === 0 ? (
+              <div className="p-2 text-xs text-gray-500">No results</div>
+            ) : (
+              filtered.map(opt => (
+                <button
+                  key={opt}
+                  type="button"
+                  className="w-full text-left px-3 py-2 text-sm hover:bg-green-50"
+                  onClick={() => { onChange(opt); setQuery(opt); setOpen(false); }}
+                >
+                  {opt}
+                </button>
+              ))
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+const RoleSelect = ({ value, onChange, roles }: { value: string; onChange: (v: string) => void; roles: any[] }) => {
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const filtered = roles.filter(role => role.name.toLowerCase().includes(query.toLowerCase()));
+  
+  // Find the selected role name based on the role ID
+  const selectedRole = roles.find(role => role._id === value);
+  const displayValue = selectedRole ? selectedRole.name : "";
+  
+  return (
+    <div className="flex flex-col">
+      <label className="mb-2 text-sm font-medium text-gray-700">Role</label>
+      <div className="relative">
+        <input 
+          value={query || displayValue}
+          onChange={e => { setQuery(e.target.value); setOpen(true); }}
+          onClick={() => setOpen(o => !o)}
+          placeholder="Select role" 
+          className="w-full rounded-md border border-gray-300 px-3 py-2.5 text-sm bg-white focus:border-green-500 focus:ring-2 focus:ring-green-100 placeholder-gray-400"
+        />
+        <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+        {open && (
+          <div className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-md shadow max-h-56 overflow-auto">
+            <div className="flex items-center gap-2 p-2 border-b">
+              <SearchIcon className="w-4 h-4 text-gray-400" />
+              <input
+                autoFocus
+                value={query}
+                onChange={e => setQuery(e.target.value)}
+                placeholder="Search..."
+                className="w-full text-sm outline-none"
+              />
+            </div>
+            {filtered.length === 0 ? (
+              <div className="p-2 text-xs text-gray-500">No results</div>
+            ) : (
+              filtered.map(role => (
+                <button
+                  key={role.id}
+                  type="button"
+                  className="w-full text-left px-3 py-2 text-sm hover:bg-green-50"
+                  onClick={() => { onChange(role._id); setQuery(""); setOpen(false); }}
+                >
+                  {role.name}
+                </button>
+              ))
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
 const AddEmployeeStepper = () => {
+  const navigate = useNavigate();
   const [step, setStep] = useState(0);
 
   const [form, setForm] = useState<any>({
     firstName: "", lastName: "", email: "", password: "", phone: "", department: "", designation: "",
-    grade: "", dateOfJoining: "", employmentType: "", reportingManager: "", probationEndDate: "",
+    grade: "", dateOfJoining: "", employmentType: "full-time", reportingManager: "", probationEndDate: "",
     isActive: true, dob: "", gender: "", bloodGroup: "", maritalStatus: "", nationality: "", country: "",
     state: "", city: "", zipCode: "", passportNo: "", addressLine1: "", addressLine2: "", aadhaarNo: "",
-    panNo: "", profilePhotoUrl: "", status: "active",
+    panNo: "", profilePhotoUrl: "", status: "active", role: "",
     bankDetails: { bankName: "", accountNumber: "", ifscCode: "", branch: "" },
     taxDetails: { taxRegime: "", UAN: "", ESIC: "" },
     emergencyContact: { name: "", relationship: "", phone: "" },
@@ -94,7 +204,6 @@ const AddEmployeeStepper = () => {
 
   // Roles dropdown state
   const [roles, setRoles] = useState<any[]>([]);
-  const [role, setRole] = useState("");
 
   useEffect(() => {
     getRoles().then(setRoles).catch(() => setRoles([]));
@@ -149,10 +258,10 @@ const AddEmployeeStepper = () => {
               setStep(0);
               setForm({
                 firstName: "", lastName: "", email: "", password: "", phone: "", department: "", designation: "",
-                grade: "", dateOfJoining: "", employmentType: "", reportingManager: "", probationEndDate: "",
+                grade: "", dateOfJoining: "", employmentType: "full-time", reportingManager: "", probationEndDate: "",
                 isActive: true, dob: "", gender: "", bloodGroup: "", maritalStatus: "", nationality: "", country: "",
                 state: "", city: "", zipCode: "", passportNo: "", addressLine1: "", addressLine2: "", aadhaarNo: "",
-                panNo: "", profilePhotoUrl: "", status: "active",
+                panNo: "", profilePhotoUrl: "", status: "active", role: "",
                 bankDetails: { bankName: "", accountNumber: "", ifscCode: "", branch: "" },
                 taxDetails: { taxRegime: "", UAN: "", ESIC: "" },
                 emergencyContact: { name: "", relationship: "", phone: "" },
@@ -201,7 +310,16 @@ const AddEmployeeStepper = () => {
 
         {/* Main Form Container */}
         <div className="bg-white rounded-lg shadow-sm">
-          <div className="px-8 py-8">
+          <div className="px-8 py-8 relative">
+            <button
+              type="button"
+              className="absolute right-4 top-4 text-gray-500 hover:text-gray-800"
+              onClick={() => navigate('/employees')}
+              aria-label="Close"
+              title="Close"
+            >
+              <XIcon className="w-5 h-5" />
+            </button>
             
             {/* Step Header */}
             <div className="mb-8">
@@ -242,10 +360,14 @@ const AddEmployeeStepper = () => {
                   value={form.password} 
                   onChange={(e:any)=>setForm({...form, password:e.target.value})}
                 />
-                <Input 
-                  label="Designation" 
-                  value={form.designation} 
-                  onChange={(e:any)=>setForm({...form, designation:e.target.value})}
+                <DesignationSelect
+                  value={form.designation}
+                  onChange={(v:string)=>setForm({...form, designation:v})}
+                />
+                <RoleSelect
+                  value={form.role}
+                  onChange={(v:string)=>setForm({...form, role:v})}
+                  roles={roles}
                 />
                 <Select
                   label="Employment Type"
@@ -639,7 +761,6 @@ const AddEmployeeStepper = () => {
                           UAN: form.taxDetails.UAN,
                           ESIC: form.taxDetails.ESIC,
                         },
-                        role: role,
                       };
                       await API.post("/auth/employees", payload);
                       setSuccess(true);

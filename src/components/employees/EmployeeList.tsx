@@ -1,3 +1,17 @@
+import { useEffect, useState, useRef, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Mail, Phone, MapPin, MoreVertical, ChevronDown, Search as SearchIcon } from "lucide-react";
+import { Eye, Pencil } from "lucide-react";
+import { getEmployees, getEmployeeById } from "@/api/employees";
+import { uploadFile } from "@/api/uploadFile";
+import { getRoles } from "@/api/roles";
+import API from "@/api/auth";
+
 // Reusable filter bar component
 const EmployeeFilterBar = ({
   statusFilter,
@@ -58,25 +72,6 @@ const EmployeeFilterBar = ({
     </div>
   );
 };
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Mail, Phone, MapPin, MoreVertical } from "lucide-react";
-import { Eye, Pencil } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { getEmployees, getEmployeeById } from "@/api/employees";
-import { uploadFile } from "@/api/uploadFile";
-import { useRef } from "react";
-import API from "@/api/auth";
 
 
 
@@ -93,6 +88,7 @@ interface Employee {
   employeeCode?: string;
   designation?: string;
   status?: string;
+  roles?: { _id: string; name: string; }[]; // Updated to reflect the actual structure
   createdAt?: string;
   dateOfJoining?: string;
   probationEndDate?: string;
@@ -100,6 +96,114 @@ interface Employee {
 }
 
 
+
+// Shared Designation list
+const DESIGNATION_OPTIONS = [
+  "Intern","Trainee","Associate","Junior Executive","Executive","Coordinator",
+  "Senior Executive","Specialist","Analyst","Consultant","Assistant Manager","Team Lead","Supervisor",
+  "Manager","Senior Manager","Project Manager","Program Manager","Product Manager","Operations Manager","Delivery Manager",
+  "General Manager","Associate Director","Director","Vice President","Senior Vice President","CEO","CTO","CIO","COO","CFO","CMO","CHRO","CSO",
+  "Software Engineer","Senior Software Engineer","Full Stack Developer","Backend Developer","Frontend Developer","Mobile App Developer","DevOps Engineer","Cloud Engineer","QA Engineer","Test Analyst","Automation Tester","UI/UX Designer","System Administrator","Database Administrator","Network Engineer","Security Analyst","Technical Lead","Solution Architect","Technical Project Manager","Engineering Manager","VP Engineering",
+  "Sales Executive","Business Development Executive","Business Development Manager","Inside Sales Executive","Sales Consultant","Relationship Manager","Key Account Manager","Territory Sales Manager","Regional Sales Manager","National Sales Manager","Head of Sales","Vice President Sales","Chief Sales Officer",
+  "Marketing Executive","Digital Marketing Executive","SEO Specialist","PPC Specialist","Content Writer","Copywriter","Social Media Executive","Brand Executive","Marketing Analyst","Marketing Manager","Product Marketing Manager","Campaign Manager","Growth Manager","Regional Marketing Manager","Head of Marketing","Vice President Marketing","Chief Marketing Officer",
+  "HR Executive","HR Generalist","Recruiter","Talent Acquisition Specialist","HR Manager","HR Business Partner","Training & Development Manager","Payroll Specialist","Admin Executive","Office Manager",
+  "Accounts Executive","Junior Accountant","Senior Accountant","Finance Analyst","Accounts Manager","Finance Manager","Internal Auditor","Financial Controller",
+  "Operations Executive","Operations Manager","Process Specialist","Customer Support Executive","Client Service Manager","Technical Support Engineer","Service Delivery Manager"
+];
+
+const DesignationSelect = ({ value, onChange, label }: { value: string | null; onChange: (v: string | null) => void; label?: string | null }) => {
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const filtered = DESIGNATION_OPTIONS.filter(opt => opt.toLowerCase().includes(query.toLowerCase()));
+  const displayValue = value || "";
+  return (
+    <div className="flex flex-col">
+      {(typeof label === 'string' && label.length > 0) && <label className="mb-1 text-sm font-medium text-gray-700">{label}</label>}
+      <div className="relative">
+        <input
+          value={displayValue}
+          onChange={e => { const v = e.target.value; onChange(v); setQuery(v); setOpen(true); }}
+          onClick={() => setOpen(o => !o)}
+          placeholder="Designation"
+          className="w-full rounded border px-3 py-1 bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-200"
+        />
+        <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+        {open && (
+          <div className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-md shadow max-h-56 overflow-auto">
+            <div className="flex items-center gap-2 p-2 border-b">
+              <SearchIcon className="w-4 h-4 text-gray-400" />
+              <input
+                autoFocus
+                value={query}
+                onChange={e => setQuery(e.target.value)}
+                placeholder="Search..."
+                className="w-full text-sm outline-none"
+              />
+            </div>
+            {filtered.length === 0 ? (
+              <div className="p-2 text-xs text-gray-500">No results</div>
+            ) : (
+              filtered.map((opt, index) => (
+                <button key={`${opt}-${index}`} type="button" className="w-full text-left px-3 py-2 text-sm hover:bg-green-50" onClick={() => { onChange(opt); setQuery(opt); setOpen(false); }}>
+                  {opt}
+                </button>
+              ))
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+const RoleSelect = ({ value, onChange, roles, label }: { value: string | null; onChange: (v: string | null) => void; roles: any[]; label?: string | null }) => {
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const filtered = roles.filter(role => role.name.toLowerCase().includes(query.toLowerCase()));
+  
+  // Find the role name for display based on the stored role ID
+  const selectedRole = roles.find(role => role._id === value);
+  const displayValue = selectedRole ? selectedRole.name : "";
+  
+  return (
+    <div className="flex flex-col">
+      {(typeof label === 'string' && label.length > 0) && <label className="mb-1 text-sm font-medium text-gray-700">{label}</label>}
+      <div className="relative">
+        <input
+          value={displayValue}
+          onChange={e => { setQuery(e.target.value); setOpen(true); }}
+          onClick={() => setOpen(o => !o)}
+          placeholder="Role"
+          className="w-full rounded border px-3 py-1 bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-200"
+        />
+        <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+        {open && (
+          <div className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-md shadow max-h-56 overflow-auto">
+            <div className="flex items-center gap-2 p-2 border-b">
+              <SearchIcon className="w-4 h-4 text-gray-400" />
+              <input
+                autoFocus
+                value={query}
+                onChange={e => setQuery(e.target.value)}
+                placeholder="Search..."
+                className="w-full text-sm outline-none"
+              />
+            </div>
+            {filtered.length === 0 ? (
+              <div className="p-2 text-xs text-gray-500">No results</div>
+            ) : (
+              filtered.map(role => (
+                <button key={role._id} type="button" className="w-full text-left px-3 py-2 text-sm hover:bg-green-50" onClick={() => { onChange(role._id); setQuery(role.name); setOpen(false); }}>
+                  {role.name}
+                </button>
+              ))
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
 
 const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
   const [employees, setEmployees] = useState<Employee[]>([]);
@@ -119,6 +223,7 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
   const [loadingDetails, setLoadingDetails] = useState(false);
   const [updateLoading, setUpdateLoading] = useState(false);
   const [updateMessage, setUpdateMessage] = useState<string | null>(null);
+  const [roles, setRoles] = useState<any[]>([]);
 
   const navigate = useNavigate();
 
@@ -142,6 +247,44 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
     fetchEmployees();
   }, [page, statusFilter, designationFilter, searchTerm]);
 
+  useEffect(() => {
+    getRoles().then(roles => {
+      setRoles(roles);
+    }).catch(() => {
+      console.error('❌ Failed to load roles');
+      setRoles([]);
+    });
+  }, []);
+
+  // Sync role when roles are loaded and we have employee details
+  useEffect(() => {
+    if (roles.length > 0 && employeeDetails && employeeDetails.roles && employeeDetails.roles.length > 0) {
+      const firstRole = employeeDetails.roles[0];
+      let roleObj;
+      
+
+      
+      if (typeof firstRole === 'string') {
+        // If firstRole is a string, it could be either role ID or role name
+        // First try to find by ID, then by name
+        roleObj = roles.find(r => r._id === firstRole);
+
+        if (!roleObj) {
+          roleObj = roles.find(r => r.name === firstRole);
+
+        }
+      } else {
+        // If firstRole is an object, find by ID
+        roleObj = roles.find(r => r._id === firstRole._id);
+
+      }
+      
+      if (roleObj) {
+        setFormData((fd: any) => ({ ...fd, role: roleObj._id }));
+      }
+    }
+  }, [roles, employeeDetails]);
+
   const handleStatusChange = (id: string, newStatus: string) => {
     setEmployees((prev) => prev.map(emp => emp._id === id ? { ...emp, status: newStatus } : emp));
     // TODO: Call API to update status if needed
@@ -152,18 +295,59 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
     setDesignationFilter(null);
   };
 
+  const fetchEmployeeDetails = useCallback(async (id: string) => {
+    setLoadingDetails(true);
+    try {
+      const details = await getEmployeeById(id);
+
+      setEmployeeDetails(details);
+      // Initialize formData with basic details first
+      const initialFormData = { ...details };
+      // Role will be set by useEffect when roles are available
+      initialFormData.role = '';
+      setFormData(initialFormData);
+    } catch (e) {
+      console.error('❌ Fetch Employee Details - Error:', e);
+      setEmployeeDetails(null);
+    } finally {
+      setLoadingDetails(false);
+    }
+  }, [setEmployeeDetails, setFormData, getEmployeeById]);
+
   return (
     <Card className="shadow-md rounded-xl">
       <CardContent>
-        <EmployeeFilterBar
-          statusFilter={statusFilter}
-          setStatusFilter={setStatusFilter}
-          designationFilter={designationFilter}
-          setDesignationFilter={setDesignationFilter}
-          onClear={clearFilters}
-          onAddEmployee={() => navigate('/add-employee')}
-          total={total}
-        />
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4 w-full pb-4">
+          <div className="flex items-center gap-4 flex-wrap">
+            <span className="font-medium text-base text-gray-800">Total Employees - {total}</span>
+            <select
+              className="rounded border px-3 py-1 bg-green-50 text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-200 min-w-[120px]"
+              value={statusFilter || ""}
+              onChange={e => setStatusFilter(e.target.value === "" ? null : e.target.value)}
+            >
+              <option value="">Status</option>
+              {['active','inactive','terminated'].map(opt => <option key={opt} value={opt.toLowerCase()}>{opt}</option>)}
+            </select>
+            <div className="min-w-[200px]">
+              <DesignationSelect value={designationFilter} onChange={setDesignationFilter} />
+            </div>
+            <button
+              className="inline-flex items-center gap-1 px-3 py-1 rounded border border-gray-200 bg-white text-gray-500 hover:text-green-600 hover:border-green-300 text-sm transition shadow-sm"
+              onClick={clearFilters}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+              Clear Filters
+            </button>
+          </div>
+          <div>
+            <button
+              className="bg-green-400 hover:bg-green-500 text-white font-semibold px-6 py-2 rounded transition"
+              onClick={() => navigate('/add-employee')}
+            >
+              Add Employee
+            </button>
+          </div>
+        </div>
         <div className="rounded-lg border bg-white overflow-x-auto max-h-[500px] overflow-y-auto mx-auto" style={{ width: '100%', maxWidth: '1200px', minWidth: '0', touchAction: 'pan-y' }}>
           <table className="w-full text-[11px] border-separate border-spacing-0" style={{ width: '100%', borderRadius: '12px', overflow: 'hidden', background: '#fff', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', tableLayout: 'auto' }}>
             <colgroup>
@@ -216,15 +400,13 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
                     <td className="px-1 py-1 max-w-xs truncate align-middle">{emp.probationEndDate ? new Date(emp.probationEndDate).toLocaleDateString() : '-'}</td>
                     <td className="px-1 py-1 align-middle">{emp.email || '-'}</td>
                     <td className="px-1 py-1 align-middle">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button size="sm" variant="outline" className={`min-w-[70px] px-2 py-1 ${emp.status === 'active' ? 'text-green-600 border-green-200' : 'text-red-500 border-red-200'}`}>{emp.status === 'active' ? 'Active' : 'Inactive'}</Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent>
-                          <DropdownMenuItem onClick={() => handleStatusChange(emp._id, 'active')} className="text-green-600">Active</DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => handleStatusChange(emp._id, 'inactive')} className="text-red-500">Inactive</DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                      {(() => {
+                        const s = (emp.status || '').toLowerCase();
+                        const color = s === 'active' ? 'text-green-600' : 'text-red-600';
+                        const label = s || '-';
+                        return <span className={`font-medium ${color}`}>{label}</span>;
+
+                      })()}
                     </td>
                     <td className="px-4 py-3 align-middle">
                       <div className="flex gap-2">
@@ -236,17 +418,10 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
                           onClick={async () => {
                             setSelectedEmployee(emp);
                             setModalOpen(true);
-                            setLoadingDetails(true);
                             setEditMode(false);
                             setUpdateMessage(null);
-                            try {
-                              const details = await getEmployeeById(emp._id);
-                              setEmployeeDetails(details);
-                              setFormData(details);
-                            } catch (e) {
-                              setEmployeeDetails(null);
-                            } finally {
-                              setLoadingDetails(false);
+                            if (emp._id) {
+                              await fetchEmployeeDetails(emp._id);
                             }
                           }}
                         >
@@ -260,17 +435,10 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
                           onClick={async () => {
                             setSelectedEmployee(emp);
                             setModalOpen(true);
-                            setLoadingDetails(true);
                             setEditMode(true);
                             setUpdateMessage(null);
-                            try {
-                              const details = await getEmployeeById(emp._id);
-                              setEmployeeDetails(details);
-                              setFormData(details);
-                            } catch (e) {
-                              setEmployeeDetails(null);
-                            } finally {
-                              setLoadingDetails(false);
+                            if (emp._id) {
+                              await fetchEmployeeDetails(emp._id);
                             }
                           }}
                         >
@@ -286,8 +454,11 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
         </div>
         {/* Employee Details Modal (UI only, no API yet) */}
         <Dialog open={modalOpen} onOpenChange={setModalOpen}>
-          <DialogContent className="max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+          <DialogContent className="max-w-2xl w-full max-h-[90vh] overflow-y-auto" aria-describedby="employee-details-description">
             <DialogHeader className="mb-2 pb-2 border-b">
+              <div id="employee-details-description" className="sr-only">
+                Employee details and edit form
+              </div>
               <div className="flex items-center gap-4">
                 <div className="relative w-20 h-20">
                   <img
@@ -331,7 +502,7 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
                 </div>
                 <div>
                   <DialogTitle className="text-2xl font-bold text-black tracking-tight mb-1">{employeeDetails?.firstName} {employeeDetails?.lastName}</DialogTitle>
-                  <div className="text-gray-500 text-xs">{employeeDetails?.designation || ''} {employeeDetails?.department ? `| ${employeeDetails.department}` : ''}</div>
+                  <div className="text-gray-500 text-xs">{employeeDetails?.designation || ''} {employeeDetails?.department ? ` | ${employeeDetails.department}` : ''}</div>
                   <div className="text-gray-400 text-xs mt-1">{employeeDetails?.email}</div>
                 </div>
               </div>
@@ -343,7 +514,7 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
                 ) : employeeDetails ? (
                   <form className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3">
                     {[
-                      "firstName","lastName","phone","department","designation","grade","dateOfJoining","probationEndDate","employmentType","shiftId","status","reportingManagerId","dob","gender","bloodGroup","maritalStatus","nationality","addressLine1","addressLine2","country","state","city","zipCode","aadhaarNo","panNo","passportNo","salaryStructureId","benefits","skills","loginEnabled","isActive","camsEmployeeId"
+                      "firstName","lastName","phone","department","designation","role","dateOfJoining","probationEndDate","employmentType","status","reportingManager","dob","gender","bloodGroup","maritalStatus","nationality","addressLine1","addressLine2","country","state","city","zipCode","aadhaarNumber","panNumber","passportNumber","loginEnabled","isActive",
                     ].map((key) => {
                       const value = employeeDetails[key];
                       if (typeof value === "object" && value !== null) return null;
@@ -351,20 +522,72 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
                       if (["dateOfJoining", "probationEndDate", "dob"].includes(key)) inputType = "date";
                       let inputValue = formData[key] || '';
                       if (inputType === "date" && inputValue) {
-                        inputValue = inputValue.slice(0, 10); // yyyy-mm-dd
+                        inputValue = inputValue.slice(0, 10);
                       }
+                      
+                      // Handle roles array - extract first role (index 0) for display
+                      if (key === 'role') {
+                        const rolesArray = employeeDetails.roles || [];
+                        if (rolesArray.length > 0) {
+                          const firstRole = rolesArray[0];
+                          if (typeof firstRole === 'string') {
+                            // If it's a string (role ID), find the role name from roles array
+                            const roleObj = roles.find(r => r._id === firstRole);
+                            inputValue = roleObj ? roleObj.name : firstRole;
+                          } else {
+                            // If it's an object, use the name property
+                            inputValue = firstRole.name || '';
+                          }
+                        } else {
+                          inputValue = '';
+                        }
+                      }
+                      const labelText = key === 'reportingManagerId' ? 'Reporting Manager' : key.replace(/([A-Z])/g, ' $1');
                       return (
                         <div key={key} className="flex flex-col mb-2">
-                          <label className="font-semibold capitalize mb-1 text-gray-700">{key.replace(/([A-Z])/g, ' $1')}</label>
+                          <label className="font-semibold capitalize mb-1 text-gray-700">{labelText}</label>
                           {editMode ? (
-                            <input
-                              className="border rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
-                              type={inputType}
-                              value={inputValue}
-                              onChange={e => setFormData((fd: any) => ({ ...fd, [key]: e.target.value }))}
-                            />
+                            key === 'designation' ? (
+                              <div className="min-w-[200px]"><DesignationSelect value={formData.designation || ''} onChange={(v) => setFormData((fd: any) => ({ ...fd, designation: v }))} /></div>
+                            ) : key === 'role' ? (
+                              <div className="min-w-[200px]"><RoleSelect value={formData.role || ''} onChange={(v) => setFormData((fd: any) => ({ ...fd, role: v }))} roles={roles} /></div>
+                            ) : key === 'status' ? (
+                              <select
+                                className="border rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
+                                value={(formData.status || '').toLowerCase()}
+                                onChange={e => setFormData((fd: any) => ({ ...fd, status: e.target.value }))}
+                              >
+                                {['active','inactive','terminated'].map(s => <option key={s} value={s}>{s}</option>)}
+                              </select>
+                            ) : (
+                              <input
+                                className="border rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
+                                type={inputType}
+                                value={inputValue}
+                                onChange={e => setFormData((fd: any) => ({ ...fd, [key]: e.target.value }))}
+                              />
+                            )
                           ) : (
-                            <span className="bg-gray-50 rounded px-2 py-1 border border-gray-100">{inputType === 'date' && value ? new Date(value).toLocaleDateString() : (value !== undefined && value !== null && value !== '' ? value.toString() : '-')}</span>
+                            <span className="bg-gray-50 rounded px-2 py-1 border border-gray-100">
+                              {key === 'role' ? 
+                                (() => {
+                                  if (employeeDetails.roles && employeeDetails.roles.length > 0) {
+                                    return employeeDetails.roles.map((r: any) => {
+                                      if (typeof r === 'string') {
+                                        // If it's a string (role ID), find the role name from roles array
+                                        const roleObj = roles.find(role => role._id === r);
+                                        return roleObj ? roleObj.name : r;
+                                      } else {
+                                        // If it's an object, use the name property
+                                        return r.name || r;
+                                      }
+                                    }).join(', ');
+                                  }
+                                  return '-';
+                                })() : 
+                                (inputType === 'date' && value ? new Date(value).toLocaleDateString() : (value !== undefined && value !== null && value !== '' ? value.toString() : '-'))
+                              }
+                            </span>
                           )}
                         </div>
                       );
@@ -376,21 +599,24 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
                         {editMode ? (
                           <input className="border rounded px-2 py-1" value={formData.bankDetails?.[k] || ''} onChange={e => setFormData((fd: any) => ({ ...fd, bankDetails: { ...fd.bankDetails, [k]: e.target.value } }))} />
                         ) : (
-                          <span>{v || '-'}</span>
+                          <span>{String(v ?? '-') }</span>
                         )}
                       </div>
                     ))}
                     {/* Tax Details */}
-                    {employeeDetails.taxDetails && Object.entries(employeeDetails.taxDetails).map(([k, v]) => (
-                      <div key={"taxDetails" + k} className="flex flex-col">
-                        <label className="font-semibold capitalize">Tax {k.replace(/([A-Z])/g, ' $1')}</label>
-                        {editMode ? (
-                          <input className="border rounded px-2 py-1" value={formData.taxDetails?.[k] || ''} onChange={e => setFormData((fd: any) => ({ ...fd, taxDetails: { ...fd.taxDetails, [k]: e.target.value } }))} />
-                        ) : (
-                          <span>{v || '-'}</span>
-                        )}
-                      </div>
-                    ))}
+                    {employeeDetails.taxDetails && Object.entries(employeeDetails.taxDetails).map(([k, v]) => {
+                      const prettyKey = k === 'ESIC' ? 'ESIC' : (k === 'UAN' ? 'UAN' : k.replace(/([A-Z])/g, ' $1'));
+                      return (
+                        <div key={"taxDetails" + k} className="flex flex-col">
+                          <label className="font-semibold capitalize">Tax {prettyKey}</label>
+                          {editMode ? (
+                            <input className="border rounded px-2 py-1" value={formData.taxDetails?.[k] || ''} onChange={e => setFormData((fd: any) => ({ ...fd, taxDetails: { ...fd.taxDetails, [k]: e.target.value } }))} />
+                          ) : (
+                            <span>{String(v ?? '-') }</span>
+                          )}
+                        </div>
+                      );
+                    })}
                     {/* Emergency Contact */}
                     {employeeDetails.emergencyContact && Object.entries(employeeDetails.emergencyContact).map(([k, v]) => (
                       <div key={"emergencyContact" + k} className="flex flex-col">
@@ -398,10 +624,53 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
                         {editMode ? (
                           <input className="border rounded px-2 py-1" value={formData.emergencyContact?.[k] || ''} onChange={e => setFormData((fd: any) => ({ ...fd, emergencyContact: { ...fd.emergencyContact, [k]: e.target.value } }))} />
                         ) : (
-                          <span>{v || '-'}</span>
+                          <span>{String(v ?? '-') }</span>
                         )}
                       </div>
                     ))}
+                    {/* Documents */}
+                    <div className="col-span-full mt-2">
+                      <h4 className="font-semibold text-gray-800 mb-2">Documents</h4>
+                      {Array.isArray(employeeDetails.documents) && employeeDetails.documents.length > 0 ? (
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                          {employeeDetails.documents.map((doc: any, idx: number) => (
+                            <div key={idx} className="flex flex-col items-center p-3 border border-gray-200 rounded-lg">
+                              <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center border mb-2">
+                                {typeof doc.url === 'string' && doc.url.endsWith('.pdf') ? (
+                                  <div className="text-red-500 text-xs font-medium">PDF</div>
+                                ) : (
+                                  <img src={doc.url} alt={doc.type || 'document'} className="w-16 h-16 object-cover rounded-lg" />
+                                )}
+                              </div>
+                              <span className="text-xs font-medium capitalize text-gray-700">{doc.type || 'Document'}</span>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="text-xs text-gray-500">No documents uploaded.</div>
+                      )}
+                      {editMode && (
+                        <div className="mt-3 flex items-center gap-3">
+                          <input
+                            type="file"
+                            accept="image/*,application/pdf"
+                            onChange={async e => {
+                              const file = e.target.files?.[0];
+                              if (!file) return;
+                              try {
+                                const url = await uploadFile(file);
+                                setFormData((fd: any) => ({
+                                  ...fd,
+                                  documents: [...(fd.documents || []), { type: file.type.includes('pdf') ? 'pdf' : 'image', url }],
+                                }));
+                              } catch {}
+                              e.currentTarget.value = '';
+                            }}
+                            className="text-sm"
+                          />
+                        </div>
+                      )}
+                    </div>
                   </form>
                 ) : (
                   <div>No details found.</div>
@@ -418,11 +687,71 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
                       setUpdateLoading(true);
                       setUpdateMessage(null);
                       try {
-                        const submitData = { ...formData };
+                        const submitData: any = { ...formData };
+                        let currentSelectedRole: any = null;
+
+                        if (submitData.role) {
+                          const foundRole = roles.find(r => r._id === submitData.role);
+
+                          if (foundRole) {
+                            // Send role ID to backend for database storage
+                            submitData.roles = [foundRole._id];
+                            currentSelectedRole = foundRole;
+
+                          }
+                          delete submitData.role;
+                        }
+                        
+
+                        // Remove properties not expected by the backend or that cause issues
+                        delete submitData.profilePhotoUrl; // Ensure profile photo is not sent
+                        delete submitData.createdAt; // Ensure createdAt is not sent
+                        delete submitData.employeeCode; // Ensure employeeCode is not sent
+                        delete submitData.id; // Ensure id is not sent
+                        delete submitData._id; // Ensure _id is not sent
+                        delete submitData.bankDetails; // Ensure bankDetails is not sent
+                        delete submitData.taxDetails; // Ensure taxDetails is not sent
+                        delete submitData.emergencyContact; // Ensure emergencyContact is not sent
+                        delete submitData.documents; // Ensure documents is not sent
+                        delete submitData.loginEnabled; // Ensure loginEnabled is not sent
+                        delete submitData.isActive; // Ensure isActive is not sent
+                        delete submitData.reportingManagerId; // Ensure reportingManagerId is not sent
+                        delete submitData.dob; // Ensure dob is not sent
+                        delete submitData.gender; // Ensure gender is not sent
+                        delete submitData.bloodGroup; // Ensure bloodGroup is not sent
+                        delete submitData.maritalStatus; // Ensure maritalStatus is not sent
+                        delete submitData.nationality; // Ensure nationality is not sent
+                        delete submitData.addressLine1; // Ensure addressLine1 is not sent
+                        delete submitData.addressLine2; // Ensure addressLine2 is not sent
+                        delete submitData.country; // Ensure country is not sent
+                        delete submitData.state; // Ensure state is not sent
+                        delete submitData.city; // Ensure city is not sent
+                        delete submitData.zipCode; // Ensure zipCode is not sent
+                        delete submitData.aadhaarNumber; // Ensure aadhaarNumber is not sent
+                        delete submitData.panNumber; // Ensure panNumber is not sent
+                        delete submitData.passportNumber; // Ensure passportNumber is not sent
+
+
                         await API.put(`/auth/employees/${selectedEmployee?._id}`, submitData);
+
                         setUpdateMessage('Update success!');
                         setEditMode(false);
                         setProfilePreview(null);
+                        // After successful update, update the UI immediately
+                        if (selectedEmployee?._id) {
+                          // Update employeeDetails to reflect the changes immediately
+
+                          setEmployeeDetails(prev => ({ ...prev, roles: submitData.roles }));
+                          // Update the main employee list to reflect the role change
+                          setEmployees(prev => prev.map(emp => 
+                            emp._id === selectedEmployee?._id 
+                              ? { ...emp, designation: submitData.designation, status: submitData.status, roles: submitData.roles } 
+                              : emp
+                          ));
+                          // Re-fetch employee details to ensure we have the latest data
+
+                          await fetchEmployeeDetails(selectedEmployee._id);
+                        }
                       } catch (e) {
                         setUpdateMessage('Update failed!');
                       } finally {
