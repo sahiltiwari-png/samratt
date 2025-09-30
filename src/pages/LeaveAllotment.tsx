@@ -24,6 +24,7 @@ import {
   EmployeeListItem,
   allocateLeave
 } from "@/api/leaves";
+import ViewAllotmentHistory from "@/components/leaves/ViewAllotmentHistory";
 
 // Define all possible leave types
 const LEAVE_TYPES = [
@@ -41,6 +42,7 @@ interface EmployeeLeaveData {
   firstName: string;
   lastName: string;
   employeeCode: string;
+  designation?: string;
   profilePhotoUrl?: string;
   leaveBalances: {
     casual: { allocated: number; used: number; balance: number };
@@ -80,6 +82,10 @@ const LeaveAllotment = () => {
   const [employeeList, setEmployeeList] = useState<EmployeeListItem[]>([]);
   const [showEmployeeDropdown, setShowEmployeeDropdown] = useState(false);
   const [loadingEmployees, setLoadingEmployees] = useState(false);
+
+  // Modal states
+  const [showHistoryModal, setShowHistoryModal] = useState(false);
+  const [selectedEmployeeForHistory, setSelectedEmployeeForHistory] = useState<EmployeeLeaveData | null>(null);
 
   // Transform API data to include all leave types with 0 values for missing types
   const transformLeaveBalanceData = (apiData: LeaveBalanceEmployee[]): EmployeeLeaveData[] => {
@@ -649,11 +655,8 @@ const LeaveAllotment = () => {
                           size="sm"
                           className="text-blue-600 hover:text-blue-800 p-0 h-auto text-xs sm:text-sm"
                           onClick={() => {
-                            // Handle view allotment history
-                            toast({
-                              title: "View Allotment History",
-                              description: `Viewing history for ${employee.firstName} ${employee.lastName}`,
-                            });
+                            setSelectedEmployeeForHistory(employee);
+                            setShowHistoryModal(true);
                           }}
                         >
                           <span className="hidden sm:inline">View Allotment history</span>
@@ -733,6 +736,21 @@ const LeaveAllotment = () => {
           </div>
         )}
       </div>
+
+      {/* View Allotment History Modal */}
+      {selectedEmployeeForHistory && (
+        <ViewAllotmentHistory
+          isOpen={showHistoryModal}
+          onClose={() => {
+            setShowHistoryModal(false);
+            setSelectedEmployeeForHistory(null);
+          }}
+          employeeId={selectedEmployeeForHistory._id}
+          employeeName={`${selectedEmployeeForHistory.firstName} ${selectedEmployeeForHistory.lastName}`}
+          employeeDesignation={selectedEmployeeForHistory.designation || 'No designation'}
+          profilePhotoUrl={selectedEmployeeForHistory.profilePhotoUrl}
+        />
+      )}
     </div>
   );
 };

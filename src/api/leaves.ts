@@ -222,3 +222,44 @@ export const allocateLeave = async (
   const res = await API.post('/leave-balance/allocate', requestData);
   return res.data;
 };
+
+// Employee leave balance history interfaces and API function
+export interface LeaveBalanceHistoryItem {
+  leaveType: string;
+  totalAloted: number;
+  totalTaken: number;
+  totalBalance: number;
+}
+
+export interface LeaveBalanceHistoryResponse {
+  success: boolean;
+  data: LeaveBalanceHistoryItem[];
+}
+
+export const getEmployeeLeaveBalanceHistory = async (
+  employeeId: string,
+  leaveType?: string
+): Promise<LeaveBalanceHistoryResponse> => {
+  // Get organization ID from localStorage
+  const userStr = localStorage.getItem('user');
+  if (!userStr) {
+    throw new Error('User not found in localStorage');
+  }
+  
+  const user = JSON.parse(userStr);
+  const organizationId = user.organizationId;
+  
+  if (!organizationId) {
+    throw new Error('Organization ID not found');
+  }
+
+  const params = new URLSearchParams();
+  params.append('organizationId', organizationId);
+  
+  if (leaveType && leaveType !== 'all') {
+    params.append('leaveType', leaveType);
+  }
+  
+  const res = await API.get(`/leave-balance/${employeeId}?${params.toString()}`);
+  return res.data;
+};
