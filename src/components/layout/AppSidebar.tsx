@@ -81,29 +81,25 @@ export function AppSidebar() {
   return (
     <Sidebar className={`border-r border-gray-700 ${state === "collapsed" ? "w-14" : "w-64"}`}>
       <SidebarHeader className="border-b border-gray-700 p-4">
-        {state !== "collapsed" && (
-          <div className="flex items-center gap-3">
+        {state === "expanded" && (
+          <div className="flex items-center justify-center py-2">
             <img 
-              src="/gounicrew-logo.png" 
+              src="/gucwhite.png" 
               alt="GoUnicrew"
-              className="h-8 w-auto"
+              className="h-12 w-auto object-contain"
             />
-            <div>
-              <h1 className="font-semibold text-lg text-white">GoUnicrew</h1>
-              <p className="text-xs text-gray-300">HR Management Platform</p>
-            </div>
           </div>
         )}
         {state === "collapsed" && (
           <img 
-            src="/gounicrew-logo.png" 
+            src="/gucwhite.png" 
             alt="GoUnicrew"
-            className="h-8 w-8 mx-auto object-contain"
+            className="h-10 w-10 mx-auto object-contain"
           />
         )}
       </SidebarHeader>
 
-      <SidebarContent className="p-2">
+      <SidebarContent className="p-2 overflow-y-auto scrollbar-hide">
         <SidebarGroup>
           <SidebarGroupLabel className="text-white uppercase text-xs font-medium px-2 mb-2">
             {state !== "collapsed" ? "Menu" : ""}
