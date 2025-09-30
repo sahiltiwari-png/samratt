@@ -75,12 +75,12 @@ export function AppSidebar() {
   const isActive = (path: string) => location.pathname === path || location.pathname === "/" && path === "/dashboard";
   const getNavClassName = (path: string) => 
     isActive(path) 
-      ? "bg-primary text-white hover:bg-primary/90 font-semibold" 
-      : "text-gray-800 hover:bg-gray-100 hover:text-gray-900";
+      ? "bg-white text-gray-900 hover:bg-gray-100 font-semibold shadow-sm" 
+      : "bg-transparent text-white hover:bg-white hover:text-gray-900 transition-all duration-200";
 
   return (
-    <Sidebar className={`bg-gray-50 border-r border-gray-200 ${state === "collapsed" ? "w-14" : "w-64"}`}>
-      <SidebarHeader className="border-b border-gray-200 p-4">
+    <Sidebar className={`border-r border-gray-700 ${state === "collapsed" ? "w-14" : "w-64"}`}>
+      <SidebarHeader className="border-b border-gray-700 p-4">
         {state !== "collapsed" && (
           <div className="flex items-center gap-3">
             <img 
@@ -89,8 +89,8 @@ export function AppSidebar() {
               className="h-8 w-auto"
             />
             <div>
-              <h1 className="font-semibold text-lg text-gray-900">GoUnicrew</h1>
-              <p className="text-xs text-gray-600">HR Management Platform</p>
+              <h1 className="font-semibold text-lg text-white">GoUnicrew</h1>
+              <p className="text-xs text-gray-300">HR Management Platform</p>
             </div>
           </div>
         )}
@@ -105,7 +105,7 @@ export function AppSidebar() {
 
       <SidebarContent className="p-2">
         <SidebarGroup>
-          <SidebarGroupLabel className="text-gray-600 uppercase text-xs font-medium px-2 mb-2">
+          <SidebarGroupLabel className="text-white uppercase text-xs font-medium px-2 mb-2">
             {state !== "collapsed" ? "Menu" : ""}
           </SidebarGroupLabel>
           <SidebarGroupContent>
@@ -194,10 +194,10 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="border-t border-gray-200 p-4">
+      <SidebarFooter className="border-t border-gray-700 p-4">
         <Button 
           variant="ghost" 
-          className="w-full justify-start text-gray-800 hover:text-gray-900 hover:bg-gray-100"
+          className="w-full justify-start bg-transparent text-white hover:bg-white hover:text-gray-900 transition-all duration-200"
           onClick={handleLogout}
         >
           <LogOut className="h-4 w-4" />
