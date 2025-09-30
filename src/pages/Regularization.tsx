@@ -234,7 +234,7 @@ const Regularization = () => {
       
       const updates = {
         status: editValues[requestId].status,
-        remarks: editValues[requestId].remarks
+        reviewComment: editValues[requestId].remarks || "not specify"
       };
 
       await updateRegularizationRequest(requestId, updates);
@@ -646,7 +646,7 @@ const Regularization = () => {
                             {updating.has(req._id) ? (
                               <div className="animate-spin h-3 w-3 border border-white border-t-transparent rounded-full" />
                             ) : (
-                              'Save'
+                              'Update'
                             )}
                           </Button>
                           <Button

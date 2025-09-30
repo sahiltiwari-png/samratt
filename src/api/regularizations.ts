@@ -65,10 +65,10 @@ export const getRegularizationRequests = async (filters: RegularizationFilters =
 
 export const updateRegularizationRequest = async (
   requestId: string, 
-  updates: { status?: string; remarks?: string }
+  updates: { status: string; reviewComment: string }
 ): Promise<RegularizationRequest> => {
   try {
-    const response = await API.put(`/regularizations/${requestId}`, updates);
+    const response = await API.put(`/regularizations/attendance/status-update/${requestId}`, updates);
     return response.data;
   } catch (error) {
     console.error('Error updating regularization request:', error);
