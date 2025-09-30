@@ -14,6 +14,8 @@ import Attendance from "./pages/Attendance";
 import Leaves from "./pages/Leaves";
 import LeavePolicy from "./pages/LeavePolicy";
 import LeaveRequests from "./pages/LeaveRequests";
+import LeaveAllotment from "./pages/LeaveAllotment";
+import LeaveAllotmentHistory from "./pages/LeaveAllotmentHistory";
 import Employees from "./pages/Employees";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
@@ -38,7 +40,7 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
+      <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <AuthProvider>
           <Routes>
             <Route path="/login" element={<Login />} />
@@ -61,6 +63,8 @@ const App = () => (
                       <Route path="/leaves" element={<Leaves />} />
                       <Route path="/leaves/policy" element={<LeavePolicy />} />
                       <Route path="/leaves/requests" element={<LeaveRequests />} />
+                      <Route path="/leaves/allotment" element={<LeaveAllotment />} />
+                      <Route path="/leaves/allotment/history/:employeeId" element={<LeaveAllotmentHistory />} />
                       <Route path="/reports" element={<Reports />} />
                       <Route path="/settings" element={<Settings />} />
                   <Route path="/profile" element={<Profile />} />

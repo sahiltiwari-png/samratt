@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { OrgSearchContext } from "@/components/layout/MainLayout";
 import { Plus, Building, Users, X } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from '@/contexts/AuthContext';
 import EmployeeList from "@/components/employees/EmployeeList";
 const Dashboard = () => {
@@ -20,6 +20,7 @@ const Dashboard = () => {
   const [dashboardError, setDashboardError] = useState("");
   const { search } = useContext(OrgSearchContext);
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [calendarData, setCalendarData] = useState<{calendarFile?: string; calendarFileName?: string} | null>(null);
   const [calendarLoading, setCalendarLoading] = useState(false);
   const [showImageModal, setShowImageModal] = useState(false);
@@ -217,7 +218,12 @@ const Dashboard = () => {
                 <span className="text-green-600 font-bold">Active {dashboardStats?.employees?.active ?? '-'}</span>
                 <span className="text-red-500 font-bold">Inactive {dashboardStats?.employees?.inactive ?? '-'}</span>
               </div>
-              <button className="bg-green-500 hover:bg-green-600 text-white rounded-lg py-2 font-semibold transition">Manage Employees</button>
+              <button 
+                className="bg-green-500 hover:bg-green-600 text-white rounded-lg py-2 font-semibold transition"
+                onClick={() => navigate('/employees')}
+              >
+                Manage Employees
+              </button>
             </div>
             {/* Total Leave Requests */}
             <div className="bg-white rounded-2xl shadow p-6 flex flex-col justify-between">
@@ -230,7 +236,12 @@ const Dashboard = () => {
                 <span className="text-red-500 font-bold">Declined {dashboardStats?.leaves?.declined ?? '-'}</span>
                 <span className="text-yellow-500 font-bold">Pending {dashboardStats?.leaves?.pending ?? '-'}</span>
               </div>
-              <button className="bg-green-500 hover:bg-green-600 text-white rounded-lg py-2 font-semibold transition">Manage leaves requests</button>
+              <button 
+                className="bg-green-500 hover:bg-green-600 text-white rounded-lg py-2 font-semibold transition"
+                onClick={() => navigate('/leaves/requests')}
+              >
+                Manage leaves requests
+              </button>
             </div>
             {/* Leave Policy - Redesigned to match screenshot */}
             <div className="bg-white rounded-2xl shadow p-5 flex flex-col justify-between border-2 border-green-200" style={{boxShadow: '0 2px 8px 0 rgba(60, 199, 143, 0.08)'}}>
@@ -249,7 +260,12 @@ const Dashboard = () => {
                 <span className="text-gray-400">Medical <span className="text-red-400 font-bold">{dashboardStats?.leavePolicy?.medical ?? '-'}</span></span>
                 <span className="text-gray-400">Earned <span className="text-yellow-500 font-bold">{dashboardStats?.leavePolicy?.earned ?? '-'}</span></span>
               </div>
-              <button className="w-full bg-[#3CC78F] hover:bg-[#2fa06e] text-white rounded-lg py-2 font-semibold transition text-base shadow-none">Edit Policy</button>
+              <button 
+                className="w-full bg-[#3CC78F] hover:bg-[#2fa06e] text-white rounded-lg py-2 font-semibold transition text-base shadow-none"
+                onClick={() => navigate('/leaves/policy')}
+              >
+                Edit Policy
+              </button>
             </div>
             {/* Payroll Processed */}
             <div className="bg-white rounded-2xl shadow p-6 flex flex-col justify-between">
@@ -261,7 +277,12 @@ const Dashboard = () => {
                 <span className="text-green-600 font-bold">{dashboardStats?.payroll?.processed ?? '-'} / {dashboardStats?.employees?.total ?? '-'} employees</span>
                 <span className="text-red-500 font-bold">Pending employees {dashboardStats?.payroll?.pending ?? '-'}</span>
               </div>
-              <button className="bg-green-500 hover:bg-green-600 text-white rounded-lg py-2 font-semibold transition">Manage Payroll</button>
+              <button 
+                className="bg-green-500 hover:bg-green-600 text-white rounded-lg py-2 font-semibold transition"
+                onClick={() => navigate('/payroll')}
+              >
+                Manage Payroll
+              </button>
             </div>
             {/* Reports */}
             <div className="bg-white rounded-2xl shadow p-6 flex flex-col justify-between">

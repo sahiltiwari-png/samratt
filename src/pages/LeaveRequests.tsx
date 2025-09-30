@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { User, ChevronDown, X, Search, ChevronLeft, ChevronRight } from "lucide-react";
-import { getLeaveRequests, LeaveRequest, Employee } from "@/api/leaves";
+import { getLeaveRequests, LeaveRequest, Employee, updateLeaveRequestStatus } from "@/api/leaves";
 import { getEmployees, Employee as EmployeeType, EmployeesResponse } from "@/api/employees";
 import { toast } from "@/components/ui/use-toast";
 
@@ -34,6 +34,11 @@ const LeaveRequests = () => {
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
+
+  // Edit states
+  const [editingRows, setEditingRows] = useState<Set<string>>(new Set());
+  const [editValues, setEditValues] = useState<{[key: string]: {status: string, remarks: string}}>({});
+  const [updating, setUpdating] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     fetchLeaveRequests();
@@ -176,6 +181,81 @@ const LeaveRequests = () => {
       default:
         return "bg-gray-100 text-gray-700";
     }
+  };
+
+  const handleEdit = (request: LeaveRequest) => {
+    const newEditingRows = new Set(editingRows);
+    newEditingRows.add(request._id);
+    setEditingRows(newEditingRows);
+    
+    setEditValues(prev => ({
+      ...prev,
+      [request._id]: {
+        status: request.status,
+        remarks: request.remarks || ''
+      }
+    }));
+  };
+
+  const handleCancelEdit = (requestId: string) => {
+    const newEditingRows = new Set(editingRows);
+    newEditingRows.delete(requestId);
+    setEditingRows(newEditingRows);
+    
+    setEditValues(prev => {
+      const newValues = { ...prev };
+      delete newValues[requestId];
+      return newValues;
+    });
+  };
+
+  const handleUpdate = async (requestId: string) => {
+    const editValue = editValues[requestId];
+    if (!editValue) return;
+
+    const newUpdating = new Set(updating);
+    newUpdating.add(requestId);
+    setUpdating(newUpdating);
+
+    try {
+      await updateLeaveRequestStatus(requestId, editValue.status, editValue.remarks);
+      
+      // Update the local state
+      setRequests(prev => prev.map(req => 
+        req._id === requestId 
+          ? { ...req, status: editValue.status, remarks: editValue.remarks }
+          : req
+      ));
+
+      // Exit edit mode
+      handleCancelEdit(requestId);
+      
+      toast({
+        title: "Success",
+        description: "Leave request updated successfully",
+      });
+    } catch (error) {
+      console.error('Error updating leave request:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update leave request",
+        variant: "destructive",
+      });
+    } finally {
+      const newUpdating = new Set(updating);
+      newUpdating.delete(requestId);
+      setUpdating(newUpdating);
+    }
+  };
+
+  const handleEditValueChange = (requestId: string, field: 'status' | 'remarks', value: string) => {
+    setEditValues(prev => ({
+      ...prev,
+      [requestId]: {
+        ...prev[requestId],
+        [field]: value
+      }
+    }));
   };
 
   if (loading) {
@@ -385,26 +465,74 @@ const LeaveRequests = () => {
 
                     {/* Status badge */}
                      <td className="px-4 py-3">
-                       <span
-                         className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(req.status)}`}
-                       >
-                         {req.status}
-                       </span>
+                       {editingRows.has(req._id) ? (
+                         <Select
+                           value={editValues[req._id]?.status || req.status}
+                           onValueChange={(value) => handleEditValueChange(req._id, 'status', value)}
+                         >
+                           <SelectTrigger className="w-32 h-8">
+                             <SelectValue />
+                           </SelectTrigger>
+                           <SelectContent>
+                             <SelectItem value="applied">Applied</SelectItem>
+                             <SelectItem value="approved">Approved</SelectItem>
+                             <SelectItem value="rejected">Rejected</SelectItem>
+                             <SelectItem value="cancelled">Cancelled</SelectItem>
+                           </SelectContent>
+                         </Select>
+                       ) : (
+                         <span
+                           className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(req.status)}`}
+                         >
+                           {req.status}
+                         </span>
+                       )}
                      </td>
 
                      {/* Remarks */}
                        <td className="px-4 py-3 text-gray-600" style={{ fontFamily: 'Montserrat', fontWeight: 500, fontSize: '12px', lineHeight: '12.09px' }}>
-                         {req.remarks || "Empty remarks"}
+                         {editingRows.has(req._id) ? (
+                           <Input
+                             value={editValues[req._id]?.remarks || req.remarks || ''}
+                             onChange={(e) => handleEditValueChange(req._id, 'remarks', e.target.value)}
+                             placeholder="Enter remarks"
+                             className="w-40 h-8 text-xs"
+                           />
+                         ) : (
+                           req.remarks || "Empty remarks"
+                         )}
                        </td>
 
                      {/* Actions */}
                      <td className="px-4 py-3">
-                       <Button
-                         size="sm"
-                         className="bg-emerald-600 text-white hover:bg-emerald-700"
-                       >
-                         Update
-                       </Button>
+                       {editingRows.has(req._id) ? (
+                         <div className="flex gap-2">
+                           <Button
+                             size="sm"
+                             onClick={() => handleUpdate(req._id)}
+                             disabled={updating.has(req._id)}
+                             className="bg-emerald-600 text-white hover:bg-emerald-700"
+                           >
+                             {updating.has(req._id) ? 'Updating...' : 'Update'}
+                           </Button>
+                           <Button
+                             size="sm"
+                             variant="outline"
+                             onClick={() => handleCancelEdit(req._id)}
+                             disabled={updating.has(req._id)}
+                           >
+                             Cancel
+                           </Button>
+                         </div>
+                       ) : (
+                         <Button
+                           size="sm"
+                           onClick={() => handleEdit(req)}
+                           className="bg-blue-600 text-white hover:bg-blue-700"
+                         >
+                           Edit
+                         </Button>
+                       )}
                      </td>
                   </tr>
                 ))}
