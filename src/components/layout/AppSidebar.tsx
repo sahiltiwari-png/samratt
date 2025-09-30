@@ -10,6 +10,7 @@ import {
   User,
   Shield,
   LogOut,
+  CheckCircle,
 } from "lucide-react";
 
 type SubMenuItem = {
@@ -43,7 +44,7 @@ import { useAuth } from '@/contexts/AuthContext';
 const navigation: NavigationItem[] = [
   { title: "Dashboard", url: "/dashboard", icon: Home },
   { title: "Employees", url: "/employees", icon: Users },
-  { title: "HR", url: "/hr", icon: User },
+  { title: "Regularization", url: "/regularization", icon: CheckCircle },
   { title: "Payroll", url: "/payroll", icon: FileText },
   { title: "Salary Structure", url: "/salary-slips", icon: FileText },
   { title: "Attendance", url: "/attendance", icon: Clock },
