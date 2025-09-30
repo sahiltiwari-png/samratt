@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -24,7 +25,6 @@ import {
   EmployeeListItem,
   allocateLeave
 } from "@/api/leaves";
-import ViewAllotmentHistory from "@/components/leaves/ViewAllotmentHistory";
 
 // Define all possible leave types
 const LEAVE_TYPES = [
@@ -55,6 +55,8 @@ interface EmployeeLeaveData {
 }
 
 const LeaveAllotment = () => {
+  const navigate = useNavigate();
+
   // Data states
   const [employees, setEmployees] = useState<EmployeeLeaveData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -655,8 +657,12 @@ const LeaveAllotment = () => {
                           size="sm"
                           className="text-blue-600 hover:text-blue-800 p-0 h-auto text-xs sm:text-sm"
                           onClick={() => {
-                            setSelectedEmployeeForHistory(employee);
-                            setShowHistoryModal(true);
+                            const params = new URLSearchParams({
+                              name: `${employee.firstName} ${employee.lastName}`,
+                              designation: employee.designation || 'No designation',
+                              ...(employee.profilePhotoUrl && { photo: employee.profilePhotoUrl })
+                            });
+                            navigate(`/leaves/allotment/history/${employee._id}?${params.toString()}`);
                           }}
                         >
                           <span className="hidden sm:inline">View Allotment history</span>
@@ -737,20 +743,6 @@ const LeaveAllotment = () => {
         )}
       </div>
 
-      {/* View Allotment History Modal */}
-      {selectedEmployeeForHistory && (
-        <ViewAllotmentHistory
-          isOpen={showHistoryModal}
-          onClose={() => {
-            setShowHistoryModal(false);
-            setSelectedEmployeeForHistory(null);
-          }}
-          employeeId={selectedEmployeeForHistory._id}
-          employeeName={`${selectedEmployeeForHistory.firstName} ${selectedEmployeeForHistory.lastName}`}
-          employeeDesignation={selectedEmployeeForHistory.designation || 'No designation'}
-          profilePhotoUrl={selectedEmployeeForHistory.profilePhotoUrl}
-        />
-      )}
     </div>
   );
 };

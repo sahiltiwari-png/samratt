@@ -15,6 +15,7 @@ import Leaves from "./pages/Leaves";
 import LeavePolicy from "./pages/LeavePolicy";
 import LeaveRequests from "./pages/LeaveRequests";
 import LeaveAllotment from "./pages/LeaveAllotment";
+import LeaveAllotmentHistory from "./pages/LeaveAllotmentHistory";
 import Employees from "./pages/Employees";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
@@ -63,6 +64,7 @@ const App = () => (
                       <Route path="/leaves/policy" element={<LeavePolicy />} />
                       <Route path="/leaves/requests" element={<LeaveRequests />} />
                       <Route path="/leaves/allotment" element={<LeaveAllotment />} />
+                      <Route path="/leaves/allotment/history/:employeeId" element={<LeaveAllotmentHistory />} />
                       <Route path="/reports" element={<Reports />} />
                       <Route path="/settings" element={<Settings />} />
                   <Route path="/profile" element={<Profile />} />

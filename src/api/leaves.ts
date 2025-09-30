@@ -225,10 +225,26 @@ export const allocateLeave = async (
 
 // Employee leave balance history interfaces and API function
 export interface LeaveBalanceHistoryItem {
+  _id: string;
+  organizationId: string;
+  employeeId: string;
+  leaveTypeId: string;
+  leavePolicyId: string;
   leaveType: string;
-  totalAloted: number;
-  totalTaken: number;
-  totalBalance: number;
+  allocated: number;
+  used: number;
+  balance: number;
+  history: Array<{
+    year: number;
+    action: string;
+    days: number;
+    remarks: string;
+    _id: string;
+    date: string;
+  }>;
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
 }
 
 export interface LeaveBalanceHistoryResponse {
