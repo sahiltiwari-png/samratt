@@ -331,13 +331,14 @@ const SalarySlip = () => {
         {/* Header */}
         <div className="flex items-start justify-between mb-1">
           <div>
-            <h1 className="text-2xl font-semibold text-gray-900">Salary Structure</h1>
-            <p className="text-sm text-gray-700">
+            <h1 className="text-2xl font-semibold" style={{color: '#2C373B'}}>Salary Structure</h1>
+            <p className="text-sm" style={{color: '#2C373B'}}>
               Overview of employee salary structures with detailed breakdown
             </p>
           </div>
           <Button
-            className="bg-emerald-600 text-white hover:bg-emerald-700"
+            className="hover:opacity-80"
+            style={{backgroundColor: '#4CDC9C', color: '#2C373B'}}
             onClick={openCreate}
           >
             Create Salary Structure
@@ -356,14 +357,14 @@ const SalarySlip = () => {
               <table className="min-w-full w-full text-sm">
                 <thead className="bg-gray-50 border-b">
                   <tr>
-                    <th className="px-4 py-2 text-left font-medium text-gray-600">Employee</th>
-                    <th className="px-4 py-2 text-left font-medium text-gray-600">Code</th>
-                    <th className="px-4 py-2 text-left font-medium text-gray-600">CTC</th>
-                    <th className="px-4 py-2 text-left font-medium text-gray-600">HRA</th>
-                    <th className="px-4 py-2 text-left font-medium text-gray-600">Conveyance</th>
-                    <th className="px-4 py-2 text-left font-medium text-gray-600">Special Allowance</th>
-                    <th className="px-4 py-2 text-left font-medium text-gray-600">Gross</th>
-                    <th className="px-4 py-2 text-left font-medium text-gray-600">Actions</th>
+                    <th className="px-4 py-2 text-left font-semibold" style={{fontSize: '12px', fontWeight: '600', color: '#2C373B'}}>Employee</th>
+                    <th className="px-4 py-2 text-left font-semibold" style={{fontSize: '12px', fontWeight: '600', color: '#2C373B'}}>Code</th>
+                    <th className="px-4 py-2 text-left font-semibold" style={{fontSize: '12px', fontWeight: '600', color: '#2C373B'}}>CTC</th>
+                    <th className="px-4 py-2 text-left font-semibold" style={{fontSize: '12px', fontWeight: '600', color: '#2C373B'}}>HRA</th>
+                    <th className="px-4 py-2 text-left font-semibold" style={{fontSize: '12px', fontWeight: '600', color: '#2C373B'}}>Conveyance</th>
+                    <th className="px-4 py-2 text-left font-semibold" style={{fontSize: '12px', fontWeight: '600', color: '#2C373B'}}>Special Allowance</th>
+                    <th className="px-4 py-2 text-left font-semibold" style={{fontSize: '12px', fontWeight: '600', color: '#2C373B'}}>Gross</th>
+                    <th className="px-4 py-2 text-left font-semibold" style={{fontSize: '12px', fontWeight: '600', color: '#2C373B'}}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -383,25 +384,26 @@ const SalarySlip = () => {
                                 />
                               ) : null}
                               <AvatarFallback>
-                                <User className="h-5 w-5 text-gray-500" />
+                                <User className="h-5 w-5" style={{color: '#2C373B'}} />
                               </AvatarFallback>
                             </Avatar>
                             <div>
-                              <div className="text-sm font-medium text-gray-900">{record.employeeId?.firstName ?? ""} {record.employeeId?.lastName ?? ""}</div>
+                              <div className="font-medium" style={{fontSize: '14px', fontWeight: '500', color: '#2C373B'}}>{record.employeeId?.firstName ?? ""} {record.employeeId?.lastName ?? ""}</div>
                             </div>
                           </div>
                         </td>
-                        <td className="px-4 py-2">{record.employeeId?.employeeCode ?? ""}</td>
-                        <td className="px-4 py-2">₹{Number(record.ctc ?? 0).toLocaleString()}</td>
-                        <td className="px-4 py-2">₹{Number(record.hra ?? 0).toLocaleString()}</td>
-                        <td className="px-4 py-2">₹{Number(record.conveyance ?? 0).toLocaleString()}</td>
-                        <td className="px-4 py-2">₹{Number(record.specialAllowance ?? 0).toLocaleString()}</td>
-                        <td className="px-4 py-2 font-semibold">₹{Number(record.gross ?? 0).toLocaleString()}</td>
+                        <td className="px-4 py-2" style={{fontSize: '14px', fontWeight: '500', color: '#2C373B'}}>{record.employeeId?.employeeCode ?? ""}</td>
+                        <td className="px-4 py-2" style={{fontSize: '14px', fontWeight: '500', color: '#2C373B'}}>₹{Number(record.ctc ?? 0).toLocaleString()}</td>
+                        <td className="px-4 py-2" style={{fontSize: '14px', fontWeight: '500', color: '#2C373B'}}>₹{Number(record.hra ?? 0).toLocaleString()}</td>
+                        <td className="px-4 py-2" style={{fontSize: '14px', fontWeight: '500', color: '#2C373B'}}>₹{Number(record.conveyance ?? 0).toLocaleString()}</td>
+                        <td className="px-4 py-2" style={{fontSize: '14px', fontWeight: '500', color: '#2C373B'}}>₹{Number(record.specialAllowance ?? 0).toLocaleString()}</td>
+                        <td className="px-4 py-2" style={{fontSize: '14px', fontWeight: '500', color: '#2C373B'}}>₹{Number(record.gross ?? 0).toLocaleString()}</td>
                         <td className="px-4 py-2 flex gap-2">
                           <Button
                             variant="link"
                             size="icon"
-                            className="text-blue-600 h-8 w-8 p-0 hover:bg-emerald-100 focus:outline-none focus:ring-0 focus:border-0"
+                            className="h-8 w-8 p-0 hover:opacity-80 focus:outline-none focus:ring-0 focus:border-0"
+                            style={{backgroundColor: '#4CDC9C', color: '#2C373B'}}
                             onClick={() => openView(record)}
                           >
                             <Eye className="w-5 h-5" />
@@ -409,7 +411,8 @@ const SalarySlip = () => {
                           <Button
                             variant="link"
                             size="icon"
-                            className="text-emerald-600 h-8 w-8 p-0 hover:bg-emerald-100 focus:outline-none focus:ring-0 focus:border-0"
+                            className="h-8 w-8 p-0 hover:opacity-80 focus:outline-none focus:ring-0 focus:border-0"
+                            style={{backgroundColor: '#4CDC9C', color: '#2C373B'}}
                             onClick={() => openEdit(record)}
                           >
                             <Edit className="w-5 h-5" />
@@ -417,7 +420,8 @@ const SalarySlip = () => {
                           <Button
                             variant="link"
                             size="icon"
-                            className="text-red-600 h-8 w-8 p-0 hover:bg-red-100 focus:outline-none focus:ring-0 focus:border-0"
+                            className="h-8 w-8 p-0 hover:opacity-80 focus:outline-none focus:ring-0 focus:border-0"
+                            style={{backgroundColor: '#4CDC9C', color: '#2C373B'}}
                             onClick={() => openDelete(record)}
                           >
                             <Trash2 className="w-5 h-5" />
@@ -441,28 +445,28 @@ const SalarySlip = () => {
       <Dialog open={viewOpen} onOpenChange={setViewOpen}>
         <DialogContent className="sm:max-w-lg focus:outline-none focus:ring-0 focus:border-0">
           <DialogHeader>
-            <DialogTitle className="text-emerald-700">Salary Structure Details</DialogTitle>
+            <DialogTitle style={{color: '#2C373B'}}>Salary Details</DialogTitle>
           </DialogHeader>
           {viewDetail && (
             <div className="space-y-2 text-sm text-gray-700">
-              <p><strong>Name:</strong> {viewDetail.employeeId?.firstName ?? ""} {viewDetail.employeeId?.lastName ?? ""}</p>
-              <p><strong>Code:</strong> {viewDetail.employeeId?.employeeCode ?? ""}</p>
-              <p><strong>Basic:</strong> ₹{Number(viewDetail.basic ?? 0).toLocaleString()}</p>
-              <p><strong>CTC:</strong> ₹{Number(viewDetail.ctc ?? 0).toLocaleString()}</p>
-              <p><strong>Gross:</strong> ₹{Number(viewDetail.gross ?? 0).toLocaleString()}</p>
-              <p><strong>HRA:</strong> ₹{Number(viewDetail.hra ?? 0).toLocaleString()}</p>
-              <p><strong>Conveyance:</strong> ₹{Number(viewDetail.conveyance ?? 0).toLocaleString()}</p>
-              <p><strong>Special Allowance:</strong> ₹{Number(viewDetail.specialAllowance ?? 0).toLocaleString()}</p>
-              <p><strong>PF:</strong> ₹{Number(viewDetail.pf ?? 0).toLocaleString()}</p>
-              <p><strong>ESI:</strong> ₹{Number(viewDetail.esi ?? 0).toLocaleString()}</p>
-              <p><strong>TDS:</strong> ₹{Number(viewDetail.tds ?? 0).toLocaleString()}</p>
-              <p><strong>Professional Tax:</strong> ₹{Number(viewDetail.professionalTax ?? 0).toLocaleString()}</p>
-              <p><strong>Other Deductions:</strong> ₹{Number(viewDetail.otherDeductions ?? 0).toLocaleString()}</p>
+              <p style={{color: '#2C373B'}}><strong>Name:</strong> {viewDetail.employeeId?.firstName ?? ""} {viewDetail.employeeId?.lastName ?? ""}</p>
+              <p style={{color: '#2C373B'}}><strong>Code:</strong> {viewDetail.employeeId?.employeeCode ?? ""}</p>
+              <p style={{color: '#2C373B'}}><strong>Basic:</strong> ₹{Number(viewDetail.basic ?? 0).toLocaleString()}</p>
+              <p style={{color: '#2C373B'}}><strong>CTC:</strong> ₹{Number(viewDetail.ctc ?? 0).toLocaleString()}</p>
+              <p style={{color: '#2C373B'}}><strong>Gross:</strong> ₹{Number(viewDetail.gross ?? 0).toLocaleString()}</p>
+              <p style={{color: '#2C373B'}}><strong>HRA:</strong> ₹{Number(viewDetail.hra ?? 0).toLocaleString()}</p>
+              <p style={{color: '#2C373B'}}><strong>Conveyance:</strong> ₹{Number(viewDetail.conveyance ?? 0).toLocaleString()}</p>
+              <p style={{color: '#2C373B'}}><strong>Special Allowance:</strong> ₹{Number(viewDetail.specialAllowance ?? 0).toLocaleString()}</p>
+              <p style={{color: '#2C373B'}}><strong>PF:</strong> ₹{Number(viewDetail.pf ?? 0).toLocaleString()}</p>
+              <p style={{color: '#2C373B'}}><strong>ESI:</strong> ₹{Number(viewDetail.esi ?? 0).toLocaleString()}</p>
+              <p style={{color: '#2C373B'}}><strong>TDS:</strong> ₹{Number(viewDetail.tds ?? 0).toLocaleString()}</p>
+              <p style={{color: '#2C373B'}}><strong>Professional Tax:</strong> ₹{Number(viewDetail.professionalTax ?? 0).toLocaleString()}</p>
+              <p style={{color: '#2C373B'}}><strong>Other Deductions:</strong> ₹{Number(viewDetail.otherDeductions ?? 0).toLocaleString()}</p>
             </div>
           )}
           <DialogFooter>
             <DialogClose asChild>
-              <Button variant="outline" className="hover:bg-gray-100 focus:outline-none focus:ring-0 focus:border-0">
+              <Button variant="outline" className="hover:opacity-80 focus:outline-none focus:ring-0 focus:border-0" style={{backgroundColor: '#4CDC9C', color: '#2C373B'}}>
                 Close
               </Button>
             </DialogClose>
@@ -474,7 +478,7 @@ const SalarySlip = () => {
       <Dialog open={editOpen} onOpenChange={setEditOpen}>
         <DialogContent className="sm:max-w-lg max-h-[80vh] overflow-y-auto focus:outline-none focus:ring-0 focus:border-0">
           <DialogHeader>
-            <DialogTitle className="text-emerald-700">Edit Salary Structure</DialogTitle>
+            <DialogTitle style={{color: '#2C373B'}}>Edit Salary Structure</DialogTitle>
           </DialogHeader>
           {editForm && (
             <div className="grid gap-3">
@@ -492,12 +496,13 @@ const SalarySlip = () => {
                 "otherDeductions",
               ].map((field) => (
                 <div key={field} className="grid gap-1">
-                  <Label className="capitalize">{field}</Label>
+                  <Label className="capitalize" style={{color: '#2C373B'}}>{field}</Label>
                   <Input
                     type="number"
                     value={editForm[field] ?? ""}
                     onChange={(e) => handleEditChange(field, e.target.value)}
-                    className="focus:outline-none focus:ring-0 focus:border-gray-300"
+                    className="h-8 focus:outline-none focus:ring-0 focus:border-gray-300"
+                    style={{backgroundColor: 'rgb(209 250 229)', color: '#2C373B'}}
                   />
                 </div>
               ))}
@@ -505,12 +510,13 @@ const SalarySlip = () => {
           )}
           <DialogFooter className="pt-4 flex gap-2 justify-end">
             <DialogClose asChild>
-              <Button variant="outline" className="hover:bg-gray-100 focus:outline-none focus:ring-0 focus:border-0">
+              <Button variant="outline" className="hover:opacity-80 focus:outline-none focus:ring-0 focus:border-0" style={{backgroundColor: '#4CDC9C', color: '#2C373B'}}>
                 Cancel
               </Button>
             </DialogClose>
             <Button
-              className="bg-emerald-600 text-white hover:bg-emerald-700 focus:outline-none focus:ring-0 focus:border-0"
+              className="hover:opacity-80 focus:outline-none focus:ring-0 focus:border-0"
+              style={{backgroundColor: '#4CDC9C', color: '#2C373B'}}
               onClick={handleUpdate}
             >
               Save Changes
@@ -523,21 +529,22 @@ const SalarySlip = () => {
       <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
         <DialogContent className="sm:max-w-md focus:outline-none focus:ring-0 focus:border-0">
           <DialogHeader>
-            <DialogTitle className="text-red-600">Confirm Delete</DialogTitle>
+            <DialogTitle style={{color: '#2C373B'}}>Confirm Delete</DialogTitle>
           </DialogHeader>
-          <p className="text-sm text-gray-700">
+          <p className="text-sm" style={{color: '#2C373B'}}>
             Are you sure you want to delete the salary structure for{" "}
             <strong>{selectedRecord?.employeeId?.firstName} {selectedRecord?.employeeId?.lastName}</strong>?
           </p>
           <DialogFooter className="flex gap-2 justify-end">
             <DialogClose asChild>
-              <Button variant="outline" className="hover:bg-gray-100 focus:outline-none focus:ring-0 focus:border-0">
+              <Button variant="outline" className="hover:opacity-80 focus:outline-none focus:ring-0 focus:border-0" style={{backgroundColor: '#4CDC9C', color: '#2C373B'}}>
                 Cancel
               </Button>
             </DialogClose>
             <Button
               onClick={handleDelete}
-              className="bg-red-600 text-white hover:bg-red-700 focus:outline-none focus:ring-0 focus:border-0"
+              className="hover:opacity-80 focus:outline-none focus:ring-0 focus:border-0"
+              style={{backgroundColor: '#4CDC9C', color: '#2C373B'}}
             >
               Delete
             </Button>
@@ -548,8 +555,8 @@ const SalarySlip = () => {
       {/* Create Modal */}
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
         <DialogContent className="sm:max-w-lg max-h-[80vh] overflow-y-auto focus:outline-none focus:ring-0 focus:border-0">
-          <DialogHeader className="mb-6">
-            <DialogTitle className="text-emerald-700">Create Salary Structure</DialogTitle>
+          <DialogHeader>
+            <DialogTitle style={{color: '#2C373B'}}>Create Salary Structure</DialogTitle>
           </DialogHeader>
           <div className="grid gap-3">
             <div className="grid gap-2 relative">
@@ -595,7 +602,8 @@ const SalarySlip = () => {
                       const q = employeeSearch.trim();
                       searchEmployees(q.length >= 1 ? q : "");
                     }}
-                    className="pr-8 focus:outline-none focus:ring-0 focus:border-gray-300 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-gray-300"
+                    className="pr-8 h-8 focus:outline-none focus:ring-0 focus:border-gray-300 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-gray-300"
+                    style={{backgroundColor: 'rgb(209 250 229)', color: '#2C373B'}}
                   />
                 )}
               </div>
@@ -649,12 +657,13 @@ const SalarySlip = () => {
                 "gross",
               ].map((field) => (
                 <div key={field} className="grid gap-2">
-                  <Label className="capitalize">{field}</Label>
+                  <Label className="capitalize" style={{color: '#2C373B'}}>{field}</Label>
                   <Input
                     type="number"
                     value={createForm[field] ?? ""}
                     onChange={(e) => handleCreateEditChange(field, e.target.value)}
-                    className="focus:outline-none focus:ring-0 focus:border-gray-300 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-gray-300"
+                    className="h-8 focus:outline-none focus:ring-0 focus:border-gray-300 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-gray-300"
+                    style={{backgroundColor: 'rgb(209 250 229)', color: '#2C373B'}}
                   />
                 </div>
               ))}
@@ -662,13 +671,14 @@ const SalarySlip = () => {
           </div>
           <DialogFooter className="pt-4 flex gap-2 justify-end">
             <DialogClose asChild>
-              <Button variant="outline" className="hover:bg-gray-100 focus:outline-none focus:ring-0 focus:border-0">
+              <Button variant="outline" className="hover:opacity-80 focus:outline-none focus:ring-0 focus:border-0" style={{backgroundColor: '#4CDC9C', color: '#2C373B'}}>
                 Cancel
               </Button>
             </DialogClose>
             <Button
-              className="bg-emerald-600 text-white hover:bg-emerald-700 focus:outline-none focus:ring-0 focus:border-0"
               onClick={handleCreate}
+              className="hover:opacity-80 focus:outline-none focus:ring-0 focus:border-0"
+              style={{backgroundColor: '#4CDC9C', color: '#2C373B'}}
             >
               Add Salary Structure
             </Button>
