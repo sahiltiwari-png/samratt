@@ -25,7 +25,7 @@ import { User, X, ChevronLeft, ChevronRight, Calendar as CalendarIcon, Download,
 import { toast } from "@/components/ui/use-toast";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
-import { getLeavesReport, LeaveReportData } from "@/api/leaves";
+import { getLeavesReport, LeaveReportData, downloadLeavesReport } from "@/api/leaves";
 import { getEmployees, Employee } from "@/api/employees";
 
 interface SelectedEmployee {
@@ -159,11 +159,44 @@ const LeaveRequestsReport = () => {
   };
 
   const handleExportReport = async () => {
-    toast({
-      title: "Exporting Report",
-      description: "Your report is being prepared for download...",
-    });
-    // TODO: Implement export functionality
+    try {
+      toast({
+        title: "Exporting Report",
+        description: "Your report is being prepared for download...",
+      });
+
+      const exportParams: any = {};
+      
+      if (startDate) {
+        exportParams.startDate = format(startDate, 'yyyy-MM-dd');
+      }
+      
+      if (endDate) {
+        exportParams.endDate = format(endDate, 'yyyy-MM-dd');
+      }
+      
+      if (selectedEmployee) {
+        exportParams.employeeId = selectedEmployee._id;
+      }
+      
+      if (leaveTypeFilter && leaveTypeFilter !== 'all') {
+        exportParams.leaveType = leaveTypeFilter;
+      }
+
+      await downloadLeavesReport(exportParams);
+      
+      toast({
+        title: "Export Successful",
+        description: "Your leave requests report has been downloaded successfully.",
+      });
+    } catch (error) {
+      console.error('Export error:', error);
+      toast({
+        title: "Export Failed",
+        description: "There was an error exporting the report. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const selectEmployee = (employee: Employee) => {
@@ -189,10 +222,7 @@ const LeaveRequestsReport = () => {
         {/* Header */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">Leave Requests Report</h2>
-            <p className="text-gray-600 mt-1">
-              Total {leaveRequests.length} leave requests
-            </p>
+            <h2 className="text-2xl font-bold text-gray-900">Leave requests - {leaveRequests.length}</h2>
           </div>
           
           <div className="flex items-center gap-3 flex-wrap">
@@ -451,33 +481,35 @@ const LeaveRequestsReport = () => {
         </div>
 
         {/* Pagination */}
-        {!loading && leaveRequests.length > 0 && (
-          <div className="bg-white rounded-xl shadow-md border p-4">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div className="text-sm text-gray-700">
+        {!loading && leaveRequests.length > itemsPerPage && (
+          <div className="bg-white rounded-xl shadow-md border p-6">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
+              <div className="text-sm text-gray-600 font-medium">
                 Showing {startIndex + 1} to {Math.min(startIndex + itemsPerPage, leaveRequests.length)} of {leaveRequests.length} results
               </div>
               
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-3">
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                   disabled={currentPage === 1}
-                  className="flex items-center gap-1 border-emerald-300 hover:bg-emerald-50"
+                  className="flex items-center gap-2 px-4 py-2 border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <ChevronLeft className="h-4 w-4" />
-                  Previous
+                  Prev
                 </Button>
 
                 <div className="flex items-center gap-1">
                   {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
+                    // Show first page, last page, current page, and pages around current
                     const showPage = page === 1 || page === totalPages || 
-                      (page >= currentPage - 1 && page <= currentPage + 1);
+                      (page >= currentPage - 2 && page <= currentPage + 2);
                     
                     if (!showPage) {
-                      if (page === currentPage - 2 || page === currentPage + 2) {
-                        return <span key={page} className="px-2 text-gray-400">...</span>;
+                      // Show ellipsis
+                      if (page === currentPage - 3 || page === currentPage + 3) {
+                        return <span key={page} className="px-2 py-1 text-gray-400 text-sm">...</span>;
                       }
                       return null;
                     }
@@ -485,13 +517,13 @@ const LeaveRequestsReport = () => {
                     return (
                       <Button
                         key={page}
-                        variant={currentPage === page ? "default" : "outline"}
+                        variant={currentPage === page ? "default" : "ghost"}
                         size="sm"
                         onClick={() => setCurrentPage(page)}
-                        className={`min-w-[40px] ${
+                        className={`min-w-[40px] h-10 text-sm font-medium ${
                           currentPage === page 
-                            ? "bg-emerald-600 hover:bg-emerald-700 text-white" 
-                            : "border-emerald-300 hover:bg-emerald-50"
+                            ? "bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm" 
+                            : "text-gray-700 hover:bg-gray-100 border border-gray-200"
                         }`}
                       >
                         {page}
@@ -505,7 +537,7 @@ const LeaveRequestsReport = () => {
                   size="sm"
                   onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                   disabled={currentPage === totalPages}
-                  className="flex items-center gap-1 border-emerald-300 hover:bg-emerald-50"
+                  className="flex items-center gap-2 px-4 py-2 border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Next
                   <ChevronRight className="h-4 w-4" />
