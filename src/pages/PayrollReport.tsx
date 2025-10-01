@@ -274,22 +274,29 @@ const PayrollReport = () => {
   }, [showEmployeeDropdown]);
 
   return (
-    <div className="h-screen bg-gray-50 overflow-hidden flex flex-col">
-      <div className="flex-1 overflow-y-auto">
-        <div className="max-w-full space-y-6 p-4 md:p-6">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      <div className="flex-1 overflow-x-hidden">
+        <div className="w-full max-w-none space-y-6 px-4 py-4 md:px-6 md:py-6">
           {/* Header */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
               <h1 className="text-2xl font-bold text-gray-900">
                 Payroll Report
               </h1>
-              <p className="text-gray-600">
+              <p className="text-gray-600 font-medium" style={{ fontWeight: '500' }}>
                 View and manage payroll information
               </p>
             </div>
             <Button 
-              className="flex items-center gap-2"
+              className="flex items-center gap-2 hover:opacity-90 transition-opacity"
               onClick={handleExportReport}
+              style={{
+                backgroundColor: '#4CDC9C',
+                color: '#2C373B',
+                fontSize: '14px',
+                fontWeight: '600',
+                border: 'none'
+              }}
             >
               <Download className="h-4 w-4" />
               Export Report
@@ -299,7 +306,7 @@ const PayrollReport = () => {
           {/* Filters */}
           <Card>
             <CardContent className="p-6">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 items-end">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 sm:gap-4 items-end">
                 {/* Start Date */}
                 <div className="space-y-2">
                   <Label className="text-emerald-800 font-medium">Start Date</Label>
@@ -308,7 +315,7 @@ const PayrollReport = () => {
                       <Button
                         variant="outline"
                         className={cn(
-                          "w-full justify-start text-left font-normal bg-emerald-100 border-emerald-300 text-emerald-700 hover:bg-emerald-200",
+                          "w-full justify-start text-left font-normal bg-emerald-100 border-emerald-300 text-emerald-700 hover:bg-emerald-200 h-9",
                           !startDate && "text-emerald-600"
                         )}
                       >
@@ -335,7 +342,7 @@ const PayrollReport = () => {
                       <Button
                         variant="outline"
                         className={cn(
-                          "w-full justify-start text-left font-normal bg-emerald-100 border-emerald-300 text-emerald-700 hover:bg-emerald-200",
+                          "w-full justify-start text-left font-normal bg-emerald-100 border-emerald-300 text-emerald-700 hover:bg-emerald-200 h-9",
                           !endDate && "text-emerald-600"
                         )}
                       >
@@ -358,7 +365,7 @@ const PayrollReport = () => {
                 <div className="space-y-2">
                   <Label className="text-emerald-800 font-medium">Status</Label>
                   <Select value={statusFilter} onValueChange={setStatusFilter}>
-                    <SelectTrigger className="bg-emerald-100 border-emerald-300 text-emerald-700 hover:bg-emerald-200">
+                    <SelectTrigger className="bg-emerald-100 border-emerald-300 text-emerald-700 hover:bg-emerald-200 h-9">
                       <SelectValue placeholder="Select Status" />
                     </SelectTrigger>
                     <SelectContent>
@@ -375,7 +382,7 @@ const PayrollReport = () => {
                 <div className="space-y-2 relative employee-search-container">
                   <Label className="text-emerald-800 font-medium">Employee</Label>
                   <div className="relative">
-                    <div className="min-h-[40px] w-full bg-emerald-100 border border-emerald-300 rounded-md text-emerald-700 hover:bg-emerald-200 focus-within:bg-emerald-50 focus-within:ring-2 focus-within:ring-emerald-500 focus-within:ring-offset-2 transition-all duration-200">
+                    <div className="h-9 w-full bg-emerald-100 border border-emerald-300 rounded-md text-emerald-700 hover:bg-emerald-200 focus-within:bg-emerald-50 focus-within:ring-2 focus-within:ring-emerald-500 focus-within:ring-offset-2 transition-all duration-200">
                       <div className="flex flex-wrap gap-1.5 items-center p-2">
                         {/* Selected Employee Tags - Styled to look like part of input */}
                         {selectedEmployees.map((employee) => (
@@ -541,67 +548,73 @@ const PayrollReport = () => {
               </div>
             ) : (
             <>
-              {/* Mobile View */}
-              <div className="md:hidden">
-                <div className="p-4 border-b border-emerald-200 bg-emerald-50">
-                  <p className="text-sm text-emerald-700">
+              {/* Mobile View - Enhanced Card Layout */}
+              <div className="lg:hidden">
+                <div className="p-3 border-b border-emerald-200 bg-emerald-50">
+                  <p className="text-xs text-emerald-700 font-medium">
                     Showing {payrollData.length === 0 ? 0 : startIndex + 1} to {Math.min(endIndex, payrollData.length)} of {payrollData.length} records
                   </p>
                 </div>
                 {payrollData.length === 0 ? (
                   <div className="p-8 text-center text-gray-500">
-                    <p>No payroll data found</p>
+                    <p className="font-medium">No payroll data found</p>
                     <p className="text-sm mt-1">Try adjusting your filters</p>
                   </div>
                 ) : (
-                  <div className="divide-y divide-emerald-100">
+                  <div className="p-3 space-y-3">
                     {currentPayrollData.map((item, index) => (
-                      <div key={`${item.employeeCode}-${index}`} className="p-4 space-y-3 hover:bg-emerald-50">
-                        {/* Employee Info */}
-                        <div className="flex items-center gap-3">
-                          <Avatar className="h-10 w-10">
-                            {item.profilePhotoUrl ? (
-                              <AvatarImage src={item.profilePhotoUrl} alt={item.employeeName} />
-                            ) : (
-                              <AvatarFallback>
-                                <User className="h-5 w-5" />
-                              </AvatarFallback>
-                            )}
-                          </Avatar>
-                          <div className="flex-1 min-w-0">
-                            <h3 className="font-medium text-emerald-900 truncate">
-                              {item.employeeName}
-                            </h3>
-                            <p className="text-sm text-emerald-600">
-                              {item.employeeCode} • {item.designation}
-                            </p>
+                      <div key={`${item.employeeCode}-${index}`} className="bg-white rounded-lg border border-emerald-200 shadow-sm hover:shadow-md transition-shadow duration-200">
+                        <div className="p-4 space-y-4">
+                          {/* Employee Info Header */}
+                          <div className="flex items-center gap-3">
+                            <Avatar className="h-12 w-12 border-2 border-emerald-200">
+                              {item.profilePhotoUrl ? (
+                                <AvatarImage src={item.profilePhotoUrl} alt={item.employeeName} />
+                              ) : (
+                                <AvatarFallback className="bg-emerald-100">
+                                  <User className="h-6 w-6 text-emerald-600" />
+                                </AvatarFallback>
+                              )}
+                            </Avatar>
+                            <div className="flex-1 min-w-0">
+                              <h3 className="font-semibold text-emerald-900 truncate" style={{fontSize: '14px', fontWeight: '600'}}>
+                                {item.employeeName}
+                              </h3>
+                              <p className="text-emerald-600 truncate" style={{fontSize: '12px', fontWeight: '500'}}>
+                                {item.employeeCode} • {item.designation}
+                              </p>
+                            </div>
+                            <Badge className={getStatusBadgeColor(item.status)} style={{fontSize: '11px'}}>
+                              {item.status}
+                            </Badge>
                           </div>
-                          <Badge className={getStatusBadgeColor(item.status)}>
-                            {item.status}
-                          </Badge>
-                        </div>
 
-                        {/* Salary Details */}
-                        <div className="grid grid-cols-2 gap-4 text-sm">
-                          <div>
-                            <span className="text-emerald-600">Basic:</span>
-                            <span className="ml-2 font-medium text-emerald-800">₹{item.grossEarnings?.toLocaleString()}</span>
-                          </div>
-                          <div>
-                            <span className="text-emerald-600">HRA:</span>
-                            <span className="ml-2 font-medium text-emerald-800">₹0</span>
-                          </div>
-                          <div>
-                            <span className="text-emerald-600">Gross:</span>
-                            <span className="ml-2 font-medium text-emerald-800">₹{item.grossEarnings?.toLocaleString()}</span>
-                          </div>
-                          <div>
-                            <span className="text-emerald-600">Deductions:</span>
-                            <span className="ml-2 font-medium text-red-600">₹{parseFloat(item.deductions || '0').toLocaleString()}</span>
-                          </div>
-                          <div className="col-span-2 pt-2 border-t border-emerald-100">
-                            <span className="text-emerald-600">Net Salary:</span>
-                            <span className="ml-2 font-semibold text-emerald-900">₹{parseFloat(item.netPayable || '0').toLocaleString()}</span>
+                          {/* Salary Details Grid */}
+                          <div className="bg-emerald-50 rounded-lg p-3">
+                            <div className="grid grid-cols-2 gap-3 text-sm">
+                              <div className="flex justify-between">
+                                <span className="text-emerald-600 font-medium" style={{fontSize: '12px'}}>Basic:</span>
+                                <span className="font-semibold text-emerald-800" style={{fontSize: '12px', fontWeight: '600'}}>₹{item.grossEarnings?.toLocaleString()}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="text-emerald-600 font-medium" style={{fontSize: '12px'}}>HRA:</span>
+                                <span className="font-semibold text-emerald-800" style={{fontSize: '12px', fontWeight: '600'}}>₹0</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="text-emerald-600 font-medium" style={{fontSize: '12px'}}>Gross:</span>
+                                <span className="font-semibold text-emerald-800" style={{fontSize: '12px', fontWeight: '600'}}>₹{item.grossEarnings?.toLocaleString()}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="text-emerald-600 font-medium" style={{fontSize: '12px'}}>Deductions:</span>
+                                <span className="font-semibold text-red-600" style={{fontSize: '12px', fontWeight: '600'}}>₹{parseFloat(item.deductions || '0').toLocaleString()}</span>
+                              </div>
+                            </div>
+                            <div className="mt-3 pt-3 border-t border-emerald-200">
+                              <div className="flex justify-between items-center">
+                                <span className="text-emerald-700 font-semibold" style={{fontSize: '14px', fontWeight: '600'}}>Net Salary:</span>
+                                <span className="font-bold text-emerald-900 text-lg">₹{parseFloat(item.netPayable || '0').toLocaleString()}</span>
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -612,32 +625,32 @@ const PayrollReport = () => {
 
               {/* Desktop View */}
               <div className="hidden lg:block">
-                <div className="overflow-x-auto">
+                <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-emerald-300 scrollbar-track-emerald-100" style={{ WebkitOverflowScrolling: 'touch' }}>
                   <table className="w-full min-w-[800px] divide-y divide-gray-200">
                     <thead className="bg-emerald-50">
                       <tr>
-                        <th className="px-3 py-3 text-left text-xs font-semibold text-emerald-800 uppercase tracking-wider w-[200px]">
+                        <th className="px-3 py-3 text-left text-sm font-semibold text-emerald-800 uppercase tracking-wider w-[200px]" style={{fontSize: '12px', fontWeight: '600'}}>
                           Name
                         </th>
-                        <th className="px-3 py-3 text-left text-xs font-semibold text-emerald-800 uppercase tracking-wider w-[120px]">
+                        <th className="px-3 py-3 text-left text-sm font-semibold text-emerald-800 uppercase tracking-wider w-[120px]" style={{fontSize: '12px', fontWeight: '600'}}>
                           Employee Code
                         </th>
-                        <th className="px-3 py-3 text-right text-xs font-semibold text-emerald-800 uppercase tracking-wider w-[100px]">
+                        <th className="px-3 py-3 text-right text-sm font-semibold text-emerald-800 uppercase tracking-wider w-[100px]" style={{fontSize: '12px', fontWeight: '600'}}>
                           Basic
                         </th>
-                        <th className="px-3 py-3 text-right text-xs font-semibold text-emerald-800 uppercase tracking-wider w-[100px]">
+                        <th className="px-3 py-3 text-right text-sm font-semibold text-emerald-800 uppercase tracking-wider w-[100px]" style={{fontSize: '12px', fontWeight: '600'}}>
                           HRA
                         </th>
-                        <th className="px-3 py-3 text-right text-xs font-semibold text-emerald-800 uppercase tracking-wider w-[120px]">
+                        <th className="px-3 py-3 text-right text-sm font-semibold text-emerald-800 uppercase tracking-wider w-[120px]" style={{fontSize: '12px', fontWeight: '600'}}>
                           Gross Earning
                         </th>
-                        <th className="px-3 py-3 text-right text-xs font-semibold text-emerald-800 uppercase tracking-wider w-[100px]">
+                        <th className="px-3 py-3 text-right text-sm font-semibold text-emerald-800 uppercase tracking-wider w-[100px]" style={{fontSize: '12px', fontWeight: '600'}}>
                           Deduction
                         </th>
-                        <th className="px-3 py-3 text-right text-xs font-semibold text-emerald-800 uppercase tracking-wider w-[120px]">
+                        <th className="px-3 py-3 text-right text-sm font-semibold text-emerald-800 uppercase tracking-wider w-[120px]" style={{fontSize: '12px', fontWeight: '600'}}>
                           Net Salary
                         </th>
-                        <th className="px-3 py-3 text-center text-xs font-semibold text-emerald-800 uppercase tracking-wider w-[100px]">
+                        <th className="px-3 py-3 text-center text-sm font-semibold text-emerald-800 uppercase tracking-wider w-[100px]" style={{fontSize: '12px', fontWeight: '600'}}>
                           Status
                         </th>
                       </tr>
@@ -665,31 +678,31 @@ const PayrollReport = () => {
                                   )}
                                 </Avatar>
                                 <div className="min-w-0">
-                                  <div className="text-sm font-medium text-emerald-900 truncate">
+                                  <div className="text-sm font-medium text-emerald-900 truncate" style={{fontSize: '14px', fontWeight: '500'}}>
                                     {item.employeeName}
                                   </div>
-                                  <div className="text-sm text-emerald-600 truncate">
+                                  <div className="text-sm text-emerald-600 truncate" style={{fontSize: '14px', fontWeight: '500'}}>
                                     {item.designation}
                                   </div>
                                 </div>
                               </div>
                             </td>
-                            <td className="px-3 py-3 text-sm text-emerald-700">
+                            <td className="px-3 py-3 text-sm text-emerald-700" style={{fontSize: '14px', fontWeight: '500'}}>
                               {item.employeeCode}
                             </td>
-                            <td className="px-3 py-3 text-right text-sm text-emerald-700">
+                            <td className="px-3 py-3 text-right text-sm text-emerald-700" style={{fontSize: '14px', fontWeight: '500'}}>
                               ₹{item.grossEarnings?.toLocaleString()}
                             </td>
-                            <td className="px-3 py-3 text-right text-sm text-emerald-700">
+                            <td className="px-3 py-3 text-right text-sm text-emerald-700" style={{fontSize: '14px', fontWeight: '500'}}>
                               ₹0
                             </td>
-                            <td className="px-3 py-3 text-right text-sm font-medium text-emerald-800">
+                            <td className="px-3 py-3 text-right text-sm font-medium text-emerald-800" style={{fontSize: '14px', fontWeight: '500'}}>
                               ₹{item.grossEarnings?.toLocaleString()}
                             </td>
-                            <td className="px-3 py-3 text-right text-sm text-red-600">
+                            <td className="px-3 py-3 text-right text-sm text-red-600" style={{fontSize: '14px', fontWeight: '500'}}>
                               ₹{parseFloat(item.deductions || '0').toLocaleString()}
                             </td>
-                            <td className="px-3 py-3 text-right text-sm font-semibold text-emerald-900">
+                            <td className="px-3 py-3 text-right text-sm font-semibold text-emerald-900" style={{fontSize: '14px', fontWeight: '500'}}>
                               ₹{parseFloat(item.netPayable || '0').toLocaleString()}
                             </td>
                             <td className="px-3 py-3 text-center">
