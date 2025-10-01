@@ -222,13 +222,14 @@ const LeaveRequestsReport = () => {
         {/* Header */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">Leave requests - {leaveRequests.length}</h2>
+            <h2 className="text-2xl font-bold" style={{color: '#2C373B'}}>Leave requests - {leaveRequests.length}</h2>
           </div>
           
           <div className="flex items-center gap-3 flex-wrap">
             <Button
               onClick={handleExportReport}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white flex items-center gap-2"
+              className="flex items-center gap-2"
+              style={{backgroundColor: '#4CDC9C', color: '#2C373B'}}
             >
               <Download className="h-4 w-4" />
               Export Report
@@ -249,9 +250,10 @@ const LeaveRequestsReport = () => {
                   <Button
                     variant="outline"
                     className={cn(
-                      "w-full justify-start text-left font-normal bg-white border-emerald-300 hover:bg-emerald-50",
+                      "w-full justify-start text-left font-normal border-emerald-300 h-9 hover:bg-emerald-100",
                       !startDate && "text-muted-foreground"
                     )}
+                    style={{backgroundColor: 'rgb(209 250 229)'}}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4 text-emerald-600" />
                     {startDate ? format(startDate, "PPP") : "Pick a date"}
@@ -278,9 +280,10 @@ const LeaveRequestsReport = () => {
                   <Button
                     variant="outline"
                     className={cn(
-                      "w-full justify-start text-left font-normal bg-white border-emerald-300 hover:bg-emerald-50",
+                      "w-full justify-start text-left font-normal border-emerald-300 h-9 hover:bg-emerald-100",
                       !endDate && "text-muted-foreground"
                     )}
+                    style={{backgroundColor: 'rgb(209 250 229)'}}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4 text-emerald-600" />
                     {endDate ? format(endDate, "PPP") : "Pick a date"}
@@ -303,7 +306,7 @@ const LeaveRequestsReport = () => {
                 Leave Type
               </Label>
               <Select value={leaveTypeFilter} onValueChange={setLeaveTypeFilter}>
-                <SelectTrigger className="bg-white border-emerald-300 hover:bg-emerald-50">
+                <SelectTrigger className="border-emerald-300 h-9 hover:bg-emerald-100" style={{backgroundColor: 'rgb(209 250 229)'}}>
                   <SelectValue placeholder="Select leave type" />
                 </SelectTrigger>
                 <SelectContent>
@@ -342,7 +345,8 @@ const LeaveRequestsReport = () => {
                     // Delay hiding dropdown to allow for clicks
                     setTimeout(() => setShowEmployeeDropdown(false), 200);
                   }}
-                  className="bg-white border-emerald-300 hover:bg-emerald-50 pr-10"
+                  className="border-emerald-300 pr-10 h-9 hover:bg-emerald-100"
+                  style={{backgroundColor: 'rgb(209 250 229)'}}
                 />
                 <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-emerald-600 h-4 w-4" />
                 
@@ -414,7 +418,7 @@ const LeaveRequestsReport = () => {
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex-1 min-w-0">
-                      <div className="text-sm font-medium text-gray-900 truncate">
+                      <div className="text-sm font-medium truncate" style={{color: '#2C373B'}}>
                         {request.employeeName}
                       </div>
                       <div className="text-sm text-emerald-600">
@@ -432,19 +436,19 @@ const LeaveRequestsReport = () => {
                   <div className="grid grid-cols-2 gap-3 text-sm">
                     <div>
                       <span className="text-gray-500 font-medium">Leave Type:</span>
-                      <div className="text-gray-900 capitalize mt-1">{request.leaveType}</div>
+                      <div className="capitalize mt-1" style={{color: '#2C373B'}}>{request.leaveType}</div>
                     </div>
                     <div>
                       <span className="text-gray-500 font-medium">Days:</span>
-                      <div className="text-gray-900 mt-1">{request.days}</div>
+                      <div className="mt-1" style={{color: '#2C373B'}}>{request.days}</div>
                     </div>
                     <div>
                       <span className="text-gray-500 font-medium">Start Date:</span>
-                      <div className="text-gray-900 mt-1">{formatDate(request.startDate)}</div>
+                      <div className="mt-1" style={{color: '#2C373B'}}>{formatDate(request.startDate)}</div>
                     </div>
                     <div>
                       <span className="text-gray-500 font-medium">End Date:</span>
-                      <div className="text-gray-900 mt-1">{formatDate(request.endDate)}</div>
+                      <div className="mt-1" style={{color: '#2C373B'}}>{formatDate(request.endDate)}</div>
                     </div>
                   </div>
                   
@@ -464,25 +468,25 @@ const LeaveRequestsReport = () => {
             <table className="w-full divide-y divide-gray-200">
               <thead className="bg-emerald-50">
                 <tr>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-emerald-800 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-emerald-800 uppercase tracking-wider" style={{fontSize: '12px', fontWeight: 600}}>
                     Employee
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-emerald-800 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-emerald-800 uppercase tracking-wider" style={{fontSize: '12px', fontWeight: 600}}>
                     Leave Type
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-emerald-800 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-emerald-800 uppercase tracking-wider" style={{fontSize: '12px', fontWeight: 600}}>
                     Start Date
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-emerald-800 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-emerald-800 uppercase tracking-wider" style={{fontSize: '12px', fontWeight: 600}}>
                     End Date
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-emerald-800 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-emerald-800 uppercase tracking-wider" style={{fontSize: '12px', fontWeight: 600}}>
                     Reason
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-emerald-800 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-emerald-800 uppercase tracking-wider" style={{fontSize: '12px', fontWeight: 600}}>
                     Days
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-emerald-800 uppercase tracking-wider">
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-emerald-800 uppercase tracking-wider" style={{fontSize: '12px', fontWeight: 600}}>
                     Status
                   </th>
                 </tr>
@@ -521,7 +525,7 @@ const LeaveRequestsReport = () => {
                             </AvatarFallback>
                           </Avatar>
                           <div className="ml-4 min-w-0 flex-1">
-                            <div className="text-sm font-medium text-gray-900 truncate">
+                            <div className="text-sm font-medium truncate" style={{fontSize: '14px', fontWeight: 500, color: '#2C373B'}}>
                               {request.employeeName}
                             </div>
                             <div className="text-sm text-emerald-600">
@@ -531,21 +535,21 @@ const LeaveRequestsReport = () => {
                         </div>
                       </td>
                       <td className="px-4 py-4">
-                        <div className="text-sm text-gray-900 capitalize">{request.leaveType}</div>
+                        <div className="text-sm capitalize" style={{fontSize: '14px', fontWeight: 500, color: '#2C373B'}}>{request.leaveType}</div>
                       </td>
                       <td className="px-4 py-4">
-                        <div className="text-sm text-gray-900">{formatDate(request.startDate)}</div>
+                        <div className="text-sm" style={{fontSize: '14px', fontWeight: 500, color: '#2C373B'}}>{formatDate(request.startDate)}</div>
                       </td>
                       <td className="px-4 py-4">
-                        <div className="text-sm text-gray-900">{formatDate(request.endDate)}</div>
+                        <div className="text-sm" style={{fontSize: '14px', fontWeight: 500, color: '#2C373B'}}>{formatDate(request.endDate)}</div>
                       </td>
                       <td className="px-4 py-4">
-                        <div className="text-sm text-gray-900 max-w-xs truncate" title={request.reason}>
+                        <div className="text-sm max-w-xs truncate" style={{fontSize: '14px', fontWeight: 500, color: '#2C373B'}} title={request.reason}>
                           {request.reason}
                         </div>
                       </td>
                       <td className="px-4 py-4">
-                        <div className="text-sm text-gray-900">{request.days}</div>
+                        <div className="text-sm" style={{fontSize: '14px', fontWeight: 500, color: '#2C373B'}}>{request.days}</div>
                       </td>
                       <td className="px-4 py-4">
                         {getStatusBadge(request.status)}
