@@ -236,11 +236,11 @@ const LeaveRequestsReport = () => {
           </div>
         </div>
 
-        {/* Filters - All in one line */}
+        {/* Filters - Responsive layout */}
         <div className="bg-emerald-50 rounded-xl shadow-md border border-emerald-200 p-4 sm:p-6">
-          <div className="flex flex-wrap items-end gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
             {/* Start Date */}
-            <div className="min-w-[180px]">
+            <div className="w-full">
               <Label className="text-sm font-medium text-emerald-800 mb-2 block">
                 Start Date
               </Label>
@@ -269,7 +269,7 @@ const LeaveRequestsReport = () => {
             </div>
 
             {/* End Date */}
-            <div className="min-w-[180px]">
+            <div className="w-full">
               <Label className="text-sm font-medium text-emerald-800 mb-2 block">
                 End Date
               </Label>
@@ -298,7 +298,7 @@ const LeaveRequestsReport = () => {
             </div>
 
             {/* Leave Type Filter */}
-            <div className="min-w-[160px]">
+            <div className="w-full">
               <Label className="text-sm font-medium text-emerald-800 mb-2 block">
                 Leave Type
               </Label>
@@ -319,7 +319,7 @@ const LeaveRequestsReport = () => {
             </div>
 
             {/* Employee Search */}
-            <div className="min-w-[200px] flex-1">
+            <div className="w-full sm:col-span-2 lg:col-span-1">
               <Label className="text-sm font-medium text-emerald-800 mb-2 block">
                 Employee
               </Label>
@@ -383,8 +383,83 @@ const LeaveRequestsReport = () => {
           </div>
         </div>
 
-        {/* Table */}
-        <div className="bg-white rounded-xl shadow-md border">
+        {/* Mobile Card View */}
+        <div className="block lg:hidden">
+          {loading ? (
+            <div className="bg-white rounded-xl shadow-md border p-6">
+              <div className="flex flex-col items-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600 mb-4"></div>
+                <p className="text-lg font-medium">Loading...</p>
+              </div>
+            </div>
+          ) : currentLeaveRequests.length === 0 ? (
+            <div className="bg-white rounded-xl shadow-md border p-6">
+              <div className="flex flex-col items-center">
+                <FileText className="h-12 w-12 text-gray-300 mb-4" />
+                <p className="text-lg font-medium">No leave requests found</p>
+                <p className="text-sm text-gray-500">Try adjusting your filter criteria</p>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {currentLeaveRequests.map((request, index) => (
+                <div key={`${request.employeeCode}-${index}`} className="bg-white rounded-xl shadow-md border p-4">
+                  <div className="flex items-start space-x-3 mb-3">
+                    <Avatar className="h-12 w-12 flex-shrink-0">
+                      {request.profilePhotoUrl ? (
+                        <AvatarImage src={request.profilePhotoUrl} alt={request.employeeName} />
+                      ) : null}
+                      <AvatarFallback className="bg-emerald-100 text-emerald-700">
+                        <User className="h-6 w-6" />
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-medium text-gray-900 truncate">
+                        {request.employeeName}
+                      </div>
+                      <div className="text-sm text-emerald-600">
+                        {request.employeeCode}
+                      </div>
+                      <div className="text-xs text-gray-500 mt-1">
+                        {request.designation} • {request.department}
+                      </div>
+                    </div>
+                    <div className="flex-shrink-0">
+                      {getStatusBadge(request.status)}
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-3 text-sm">
+                    <div>
+                      <span className="text-gray-500 font-medium">Leave Type:</span>
+                      <div className="text-gray-900 capitalize mt-1">{request.leaveType}</div>
+                    </div>
+                    <div>
+                      <span className="text-gray-500 font-medium">Days:</span>
+                      <div className="text-gray-900 mt-1">{request.days}</div>
+                    </div>
+                    <div>
+                      <span className="text-gray-500 font-medium">Start Date:</span>
+                      <div className="text-gray-900 mt-1">{formatDate(request.startDate)}</div>
+                    </div>
+                    <div>
+                      <span className="text-gray-500 font-medium">End Date:</span>
+                      <div className="text-gray-900 mt-1">{formatDate(request.endDate)}</div>
+                    </div>
+                  </div>
+                  
+                  <div className="mt-3 pt-3 border-t border-gray-100">
+                    <span className="text-gray-500 font-medium text-sm">Reason:</span>
+                    <div className="text-gray-900 text-sm mt-1 break-words">{request.reason}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Desktop Table View */}
+        <div className="hidden lg:block bg-white rounded-xl shadow-md border">
           <div className="overflow-x-auto">
             <table className="w-full divide-y divide-gray-200">
               <thead className="bg-emerald-50">
@@ -437,13 +512,16 @@ const LeaveRequestsReport = () => {
                     <tr key={`${request.employeeCode}-${index}`} className="hover:bg-emerald-50">
                       <td className="px-4 py-4">
                         <div className="flex items-center">
-                          <Avatar className="h-10 w-10">
+                          <Avatar className="h-10 w-10 flex-shrink-0">
+                            {request.profilePhotoUrl ? (
+                              <AvatarImage src={request.profilePhotoUrl} alt={request.employeeName} />
+                            ) : null}
                             <AvatarFallback className="bg-emerald-100 text-emerald-700">
                               <User className="h-5 w-5" />
                             </AvatarFallback>
                           </Avatar>
-                          <div className="ml-4">
-                            <div className="text-sm font-medium text-gray-900">
+                          <div className="ml-4 min-w-0 flex-1">
+                            <div className="text-sm font-medium text-gray-900 truncate">
                               {request.employeeName}
                             </div>
                             <div className="text-sm text-emerald-600">
@@ -462,7 +540,7 @@ const LeaveRequestsReport = () => {
                         <div className="text-sm text-gray-900">{formatDate(request.endDate)}</div>
                       </td>
                       <td className="px-4 py-4">
-                        <div className="text-sm text-gray-900 max-w-xs" title={request.reason}>
+                        <div className="text-sm text-gray-900 max-w-xs truncate" title={request.reason}>
                           {request.reason}
                         </div>
                       </td>
@@ -482,34 +560,42 @@ const LeaveRequestsReport = () => {
 
         {/* Pagination */}
         {!loading && leaveRequests.length > itemsPerPage && (
-          <div className="bg-white rounded-xl shadow-md border p-6">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
-              <div className="text-sm text-gray-600 font-medium">
+          <div className="bg-white rounded-xl shadow-md border p-4 lg:p-6">
+            <div className="flex flex-col lg:flex-row items-center justify-between gap-4 lg:gap-6">
+              <div className="text-sm text-gray-600 font-medium text-center lg:text-left">
                 Showing {startIndex + 1} to {Math.min(startIndex + itemsPerPage, leaveRequests.length)} of {leaveRequests.length} results
               </div>
               
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 lg:gap-3">
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                   disabled={currentPage === 1}
-                  className="flex items-center gap-2 px-4 py-2 border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex items-center gap-1 lg:gap-2 px-3 lg:px-4 py-2 border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <ChevronLeft className="h-4 w-4" />
-                  Prev
+                  <span className="hidden sm:inline">Prev</span>
                 </Button>
 
                 <div className="flex items-center gap-1">
                   {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
-                    // Show first page, last page, current page, and pages around current
-                    const showPage = page === 1 || page === totalPages || 
-                      (page >= currentPage - 2 && page <= currentPage + 2);
+                    // Show fewer pages on mobile
+                    const isMobile = window.innerWidth < 640;
+                    const showPage = isMobile 
+                      ? (page === 1 || page === totalPages || page === currentPage || 
+                         (page >= currentPage - 1 && page <= currentPage + 1))
+                      : (page === 1 || page === totalPages || 
+                         (page >= currentPage - 2 && page <= currentPage + 2));
                     
                     if (!showPage) {
                       // Show ellipsis
-                      if (page === currentPage - 3 || page === currentPage + 3) {
-                        return <span key={page} className="px-2 py-1 text-gray-400 text-sm">...</span>;
+                      const ellipsisCondition = isMobile 
+                        ? (page === currentPage - 2 || page === currentPage + 2)
+                        : (page === currentPage - 3 || page === currentPage + 3);
+                      
+                      if (ellipsisCondition) {
+                        return <span key={page} className="px-1 lg:px-2 py-1 text-gray-400 text-sm">...</span>;
                       }
                       return null;
                     }
@@ -520,7 +606,7 @@ const LeaveRequestsReport = () => {
                         variant={currentPage === page ? "default" : "ghost"}
                         size="sm"
                         onClick={() => setCurrentPage(page)}
-                        className={`min-w-[40px] h-10 text-sm font-medium ${
+                        className={`min-w-[36px] lg:min-w-[40px] h-9 lg:h-10 text-sm font-medium ${
                           currentPage === page 
                             ? "bg-emerald-600 hover:bg-emerald-700 text-white shadow-sm" 
                             : "text-gray-700 hover:bg-gray-100 border border-gray-200"
@@ -537,9 +623,9 @@ const LeaveRequestsReport = () => {
                   size="sm"
                   onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                   disabled={currentPage === totalPages}
-                  className="flex items-center gap-2 px-4 py-2 border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex items-center gap-1 lg:gap-2 px-3 lg:px-4 py-2 border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Next
+                  <span className="hidden sm:inline">Next</span>
                   <ChevronRight className="h-4 w-4" />
                 </Button>
               </div>

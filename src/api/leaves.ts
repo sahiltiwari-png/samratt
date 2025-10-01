@@ -286,6 +286,7 @@ export interface LeaveReportData {
   email: string;
   designation: string;
   department: string;
+  profilePhotoUrl?: string;
   leaveType: string;
   startDate: string;
   endDate: string;
