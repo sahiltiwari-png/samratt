@@ -23,6 +23,7 @@ import AdminPanel from "./pages/AdminPanel";
 import NotFound from "./pages/NotFound";
 import AddEmployeeStepper from "./pages/AddEmployeeStepper";
 import HR from "./pages/HR";
+import Regularization from "./pages/Regularization";
 import Payroll from "./pages/Payroll";
 import SalarySlips from "./pages/SalarySlips";  
 import Reports from "./pages/Reports";
@@ -55,6 +56,7 @@ const App = () => (
                       <Route path="/add-employee" element={<AddEmployeeStepper />} />
                       <Route path="/hr" element={<HR />} />
                       <Route path="/hr/:id" element={<HR />} />
+                      <Route path="/regularization" element={<Regularization />} />
                       <Route path="/organizations/:id" element={<OrganizationDetails />} />
                       <Route path="/payroll" element={<Payroll />} />
                       <Route path="/salary-slips" element={<SalarySlips />} />
