@@ -162,3 +162,27 @@ export const getPayrollReport = async (params?: {
   const res = await API.get(`/reports/payroll${qs}`);
   return res.data as PayrollReportResponse;
 };
+
+export const downloadPayrollReport = async (params?: { 
+  employeeId?: string; 
+  month?: number; 
+  year?: number; 
+  status?: string;
+  startDate?: string;
+  endDate?: string;
+}) => {
+  const query: string[] = [];
+  if (params) {
+    if (params.employeeId) query.push(`employeeId=${params.employeeId}`);
+    if (params.month) query.push(`month=${params.month}`);
+    if (params.year) query.push(`year=${params.year}`);
+    if (params.status) query.push(`status=${params.status}`);
+    if (params.startDate) query.push(`startDate=${params.startDate}`);
+    if (params.endDate) query.push(`endDate=${params.endDate}`);
+  }
+  const qs = query.length ? `?${query.join('&')}` : '';
+  const res = await API.get(`/reports/payroll/download${qs}`, {
+    responseType: 'blob'
+  });
+  return res;
+};

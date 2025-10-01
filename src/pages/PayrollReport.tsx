@@ -11,7 +11,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { getPayrollReport, PayrollReportItem } from '@/api/payroll';
+import { getPayrollReport, downloadPayrollReport, PayrollReportItem } from '@/api/payroll';
 import { getEmployees, Employee } from '@/api/employees';
 import { toast } from '@/hooks/use-toast';
 
@@ -140,6 +140,74 @@ const PayrollReport = () => {
     setCurrentPage(1);
   };
 
+  const handleExportReport = async () => {
+    try {
+      const params: any = {};
+
+      // Add employee filter
+      if (selectedEmployees.length > 0) {
+        params.employeeId = selectedEmployees[0]._id; // Single employee selection
+      }
+      
+      // Add date filters
+      if (startDate) {
+        params.startDate = format(startDate, 'yyyy-MM-dd');
+      }
+      
+      if (endDate) {
+        params.endDate = format(endDate, 'yyyy-MM-dd');
+      }
+
+      // Add status filter
+      if (statusFilter && statusFilter !== "All Status") {
+        params.status = statusFilter;
+      }
+
+      toast({
+        title: "Exporting Report",
+        description: "Your payroll report is being prepared for download...",
+      });
+
+      const response = await downloadPayrollReport(params);
+      
+      // Create blob and download file
+      const blob = new Blob([response.data], { 
+        type: response.headers['content-type'] || 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' 
+      });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      
+      // Extract filename from response headers or create default
+      const contentDisposition = response.headers['content-disposition'];
+      let filename = `payroll_report_${format(new Date(), 'yyyy-MM-dd')}.xlsx`;
+      if (contentDisposition) {
+        const filenameMatch = contentDisposition.match(/filename="(.+)"/);
+        if (filenameMatch) {
+          filename = filenameMatch[1];
+        }
+      }
+      
+      link.setAttribute('download', filename);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+      
+      toast({
+        title: "Export Successful",
+        description: "Payroll report has been downloaded successfully.",
+      });
+    } catch (error) {
+      console.error('Error exporting payroll report:', error);
+      toast({
+        title: "Export Failed",
+        description: "There was an error exporting the report. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
   const clearAllFilters = () => {
     setStartDate(undefined);
     setEndDate(undefined);
@@ -219,7 +287,10 @@ const PayrollReport = () => {
                 View and manage payroll information
               </p>
             </div>
-            <Button className="flex items-center gap-2">
+            <Button 
+              className="flex items-center gap-2"
+              onClick={handleExportReport}
+            >
               <Download className="h-4 w-4" />
               Export Report
             </Button>
@@ -304,33 +375,69 @@ const PayrollReport = () => {
                 <div className="space-y-2 relative employee-search-container">
                   <Label className="text-emerald-800 font-medium">Employee</Label>
                   <div className="relative">
-                    <Input
-                      placeholder="Search employees..."
-                      value={employeeSearchTerm}
-                      onChange={(e) => {
-                        setEmployeeSearchTerm(e.target.value);
-                        setShowEmployeeDropdown(true);
-                        searchEmployees(e.target.value);
-                      }}
-                      onFocus={async () => {
-                        setShowEmployeeDropdown(true);
-                        if (employeeSearchResults.length === 0) {
-                          await loadAllEmployees();
-                        }
-                      }}
-                      className="w-full pr-8 bg-emerald-100 border-emerald-300 text-emerald-700 hover:bg-emerald-200 focus:bg-emerald-50"
-                    />
-                    {selectedEmployees.length > 0 && (
-                      <button
-                        onClick={() => {
-                          setSelectedEmployees([]);
-                          setEmployeeSearchTerm("");
-                        }}
-                        className="absolute right-2 top-1/2 transform -translate-y-1/2 text-emerald-400 hover:text-emerald-600"
-                      >
-                        <X className="h-4 w-4" />
-                      </button>
-                    )}
+                    <div className="min-h-[40px] w-full bg-emerald-100 border border-emerald-300 rounded-md text-emerald-700 hover:bg-emerald-200 focus-within:bg-emerald-50 focus-within:ring-2 focus-within:ring-emerald-500 focus-within:ring-offset-2 transition-all duration-200">
+                      <div className="flex flex-wrap gap-1.5 items-center p-2">
+                        {/* Selected Employee Tags - Styled to look like part of input */}
+                        {selectedEmployees.map((employee) => (
+                          <div
+                            key={employee._id}
+                            className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-white/80 text-emerald-800 rounded-md text-xs border border-emerald-200 shadow-sm backdrop-blur-sm"
+                          >
+                            <Avatar className="h-4 w-4 border border-emerald-200">
+                              <AvatarImage src={employee.profilePhotoUrl} />
+                              <AvatarFallback className="text-xs bg-emerald-100">
+                                <User className="h-2.5 w-2.5" />
+                              </AvatarFallback>
+                            </Avatar>
+                            <span className="font-medium text-emerald-900">
+                              {employee.firstName} {employee.lastName}
+                            </span>
+                            <span className="text-emerald-600 font-mono text-xs">
+                              {employee.employeeCode}
+                            </span>
+                            <button
+                              onClick={() => removeSelectedEmployee(employee._id)}
+                              className="text-emerald-400 hover:text-emerald-600 hover:bg-emerald-100 rounded-full p-0.5 transition-colors"
+                            >
+                              <X className="h-3 w-3" />
+                            </button>
+                          </div>
+                        ))}
+                        
+                        {/* Search Input - Seamlessly integrated */}
+                        <input
+                          type="text"
+                          placeholder={selectedEmployees.length > 0 ? "Search more employees..." : "Search employees..."}
+                          value={employeeSearchTerm}
+                          onChange={(e) => {
+                            setEmployeeSearchTerm(e.target.value);
+                            setShowEmployeeDropdown(true);
+                            searchEmployees(e.target.value);
+                          }}
+                          onFocus={async () => {
+                            setShowEmployeeDropdown(true);
+                            if (employeeSearchResults.length === 0) {
+                              await loadAllEmployees();
+                            }
+                          }}
+                          className="flex-1 min-w-[140px] bg-transparent border-none outline-none text-emerald-700 placeholder-emerald-500 text-sm py-1"
+                        />
+                        
+                        {/* Clear All Button */}
+                        {selectedEmployees.length > 0 && (
+                          <button
+                            onClick={() => {
+                              setSelectedEmployees([]);
+                              setEmployeeSearchTerm("");
+                            }}
+                            className="text-emerald-400 hover:text-emerald-600 hover:bg-emerald-200 rounded-full p-1.5 transition-colors"
+                            title="Clear all selected employees"
+                          >
+                            <X className="h-4 w-4" />
+                          </button>
+                        )}
+                      </div>
+                    </div>
                     {showEmployeeDropdown && (
                       <div className="absolute top-full left-0 right-0 z-50 bg-white border border-emerald-300 rounded-md shadow-lg max-h-60 overflow-y-auto mt-1">
                         {isLoadingEmployees ? (
@@ -369,37 +476,7 @@ const PayrollReport = () => {
                       </div>
                     )}
                   </div>
-                  
-                  {/* Selected Employee Tags */}
-                  {selectedEmployees.length > 0 && (
-                    <div className="flex flex-wrap gap-2 mt-2">
-                      {selectedEmployees.map((employee) => (
-                        <div
-                          key={employee._id}
-                          className="inline-flex items-center gap-2 px-3 py-1 bg-emerald-100 text-emerald-800 rounded-full text-sm border border-emerald-200"
-                        >
-                          <Avatar className="h-5 w-5">
-                            <AvatarImage src={employee.profilePhotoUrl} />
-                            <AvatarFallback className="text-xs">
-                              <User className="h-3 w-3" />
-                            </AvatarFallback>
-                          </Avatar>
-                          <span className="font-medium">
-                            {employee.firstName} {employee.lastName}
-                          </span>
-                          <span className="text-emerald-600">
-                            ({employee.employeeCode})
-                          </span>
-                          <button
-                            onClick={() => removeSelectedEmployee(employee._id)}
-                            className="text-emerald-500 hover:text-emerald-700 ml-1"
-                          >
-                            <X className="h-3 w-3" />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
+
                 </div>
 
                 {/* Clear All Filters Button */}
