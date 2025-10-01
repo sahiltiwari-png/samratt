@@ -279,3 +279,83 @@ export const getEmployeeLeaveBalanceHistory = async (
   const res = await API.get(`/leave-balance/${employeeId}?${params.toString()}`);
   return res.data;
 };
+
+export interface LeaveReportData {
+  employeeCode: string;
+  employeeName: string;
+  email: string;
+  designation: string;
+  department: string;
+  profilePhotoUrl?: string;
+  leaveType: string;
+  startDate: string;
+  endDate: string;
+  days: number;
+  reason: string;
+  status: string;
+  approverName: string;
+}
+
+export interface LeaveReportResponse {
+  message: string;
+  count: number;
+  data: LeaveReportData[];
+}
+
+export const getLeavesReport = async (params?: {
+  startDate?: string;
+  endDate?: string;
+  employeeId?: string;
+  leaveType?: string;
+}): Promise<LeaveReportResponse> => {
+  const queryParams = new URLSearchParams();
+  
+  if (params?.startDate) queryParams.append('startDate', params.startDate);
+  if (params?.endDate) queryParams.append('endDate', params.endDate);
+  if (params?.employeeId) queryParams.append('employeeId', params.employeeId);
+  if (params?.leaveType && params.leaveType !== 'all') queryParams.append('leaveType', params.leaveType);
+  
+  const queryString = queryParams.toString() ? `?${queryParams.toString()}` : '';
+  const response = await API.get(`/reports/leaves-report${queryString}`);
+  return response.data;
+};
+
+export const downloadLeavesReport = async (params?: {
+  startDate?: string;
+  endDate?: string;
+  employeeId?: string;
+  leaveType?: string;
+}) => {
+  const queryParams = new URLSearchParams();
+  
+  if (params?.startDate) queryParams.append('startDate', params.startDate);
+  if (params?.endDate) queryParams.append('endDate', params.endDate);
+  if (params?.employeeId) queryParams.append('employeeId', params.employeeId);
+  if (params?.leaveType && params.leaveType !== 'all') queryParams.append('leaveType', params.leaveType);
+  
+  const queryString = queryParams.toString() ? `?${queryParams.toString()}` : '';
+  const response = await API.get(`/reports/leaves-report/download${queryString}`, {
+    responseType: 'blob',
+  });
+  
+  // Create blob link to download
+  const url = window.URL.createObjectURL(new Blob([response.data]));
+  const link = document.createElement('a');
+  link.href = url;
+  
+  // Get filename from response headers or use default
+  const contentDisposition = response.headers['content-disposition'];
+  let filename = 'leaves-report.xlsx';
+  if (contentDisposition) {
+    const filenameMatch = contentDisposition.match(/filename="(.+)"/); 
+    if (filenameMatch) {
+      filename = filenameMatch[1];
+    }
+  }
+  
+  link.setAttribute('download', filename);
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  window.URL.revokeObjectURL(url);
+};

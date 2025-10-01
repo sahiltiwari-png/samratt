@@ -276,21 +276,21 @@ const LeaveRequests = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-100 via-emerald-50 to-white p-6">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-100 via-emerald-50 to-white px-2 py-6 sm:px-6">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
            <div>
-             <h2 className="text-base font-medium text-gray-900">
+             <h2 className="text-base font-medium" style={{color: '#2C373B'}}>
                Leave Request - {totalRequests}
              </h2>
            </div>
 
-          <div className="flex items-center gap-3 flex-wrap">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
             {/* Employee Search Filter */}
             <div className="relative employee-search-container">
               <div 
-                className="flex items-center gap-2 border border-emerald-300 rounded-lg px-3 py-2 bg-white w-[320px] hover:border-emerald-400 focus-within:border-emerald-500 transition-colors h-10 cursor-pointer"
+                className="flex items-center gap-2 border border-emerald-300 rounded-lg px-3 py-2 bg-white w-full sm:w-[320px] hover:border-emerald-400 focus-within:border-emerald-500 transition-colors h-10 cursor-pointer"
                 onClick={handleSearchClick}
               >
                 <Search className="h-4 w-4 text-emerald-500 flex-shrink-0" />
@@ -323,27 +323,29 @@ const LeaveRequests = () => {
                   </div>
                 ) : (
                   <Input
-                    placeholder="Click to select employee..."
-                    value={employeeSearch}
-                    onChange={(e) => setEmployeeSearch(e.target.value)}
-                    onFocus={handleSearchFocus}
-                    onClick={handleSearchClick}
-                    className="border-0 p-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-sm placeholder:text-gray-400 cursor-pointer flex-1"
-                  />
+                  placeholder="Click to select employee..."
+                  value={employeeSearch}
+                  onChange={(e) => setEmployeeSearch(e.target.value)}
+                  onFocus={handleSearchFocus}
+                  onClick={handleSearchClick}
+                  className="border-0 p-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-sm placeholder:text-gray-400 cursor-pointer flex-1 h-8"
+                  style={{backgroundColor: 'rgb(209 250 229)', color: '#2C373B'}}
+                />
                 )}
               </div>
               
               {/* Employee Dropdown */}
               {showEmployeeDropdown && (employees.length > 0 || loadingEmployees) && (
-                <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-emerald-200 rounded-lg shadow-lg z-50 max-h-48 overflow-y-auto">
+                <div className="absolute top-full left-0 right-0 mt-1 border border-emerald-200 rounded-lg shadow-lg z-50 max-h-48 overflow-y-auto" style={{backgroundColor: 'rgb(209 250 229)'}}>
                   {loadingEmployees ? (
-                    <div className="p-2 text-center text-gray-500 text-sm">Searching...</div>
+                    <div className="p-2 text-center text-sm" style={{color: '#2C373B'}}>Searching...</div>
                   ) : (
                     employees.map((employee) => (
                       <div
                         key={employee._id}
-                        className="p-2 hover:bg-emerald-50 cursor-pointer flex items-center gap-2 border-b border-gray-100 last:border-b-0"
+                        className="p-2 cursor-pointer flex items-center gap-2 border-b border-gray-100 last:border-b-0 hover:opacity-80"
                         onClick={() => selectEmployee(employee)}
+                        style={{backgroundColor: 'rgb(209 250 229)'}}
                       >
                         <Avatar className="h-6 w-6">
                           {employee.profilePhotoUrl ? (
@@ -355,8 +357,8 @@ const LeaveRequests = () => {
                           )}
                         </Avatar>
                         <div className="flex-1">
-                          <div className="font-medium text-sm text-gray-900">{employee.firstName} {employee.lastName}</div>
-                          <div className="text-xs text-emerald-600 font-medium">{employee.employeeCode}</div>
+                          <div className="font-medium text-sm" style={{color: '#2C373B'}}>{employee.firstName} {employee.lastName}</div>
+                          <div className="text-xs font-medium" style={{color: '#2C373B'}}>{employee.employeeCode}</div>
                         </div>
                       </div>
                     ))
@@ -367,7 +369,7 @@ const LeaveRequests = () => {
 
             {/* Status Filter */}
             <Select value={status} onValueChange={setStatus}>
-              <SelectTrigger className="w-[180px] border-emerald-300 bg-emerald-100 text-emerald-700 font-medium hover:bg-emerald-200">
+              <SelectTrigger className="w-full sm:w-[180px] border-emerald-300 bg-emerald-100 text-emerald-700 font-medium hover:bg-emerald-200 h-8" style={{backgroundColor: 'rgb(209 250 229)', color: '#2C373B'}}>
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
@@ -389,31 +391,31 @@ const LeaveRequests = () => {
             <table className="min-w-[950px] w-full text-sm">
               <thead className="bg-gray-50 border-b">
                 <tr>
-                  <th className="px-4 py-3 text-left font-semibold text-gray-700">
+                  <th className="px-4 py-3 text-left" style={{fontSize: '12px', fontWeight: 600, color: '#2C373B'}}>
                     Name
                   </th>
-                  <th className="px-4 py-3 text-left font-semibold text-gray-700">
+                  <th className="px-4 py-3 text-left" style={{fontSize: '12px', fontWeight: 600, color: '#2C373B'}}>
                     Leave Type
                   </th>
-                  <th className="px-4 py-3 text-left font-semibold text-gray-700">
+                  <th className="px-4 py-3 text-left" style={{fontSize: '12px', fontWeight: 600, color: '#2C373B'}}>
                     Start Date
                   </th>
-                  <th className="px-4 py-3 text-left font-semibold text-gray-700">
+                  <th className="px-4 py-3 text-left" style={{fontSize: '12px', fontWeight: 600, color: '#2C373B'}}>
                     End Date
                   </th>
-                  <th className="px-4 py-3 text-left font-semibold text-gray-700">
+                  <th className="px-4 py-3 text-left" style={{fontSize: '12px', fontWeight: 600, color: '#2C373B'}}>
                     Reason
                   </th>
-                  <th className="px-4 py-3 text-left font-semibold text-gray-700">
+                  <th className="px-4 py-3 text-left" style={{fontSize: '12px', fontWeight: 600, color: '#2C373B'}}>
                     Total Days
                   </th>
-                  <th className="px-4 py-3 text-left font-semibold text-gray-700">
+                  <th className="px-4 py-3 text-left" style={{fontSize: '12px', fontWeight: 600, color: '#2C373B'}}>
                      Status
                    </th>
-                   <th className="px-4 py-3 text-left font-semibold text-gray-700">
+                   <th className="px-4 py-3 text-left" style={{fontSize: '12px', fontWeight: 600, color: '#2C373B'}}>
                      Remarks
                    </th>
-                   <th className="px-4 py-3 text-left font-semibold text-gray-700">
+                   <th className="px-4 py-3 text-left" style={{fontSize: '12px', fontWeight: 600, color: '#2C373B'}}>
                      Actions
                    </th>
                 </tr>
@@ -424,7 +426,8 @@ const LeaveRequests = () => {
                    <tr>
                      <td
                        colSpan={9}
-                       className="px-4 py-6 text-center text-gray-600"
+                       className="px-4 py-6 text-center"
+                       style={{color: '#2C373B'}}
                      >
                        No leave requests found
                      </td>
@@ -451,28 +454,28 @@ const LeaveRequests = () => {
                             </AvatarFallback>
                           )}
                         </Avatar>
-                        <span className="font-medium text-gray-900" style={{ fontFamily: 'Montserrat', fontWeight: 500, fontSize: '12px', lineHeight: '12.09px' }}>
+                        <span className="font-medium" style={{ fontFamily: 'Montserrat', fontWeight: 500, fontSize: '14px', color: '#2C373B' }}>
                             {`${req.employeeId.firstName} ${req.employeeId.lastName}`}
                           </span>
                       </div>
                     </td>
 
-                    <td className="px-4 py-3 capitalize" style={{ fontFamily: 'Montserrat', fontWeight: 500, fontSize: '12px', lineHeight: '12.09px' }}>{req.leaveType}</td>
-                      <td className="px-4 py-3" style={{ fontFamily: 'Montserrat', fontWeight: 500, fontSize: '12px', lineHeight: '12.09px' }}>{formatDate(req.startDate)}</td>
-                      <td className="px-4 py-3" style={{ fontFamily: 'Montserrat', fontWeight: 500, fontSize: '12px', lineHeight: '12.09px' }}>{formatDate(req.endDate)}</td>
-                      <td className="px-4 py-3" style={{ fontFamily: 'Montserrat', fontWeight: 500, fontSize: '12px', lineHeight: '12.09px' }}>{req.reason}</td>
-                      <td className="px-4 py-3" style={{ fontFamily: 'Montserrat', fontWeight: 500, fontSize: '12px', lineHeight: '12.09px' }}>{req.days}</td>
+                    <td className="px-4 py-3 capitalize" style={{ fontFamily: 'Montserrat', fontWeight: 500, fontSize: '14px', color: '#2C373B' }}>{req.leaveType}</td>
+                      <td className="px-4 py-3" style={{ fontFamily: 'Montserrat', fontWeight: 500, fontSize: '14px', color: '#2C373B' }}>{formatDate(req.startDate)}</td>
+                      <td className="px-4 py-3" style={{ fontFamily: 'Montserrat', fontWeight: 500, fontSize: '14px', color: '#2C373B' }}>{formatDate(req.endDate)}</td>
+                      <td className="px-4 py-3" style={{ fontFamily: 'Montserrat', fontWeight: 500, fontSize: '14px', color: '#2C373B' }}>{req.reason}</td>
+                      <td className="px-4 py-3" style={{ fontFamily: 'Montserrat', fontWeight: 500, fontSize: '14px', color: '#2C373B' }}>{req.days}</td>
 
                     {/* Status badge */}
                      <td className="px-4 py-3">
                        {editingRows.has(req._id) ? (
-                         <Select
-                           value={editValues[req._id]?.status || req.status}
-                           onValueChange={(value) => handleEditValueChange(req._id, 'status', value)}
-                         >
-                           <SelectTrigger className="w-32 h-8">
-                             <SelectValue />
-                           </SelectTrigger>
+                           <Select
+                             value={editValues[req._id]?.status || req.status}
+                             onValueChange={(value) => handleEditValueChange(req._id, 'status', value)}
+                           >
+                             <SelectTrigger className="w-32 h-8" style={{backgroundColor: 'rgb(209 250 229)', color: '#2C373B'}}>
+                               <SelectValue />
+                             </SelectTrigger>
                            <SelectContent>
                              <SelectItem value="applied">Applied</SelectItem>
                              <SelectItem value="approved">Approved</SelectItem>
@@ -490,13 +493,14 @@ const LeaveRequests = () => {
                      </td>
 
                      {/* Remarks */}
-                       <td className="px-4 py-3 text-gray-600" style={{ fontFamily: 'Montserrat', fontWeight: 500, fontSize: '12px', lineHeight: '12.09px' }}>
+                       <td className="px-4 py-3" style={{ fontFamily: 'Montserrat', fontWeight: 500, fontSize: '14px', color: '#2C373B' }}>
                          {editingRows.has(req._id) ? (
                            <Input
                              value={editValues[req._id]?.remarks || req.remarks || ''}
                              onChange={(e) => handleEditValueChange(req._id, 'remarks', e.target.value)}
                              placeholder="Enter remarks"
                              className="w-40 h-8 text-xs"
+                             style={{backgroundColor: 'rgb(209 250 229)', color: '#2C373B'}}
                            />
                          ) : (
                            req.remarks || "Empty remarks"
@@ -511,7 +515,7 @@ const LeaveRequests = () => {
                              size="sm"
                              onClick={() => handleUpdate(req._id)}
                              disabled={updating.has(req._id)}
-                             className="bg-emerald-600 text-white hover:bg-emerald-700"
+                             style={{backgroundColor: '#4CDC9C', color: '#2C373B'}}
                            >
                              {updating.has(req._id) ? 'Updating...' : 'Update'}
                            </Button>
@@ -520,6 +524,7 @@ const LeaveRequests = () => {
                              variant="outline"
                              onClick={() => handleCancelEdit(req._id)}
                              disabled={updating.has(req._id)}
+                             style={{backgroundColor: '#4CDC9C', color: '#2C373B'}}
                            >
                              Cancel
                            </Button>
@@ -528,7 +533,7 @@ const LeaveRequests = () => {
                          <Button
                            size="sm"
                            onClick={() => handleEdit(req)}
-                           className="bg-blue-600 text-white hover:bg-blue-700"
+                           style={{backgroundColor: '#4CDC9C', color: '#2C373B'}}
                          >
                            Edit
                          </Button>
@@ -544,7 +549,7 @@ const LeaveRequests = () => {
         {/* Pagination */}
         {totalPages > 1 && (
           <div className="flex items-center justify-between mt-6">
-            <div className="text-sm text-gray-600">
+            <div className="text-sm" style={{color: '#2C373B'}}>
               Showing {startIndex + 1} to {Math.min(endIndex, filteredRequests.length)} of {filteredRequests.length} entries
             </div>
             
@@ -556,6 +561,7 @@ const LeaveRequests = () => {
                 onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
                 className="flex items-center gap-1"
+                style={{backgroundColor: '#4CDC9C', color: '#2C373B'}}
               >
                 <ChevronLeft className="h-4 w-4" />
                 Previous
@@ -573,7 +579,7 @@ const LeaveRequests = () => {
                   if (!showPage) {
                     // Show ellipsis for gaps
                     if (page === currentPage - 2 || page === currentPage + 2) {
-                      return <span key={page} className="px-2 text-gray-400">...</span>;
+                      return <span key={page} className="px-2" style={{color: '#2C373B'}}>...</span>;
                     }
                     return null;
                   }
@@ -584,11 +590,8 @@ const LeaveRequests = () => {
                       variant={currentPage === page ? "default" : "outline"}
                       size="sm"
                       onClick={() => setCurrentPage(page)}
-                      className={`min-w-[40px] ${
-                        currentPage === page 
-                          ? "bg-emerald-600 hover:bg-emerald-700 text-white" 
-                          : "hover:bg-emerald-50"
-                      }`}
+                      className="min-w-[40px]"
+                      style={{backgroundColor: '#4CDC9C', color: '#2C373B'}}
                     >
                       {page}
                     </Button>
@@ -603,6 +606,7 @@ const LeaveRequests = () => {
                 onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                 disabled={currentPage === totalPages}
                 className="flex items-center gap-1"
+                style={{backgroundColor: '#4CDC9C', color: '#2C373B'}}
               >
                 Next
                 <ChevronRight className="h-4 w-4" />

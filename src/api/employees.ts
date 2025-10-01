@@ -67,3 +67,46 @@ export const getEmployees = async (params?: {
   const response = await API.get(`/employees${queryString}`);
   return response.data;
 };
+
+export interface EmployeesReportResponse {
+  message: string;
+  count: number;
+  data: {
+    _id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    employeeCode: string;
+    designation: string;
+    status: string;
+    dateOfJoining: string;
+    department?: string;
+    probationEndDate?: string;
+  }[];
+}
+
+export const getEmployeesReport = async (params?: {
+  status?: string;
+}) => {
+  const query = [];
+  if (params?.status && params.status !== 'all') {
+    query.push(`status=${params.status}`);
+  }
+  const queryString = query.length ? `?${query.join('&')}` : '';
+  const response = await API.get(`/reports/active-employees-report${queryString}`);
+  return response.data;
+};
+
+export const downloadEmployeesReport = async (params?: {
+  status?: string;
+}) => {
+  const query = [];
+  if (params?.status && params.status !== 'all') {
+    query.push(`status=${params.status}`);
+  }
+  const queryString = query.length ? `?${query.join('&')}` : '';
+  const response = await API.get(`/reports/active-employees-report/download${queryString}`, {
+    responseType: 'blob'
+  });
+  return response;
+};

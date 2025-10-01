@@ -391,15 +391,15 @@ const LeavePolicy = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-200 via-emerald-100 to-emerald-50 p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-200 via-emerald-100 to-emerald-50 px-2 sm:px-4 md:px-6 py-6">
+      <div className="w-full space-y-6">
         <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
-          <h1 className="text-2xl font-bold">Leave Policy creation</h1>
+          <h1 className="text-2xl font-bold" style={{color: '#2C373B'}}>Leave Policy creation</h1>
           {!isFormMode && (
             <Button
               onClick={() => setIsModalOpen(true)}
               className="hover:opacity-90"
-              style={{ backgroundColor: '#4CDC9C' }}
+              style={{ backgroundColor: '#4CDC9C', color: '#2C373B' }}
               disabled={addingLeaveType}
             >
               <Plus className="w-4 h-4 mr-2" />
@@ -409,15 +409,15 @@ const LeavePolicy = () => {
         </div>
 
         {isFormMode ? (
-          <Card className="w-full max-w-3xl mx-auto shadow-lg rounded-2xl">
+          <Card className="w-full shadow-lg rounded-2xl">
             <CardHeader>
-              <CardTitle>Policy Basics</CardTitle>
+              <CardTitle style={{color: '#2C373B'}}>Policy Basics</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               {/* form fields */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="name">Policy Name *</Label>
+                  <Label htmlFor="name" style={{color: '#2C373B'}}>Policy Name *</Label>
                   <Input
                     id="name"
                     value={policyForm.name}
@@ -425,10 +425,11 @@ const LeavePolicy = () => {
                       setPolicyForm({ ...policyForm, name: e.target.value })
                     }
                     placeholder="Enter policy name"
+                    style={{height: '36px', backgroundColor: 'rgb(209 250 229)'}}
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="effectiveFrom">Effective From *</Label>
+                  <Label htmlFor="effectiveFrom" style={{color: '#2C373B'}}>Effective From *</Label>
                   <Input
                     id="effectiveFrom"
                     type="date"
@@ -439,10 +440,11 @@ const LeavePolicy = () => {
                         effectiveFrom: e.target.value,
                       })
                     }
+                    style={{height: '36px', backgroundColor: 'rgb(209 250 229)'}}
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="effectiveTo">Effective To</Label>
+                  <Label htmlFor="effectiveTo" style={{color: '#2C373B'}}>Effective To</Label>
                   <Input
                     id="effectiveTo"
                     type="date"
@@ -453,6 +455,7 @@ const LeavePolicy = () => {
                         effectiveTo: e.target.value,
                       })
                     }
+                    style={{height: '36px', backgroundColor: 'rgb(209 250 229)'}}
                   />
                 </div>
               </div>
@@ -470,7 +473,7 @@ const LeavePolicy = () => {
                       })
                     }
                   />
-                  <Label htmlFor="isDefault">Default Policy</Label>
+                  <Label htmlFor="isDefault" style={{color: '#2C373B'}}>Default Policy</Label>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Checkbox
@@ -483,14 +486,14 @@ const LeavePolicy = () => {
                       })
                     }
                   />
-                  <Label htmlFor="isActive">Active</Label>
+                  <Label htmlFor="isActive" style={{color: '#2C373B'}}>Active</Label>
                 </div>
               </div>
 
               {/* added leave types */}
               {currentLeaveTypes.length > 0 && (
                 <div className="space-y-3">
-                  <h3 className="font-semibold">Added Leave Types</h3>
+                  <h3 className="font-semibold" style={{color: '#2C373B'}}>Added Leave Types</h3>
                   <div className="space-y-2">
                     {currentLeaveTypes.map((leaveType, index) => (
                       <div
@@ -551,37 +554,37 @@ const LeavePolicy = () => {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Leave Type</TableHead>
-                      <TableHead>Limit</TableHead>
-                      <TableHead>Interval</TableHead>
-                      <TableHead>Carry Forward</TableHead>
-                      <TableHead>Encashment</TableHead>
-                      <TableHead>Probation</TableHead>
-                      <TableHead>Min Work Days</TableHead>
-                      <TableHead>Actions</TableHead>
+                      <TableHead style={{fontSize: '12px', fontWeight: '600'}}>Leave Type</TableHead>
+                      <TableHead style={{fontSize: '12px', fontWeight: '600'}}>Limit</TableHead>
+                      <TableHead style={{fontSize: '12px', fontWeight: '600'}}>Interval</TableHead>
+                      <TableHead style={{fontSize: '12px', fontWeight: '600'}}>Carry Forward</TableHead>
+                      <TableHead style={{fontSize: '12px', fontWeight: '600'}}>Encashment</TableHead>
+                      <TableHead style={{fontSize: '12px', fontWeight: '600'}}>Probation</TableHead>
+                      <TableHead style={{fontSize: '12px', fontWeight: '600'}}>Min Work Days</TableHead>
+                      <TableHead style={{fontSize: '12px', fontWeight: '600'}}>Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {policies.map((policy) =>
                       policy.leaveTypes.map((leaveType, index) => (
                         <TableRow key={`${policy._id}-${index}`}>
-                          <TableCell className="capitalize">
+                          <TableCell className="capitalize" style={{fontSize: '14px', fontWeight: '500', color: '#2C373B'}}>
                             {leaveType.type}
                           </TableCell>
-                          <TableCell>{leaveType.intervalValue}</TableCell>
-                          <TableCell className="capitalize">
+                          <TableCell style={{fontSize: '14px', fontWeight: '500', color: '#2C373B'}}>{leaveType.intervalValue}</TableCell>
+                          <TableCell className="capitalize" style={{fontSize: '14px', fontWeight: '500', color: '#2C373B'}}>
                             {leaveType.interval}
                           </TableCell>
-                          <TableCell>
+                          <TableCell style={{fontSize: '14px', fontWeight: '500', color: '#2C373B'}}>
                             {leaveType.carryForward ? "Yes" : "No"}
                           </TableCell>
-                          <TableCell>
+                          <TableCell style={{fontSize: '14px', fontWeight: '500', color: '#2C373B'}}>
                             {leaveType.encashable ? "Yes" : "No"}
                           </TableCell>
-                          <TableCell>
+                          <TableCell style={{fontSize: '14px', fontWeight: '500', color: '#2C373B'}}>
                             {leaveType.probationApplicable ? "Yes" : "No"}
                           </TableCell>
-                          <TableCell>
+                          <TableCell style={{fontSize: '14px', fontWeight: '500', color: '#2C373B'}}>
                             {leaveType.minContinuousWorkDays || "N/A"}
                           </TableCell>
                           <TableCell>
@@ -590,6 +593,7 @@ const LeavePolicy = () => {
                                 variant="outline" 
                                 size="sm"
                                 onClick={() => handleEditPolicy(policy._id)}
+                                style={{backgroundColor: '#4CDC9C', color: '#2C373B'}}
                               >
                                 <Edit className="w-4 h-4" />
                               </Button>
@@ -609,20 +613,20 @@ const LeavePolicy = () => {
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl shadow-xl">
             <DialogHeader>
-              <DialogTitle>Add Leave Type</DialogTitle>
+              <DialogTitle style={{color: '#2C373B'}}>Add Leave Type</DialogTitle>
             </DialogHeader>
             {/* modal form */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-2">
               {/* Leave type dropdown */}
               <div className="space-y-2">
-                <Label>Leave Type *</Label>
+                <Label style={{color: '#2C373B'}}>Leave Type *</Label>
                 <Select
                   value={leaveTypeForm.type}
                   onValueChange={(value) =>
                     setLeaveTypeForm({ ...leaveTypeForm, type: value })
                   }
                 >
-                  <SelectTrigger>
+                  <SelectTrigger style={{height: '36px', backgroundColor: 'rgb(209 250 229)'}}>
                     <SelectValue placeholder="Select leave type" />
                   </SelectTrigger>
                   <SelectContent>
@@ -637,14 +641,14 @@ const LeavePolicy = () => {
 
               {/* Interval dropdown */}
               <div className="space-y-2">
-                <Label>Interval *</Label>
+                <Label style={{color: '#2C373B'}}>Interval *</Label>
                 <Select
                   value={leaveTypeForm.interval}
                   onValueChange={(value) =>
                     setLeaveTypeForm({ ...leaveTypeForm, interval: value })
                   }
                 >
-                  <SelectTrigger>
+                  <SelectTrigger style={{height: '36px', backgroundColor: 'rgb(209 250 229)'}}>
                     <SelectValue placeholder="Select interval" />
                   </SelectTrigger>
                   <SelectContent>
@@ -659,7 +663,7 @@ const LeavePolicy = () => {
 
               {/* Inputs */}
               <div className="space-y-2">
-                <Label>Interval Value *</Label>
+                <Label style={{color: '#2C373B'}}>Interval Value *</Label>
                 <Input
                   type="number"
                   value={leaveTypeForm.intervalValue}
@@ -670,11 +674,12 @@ const LeavePolicy = () => {
                     })
                   }
                   placeholder="e.g. 2"
+                  style={{height: '36px', backgroundColor: 'rgb(209 250 229)'}}
                 />
               </div>
 
               <div className="space-y-2">
-                <Label>Min Continuous Work Days</Label>
+                <Label style={{color: '#2C373B'}}>Min Continuous Work Days</Label>
                 <Input
                   type="number"
                   value={leaveTypeForm.minContinuousWorkDays}
@@ -685,6 +690,7 @@ const LeavePolicy = () => {
                     })
                   }
                   placeholder="Enter min work days"
+                  style={{height: '36px', backgroundColor: 'rgb(209 250 229)'}}
                 />
               </div>
 
@@ -699,7 +705,7 @@ const LeavePolicy = () => {
                     })
                   }
                 />
-                <Label>Carry Forward</Label>
+                <Label style={{color: '#2C373B'}}>Carry Forward</Label>
               </div>
 
               {leaveTypeForm.carryForward && (
@@ -729,7 +735,7 @@ const LeavePolicy = () => {
                     })
                   }
                 />
-                <Label>Encashable</Label>
+                <Label style={{color: '#2C373B'}}>Encashable</Label>
               </div>
 
               {leaveTypeForm.encashable && (
@@ -789,7 +795,7 @@ const LeavePolicy = () => {
                     })
                   }
                 />
-                <Label>Expire Monthly</Label>
+                <Label style={{color: '#2C373B'}}>Expire Monthly</Label>
               </div>
 
               <div className="flex items-center space-x-2">
@@ -802,7 +808,7 @@ const LeavePolicy = () => {
                     })
                   }
                 />
-                <Label>Applicable in Probation</Label>
+                <Label style={{color: '#2C373B'}}>Applicable in Probation</Label>
               </div>
 
               <div className="flex items-center space-x-2">
@@ -815,7 +821,7 @@ const LeavePolicy = () => {
                     })
                   }
                 />
-                <Label>Allow Unpaid Leave</Label>
+                <Label style={{color: '#2C373B'}}>Allow Unpaid Leave</Label>
               </div>
             </div>
 
@@ -824,13 +830,14 @@ const LeavePolicy = () => {
                 variant="outline" 
                 onClick={() => setIsModalOpen(false)}
                 disabled={addingLeaveType}
+                style={{backgroundColor: '#4CDC9C', color: '#2C373B'}}
               >
                 Cancel
               </Button>
               <Button
                   onClick={handleAddLeaveType}
                   className="hover:opacity-90"
-                  style={{ backgroundColor: '#4CDC9C' }}
+                  style={{ backgroundColor: '#4CDC9C', color: '#2C373B' }}
                   disabled={addingLeaveType}
                 >
                 {addingLeaveType ? "Adding..." : "Save"}
@@ -843,13 +850,13 @@ const LeavePolicy = () => {
         <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl shadow-xl">
             <DialogHeader>
-              <DialogTitle>Edit Policy</DialogTitle>
+              <DialogTitle style={{color: '#2C373B'}}>Edit Policy</DialogTitle>
             </DialogHeader>
             <div className="space-y-6 py-4">
               {/* Policy Basic Information */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="edit-name">Policy Name *</Label>
+                  <Label htmlFor="edit-name" style={{color: '#2C373B'}}>Policy Name *</Label>
                   <Input
                     id="edit-name"
                     value={editPolicyForm.name}
@@ -857,10 +864,11 @@ const LeavePolicy = () => {
                       setEditPolicyForm({ ...editPolicyForm, name: e.target.value })
                     }
                     placeholder="Enter policy name"
+                    style={{height: '36px', backgroundColor: 'rgb(209 250 229)'}}
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="edit-effective-from">Effective From *</Label>
+                  <Label htmlFor="edit-effective-from" style={{color: '#2C373B'}}>Effective From *</Label>
                   <Input
                     id="edit-effective-from"
                     type="date"
@@ -868,10 +876,11 @@ const LeavePolicy = () => {
                     onChange={(e) =>
                       setEditPolicyForm({ ...editPolicyForm, effectiveFrom: e.target.value })
                     }
+                    style={{height: '36px', backgroundColor: 'rgb(209 250 229)'}}
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="edit-effective-to">Effective To (Optional)</Label>
+                  <Label htmlFor="edit-effective-to" style={{color: '#2C373B'}}>Effective To (Optional)</Label>
                   <Input
                     id="edit-effective-to"
                     type="date"
@@ -879,6 +888,7 @@ const LeavePolicy = () => {
                     onChange={(e) =>
                       setEditPolicyForm({ ...editPolicyForm, effectiveTo: e.target.value })
                     }
+                    style={{height: '36px', backgroundColor: 'rgb(209 250 229)'}}
                   />
                 </div>
               </div>
@@ -891,7 +901,7 @@ const LeavePolicy = () => {
                       setEditPolicyForm({ ...editPolicyForm, isDefault: checked as boolean })
                     }
                   />
-                  <Label>Use as Default Policy</Label>
+                  <Label style={{color: '#2C373B'}}>Use as Default Policy</Label>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Checkbox
@@ -900,7 +910,7 @@ const LeavePolicy = () => {
                       setEditPolicyForm({ ...editPolicyForm, isActive: checked as boolean })
                     }
                   />
-                  <Label>Active</Label>
+                  <Label style={{color: '#2C373B'}}>Active</Label>
                 </div>
               </div>
 
@@ -908,7 +918,7 @@ const LeavePolicy = () => {
               {selectedPolicy && (
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <h3 className="font-semibold">Leave Types</h3>
+                    <h3 className="font-semibold" style={{color: '#2C373B'}}>Leave Types</h3>
                     <Button
                       variant="outline"
                       size="sm"
@@ -940,7 +950,7 @@ const LeavePolicy = () => {
                             variant="outline"
                             size="sm"
                             onClick={() => handleEditLeaveType(leaveType)}
-                            className="text-blue-500 hover:text-blue-700"
+                            style={{backgroundColor: '#4CDC9C', color: '#2C373B'}}
                           >
                             <Edit className="w-4 h-4" />
                           </Button>
@@ -948,19 +958,19 @@ const LeavePolicy = () => {
                       ))}
                     </div>
                   ) : (
-                    <p className="text-gray-500 text-sm">No leave types added yet.</p>
+                    <p className="text-sm" style={{color: '#2C373B'}}>No leave types added yet.</p>
                   )}
                 </div>
               )}
 
               <div className="flex justify-end gap-3 pt-4">
-                <Button variant="outline" onClick={() => setIsEditModalOpen(false)}>
+                <Button variant="outline" onClick={() => setIsEditModalOpen(false)} style={{backgroundColor: '#4CDC9C', color: '#2C373B'}}>
                   Cancel
                 </Button>
                 <Button
                   onClick={handleUpdatePolicy}
                   className="hover:opacity-90"
-                  style={{ backgroundColor: '#4CDC9C' }}
+                  style={{ backgroundColor: '#4CDC9C', color: '#2C373B' }}
                 >
                   Update Policy
                 </Button>
@@ -973,19 +983,19 @@ const LeavePolicy = () => {
         <Dialog open={!!editingLeaveType} onOpenChange={() => setEditingLeaveType(null)}>
           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl shadow-xl">
             <DialogHeader>
-              <DialogTitle>Edit Leave Type - {editingLeaveType?.type}</DialogTitle>
+              <DialogTitle style={{color: '#2C373B'}}>Edit Leave Type - {editingLeaveType?.type}</DialogTitle>
             </DialogHeader>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-2">
               {/* Interval dropdown */}
               <div className="space-y-2">
-                <Label>Interval *</Label>
+                <Label style={{color: '#2C373B'}}>Interval *</Label>
                 <Select
                   value={editLeaveTypeForm.interval}
                   onValueChange={(value) =>
                     setEditLeaveTypeForm({ ...editLeaveTypeForm, interval: value })
                   }
                 >
-                  <SelectTrigger>
+                  <SelectTrigger style={{height: '36px', backgroundColor: 'rgb(209 250 229)'}}>
                     <SelectValue placeholder="Select interval" />
                   </SelectTrigger>
                   <SelectContent>
@@ -1000,7 +1010,7 @@ const LeavePolicy = () => {
 
               {/* Interval value */}
               <div className="space-y-2">
-                <Label>Interval Value *</Label>
+                <Label style={{color: '#2C373B'}}>Interval Value *</Label>
                 <Input
                   type="number"
                   value={editLeaveTypeForm.intervalValue}
@@ -1011,12 +1021,13 @@ const LeavePolicy = () => {
                     })
                   }
                   placeholder="Enter interval value"
+                  style={{height: '36px', backgroundColor: 'rgb(209 250 229)'}}
                 />
               </div>
 
               {/* Max Carry Forward */}
               <div className="space-y-2">
-                <Label>Max Carry Forward</Label>
+                <Label style={{color: '#2C373B'}}>Max Carry Forward</Label>
                 <Input
                   type="number"
                   value={editLeaveTypeForm.maxCarryForward}
@@ -1027,12 +1038,13 @@ const LeavePolicy = () => {
                     })
                   }
                   placeholder="Enter max carry forward"
+                  style={{height: '36px', backgroundColor: 'rgb(209 250 229)'}}
                 />
               </div>
 
               {/* Max Encashable */}
               <div className="space-y-2">
-                <Label>Max Encashable</Label>
+                <Label style={{color: '#2C373B'}}>Max Encashable</Label>
                 <Input
                   type="number"
                   value={editLeaveTypeForm.maxEncashable}
@@ -1043,12 +1055,13 @@ const LeavePolicy = () => {
                     })
                   }
                   placeholder="Enter max encashable"
+                  style={{height: '36px', backgroundColor: 'rgb(209 250 229)'}}
                 />
               </div>
 
               {/* Min Continuous Work Days */}
               <div className="space-y-2">
-                <Label>Min Continuous Work Days</Label>
+                <Label style={{color: '#2C373B'}}>Min Continuous Work Days</Label>
                 <Input
                   type="number"
                   value={editLeaveTypeForm.minContinuousWorkDays}
@@ -1059,12 +1072,13 @@ const LeavePolicy = () => {
                     })
                   }
                   placeholder="Enter min work days"
+                  style={{height: '36px', backgroundColor: 'rgb(209 250 229)'}}
                 />
               </div>
 
               {/* Max Negative Balance */}
               <div className="space-y-2">
-                <Label>Max Negative Balance</Label>
+                <Label style={{color: '#2C373B'}}>Max Negative Balance</Label>
                 <Input
                   type="number"
                   value={editLeaveTypeForm.maxNegativeBalance}
@@ -1075,6 +1089,7 @@ const LeavePolicy = () => {
                     })
                   }
                   placeholder="Enter max negative balance"
+                  style={{height: '36px', backgroundColor: 'rgb(209 250 229)'}}
                 />
               </div>
             </div>
@@ -1104,7 +1119,7 @@ const LeavePolicy = () => {
                     })
                   }
                 />
-                <Label>Allow Negative balance</Label>
+                <Label style={{color: '#2C373B'}}>Allow Negative balance</Label>
               </div>
 
               <div className="flex items-center space-x-2">
@@ -1161,13 +1176,13 @@ const LeavePolicy = () => {
             </div>
 
             <div className="flex justify-end gap-3 pt-4">
-              <Button variant="outline" onClick={() => setEditingLeaveType(null)}>
+              <Button variant="outline" onClick={() => setEditingLeaveType(null)} style={{backgroundColor: '#4CDC9C', color: '#2C373B'}}>
                 Cancel
               </Button>
               <Button
                 onClick={handleUpdateLeaveType}
                 className="hover:opacity-90"
-                style={{ backgroundColor: '#4CDC9C' }}
+                style={{ backgroundColor: '#4CDC9C', color: '#2C373B' }}
               >
                 Update Leave Type
               </Button>

@@ -53,7 +53,11 @@ const navigation: NavigationItem[] = [
     { title: "Leave Allotment", url: "/leaves/allotment" },
     { title: "Leave Requests", url: "/leaves/requests" }
   ] },
-  { title: "Reports", url: "/reports", icon: FileText },
+  { title: "Reports", url: "/reports", icon: FileText, hasSubmenu: true, submenu: [
+    { title: "Employees Report", url: "/reports/employees" },
+    { title: "Leave Requests Report", url: "/reports/leave-requests" },
+    { title: "Payroll Report", url: "/reports/payroll" }
+  ] },
   { title: "Settings", url: "/settings", icon: Settings },
 ];
 
