@@ -28,6 +28,7 @@ import Payroll from "./pages/Payroll";
 import SalarySlips from "./pages/SalarySlips";  
 import Reports from "./pages/Reports";
 import EmployeesReport from "./pages/EmployeesReport";
+import LeaveRequestsReport from "./pages/LeaveRequestsReport";
 import CreateOrganization from "./pages/CreateOrganization";
 import OrganizationDetails from "./pages/OrganizationDetails";
 import EmployeeAttendanceDetail from "./pages/EmployeeAttendanceDetail";
@@ -70,6 +71,7 @@ const App = () => (
                       <Route path="/leaves/allotment/history/:employeeId" element={<LeaveAllotmentHistory />} />
                       <Route path="/reports" element={<Reports />} />
                       <Route path="/reports/employees" element={<EmployeesReport />} />
+                      <Route path="/reports/leave-requests" element={<LeaveRequestsReport />} />
                       <Route path="/settings" element={<Settings />} />
                   <Route path="/profile" element={<Profile />} />
                       <Route path="/admin" element={<AdminPanel />} />

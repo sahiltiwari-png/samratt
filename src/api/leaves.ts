@@ -279,3 +279,41 @@ export const getEmployeeLeaveBalanceHistory = async (
   const res = await API.get(`/leave-balance/${employeeId}?${params.toString()}`);
   return res.data;
 };
+
+export interface LeaveReportData {
+  employeeCode: string;
+  employeeName: string;
+  email: string;
+  designation: string;
+  department: string;
+  leaveType: string;
+  startDate: string;
+  endDate: string;
+  days: number;
+  reason: string;
+  status: string;
+  approverName: string;
+}
+
+export interface LeaveReportResponse {
+  message: string;
+  count: number;
+  data: LeaveReportData[];
+}
+
+export const getLeavesReport = async (params?: {
+  startDate?: string;
+  endDate?: string;
+  employeeId?: string;
+  leaveType?: string;
+}): Promise<LeaveReportResponse> => {
+  const query = [];
+  if (params?.startDate) query.push(`startDate=${params.startDate}`);
+  if (params?.endDate) query.push(`endDate=${params.endDate}`);
+  if (params?.employeeId) query.push(`employeeId=${params.employeeId}`);
+  if (params?.leaveType && params.leaveType !== 'all') query.push(`leaveType=${params.leaveType}`);
+  
+  const queryString = query.length ? `?${query.join('&')}` : '';
+  const response = await API.get(`/reports/leaves-report${queryString}`);
+  return response.data;
+};
