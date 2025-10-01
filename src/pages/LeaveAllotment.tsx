@@ -364,6 +364,7 @@ const LeaveAllotment = () => {
                       onChange={(e) => handleEmployeeSearch(e.target.value)}
                       onFocus={() => setShowEmployeeDropdown(true)}
                       className="pr-10"
+                      style={{backgroundColor: 'rgb(209 250 229)', color: '#2C373B'}}
                     />
                     <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                   </>
@@ -418,7 +419,7 @@ const LeaveAllotment = () => {
                   Leave Type
                 </label>
                 <Select value={leaveType} onValueChange={setLeaveType}>
-                  <SelectTrigger>
+                  <SelectTrigger style={{backgroundColor: 'rgb(209 250 229)', color: '#2C373B'}}>
                     <SelectValue placeholder="Select leave type" />
                   </SelectTrigger>
                   <SelectContent>
@@ -436,7 +437,7 @@ const LeaveAllotment = () => {
                   Days
                 </label>
                 <Select value={days} onValueChange={setDays}>
-                  <SelectTrigger>
+                  <SelectTrigger style={{backgroundColor: 'rgb(209 250 229)', color: '#2C373B'}}>
                     <SelectValue placeholder="Select days" />
                   </SelectTrigger>
                   <SelectContent>
@@ -460,6 +461,7 @@ const LeaveAllotment = () => {
                 value={remarks}
                 onChange={(e) => setRemarks(e.target.value)}
                 rows={4}
+                style={{backgroundColor: 'rgb(209 250 229)', color: '#2C373B'}}
               />
             </div>
 
@@ -468,7 +470,8 @@ const LeaveAllotment = () => {
               <Button
                 type="submit"
                 disabled={submitting || !selectedEmployee || !leaveType || !days}
-                className="bg-emerald-600 hover:bg-emerald-700 text-white px-8"
+                className="hover:bg-emerald-700 px-8"
+                style={{backgroundColor: '#4CDC9C', color: '#2C373B'}}
               >
                 {submitting ? "Adding..." : "Add Leave"}
               </Button>
@@ -482,6 +485,7 @@ const LeaveAllotment = () => {
                 variant="outline"
                 onClick={() => setShowForm(false)}
                 className="w-full"
+                style={{backgroundColor: '#4CDC9C', color: '#2C373B'}}
               >
                 View Existing Leave Allotments
               </Button>
@@ -499,11 +503,12 @@ const LeaveAllotment = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex-1">
-          <h1 className="text-xl sm:text-2xl font-semibold text-gray-900">Leaves Alloted - {totalEmployees}</h1>
+          <h1 className="text-xl sm:text-2xl font-semibold" style={{color: '#2C373B'}}>Leaves Alloted - {totalEmployees}</h1>
         </div>
         <Button 
           onClick={() => setShowForm(true)}
-          className="bg-emerald-600 hover:bg-emerald-700 text-white w-full sm:w-auto"
+          className="hover:bg-emerald-700 w-full sm:w-auto"
+          style={{backgroundColor: '#4CDC9C', color: '#2C373B'}}
         >
           <User className="mr-2 h-4 w-4" />
           Add New Allocation
@@ -520,7 +525,7 @@ const LeaveAllotment = () => {
           {/* Leave Type Filter */}
           <div className="flex items-center gap-2">
             <Select value={selectedLeaveType} onValueChange={handleLeaveTypeChange}>
-              <SelectTrigger className="w-48 border-green-300 focus:border-green-500 focus:ring-green-200" style={{backgroundColor: '#E1F9EF'}}>
+              <SelectTrigger className="w-48 border-green-300 focus:border-green-500 focus:ring-green-200 h-8" style={{backgroundColor: 'rgb(209 250 229)', color: '#2C373B'}}>
                 <SelectValue placeholder="Filter by Leave Type" />
               </SelectTrigger>
               <SelectContent>
@@ -536,7 +541,7 @@ const LeaveAllotment = () => {
 
           {/* Clear Filters */}
           {selectedLeaveType && selectedLeaveType !== "all" && (
-            <Button variant="outline" onClick={clearFilters} size="sm" className="border-green-300 text-green-700 hover:bg-green-100">
+            <Button variant="outline" onClick={clearFilters} size="sm" className="border-green-300 hover:bg-green-100 h-8" style={{backgroundColor: '#4CDC9C', color: '#2C373B'}}>
               Clear filters
             </Button>
           )}
@@ -549,28 +554,28 @@ const LeaveAllotment = () => {
           <table className="min-w-full w-full text-xs sm:text-sm">
             <thead className="bg-gray-50 border-b">
               <tr>
-                <th className="px-2 sm:px-4 py-3 text-left font-semibold text-gray-700 min-w-[150px]">
+                <th className="px-2 sm:px-4 py-3 text-left font-semibold min-w-[150px]" style={{fontSize: '12px', fontWeight: 600, color: '#2C373B'}}>
                   Name
                 </th>
-                <th className="px-2 sm:px-4 py-3 text-left font-semibold text-gray-700 hidden sm:table-cell">
+                <th className="px-2 sm:px-4 py-3 text-left font-semibold hidden sm:table-cell" style={{fontSize: '12px', fontWeight: 600, color: '#2C373B'}}>
                   Employee code
                 </th>
-                <th className="px-2 sm:px-4 py-3 text-left font-semibold text-gray-700 min-w-[80px]">
+                <th className="px-2 sm:px-4 py-3 text-left font-semibold min-w-[80px]" style={{fontSize: '12px', fontWeight: 600, color: '#2C373B'}}>
                   Casual
                 </th>
-                <th className="px-2 sm:px-4 py-3 text-left font-semibold text-gray-700 min-w-[80px]">
+                <th className="px-2 sm:px-4 py-3 text-left font-semibold min-w-[80px]" style={{fontSize: '12px', fontWeight: 600, color: '#2C373B'}}>
                   Earned
                 </th>
-                <th className="px-2 sm:px-4 py-3 text-left font-semibold text-gray-700 min-w-[80px]">
+                <th className="px-2 sm:px-4 py-3 text-left font-semibold min-w-[80px]" style={{fontSize: '12px', fontWeight: 600, color: '#2C373B'}}>
                   Medical
                 </th>
-                <th className="px-2 sm:px-4 py-3 text-left font-semibold text-gray-700 min-w-[80px] hidden md:table-cell">
+                <th className="px-2 sm:px-4 py-3 text-left font-semibold min-w-[80px] hidden md:table-cell" style={{fontSize: '12px', fontWeight: 600, color: '#2C373B'}}>
                   Paternity
                 </th>
-                <th className="px-2 sm:px-4 py-3 text-left font-semibold text-gray-700 min-w-[80px] hidden md:table-cell">
+                <th className="px-2 sm:px-4 py-3 text-left font-semibold min-w-[80px] hidden md:table-cell" style={{fontSize: '12px', fontWeight: 600, color: '#2C373B'}}>
                   Maternity
                 </th>
-                <th className="px-2 sm:px-4 py-3 text-left font-semibold text-gray-700 min-w-[80px]">
+                <th className="px-2 sm:px-4 py-3 text-left font-semibold min-w-[80px]" style={{fontSize: '12px', fontWeight: 600, color: '#2C373B'}}>
                   Actions
                 </th>
               </tr>
@@ -578,7 +583,7 @@ const LeaveAllotment = () => {
             <tbody className="divide-y divide-gray-200">
               {filteredEmployees.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="px-4 py-8 text-center text-gray-500">
+                  <td colSpan={8} className="px-4 py-8 text-center" style={{color: '#2C373B'}}>
                     <div className="flex flex-col items-center gap-2">
                       <div className="text-lg">📋</div>
                       <div className="font-medium">
@@ -606,13 +611,13 @@ const LeaveAllotment = () => {
                           )}
                         </Avatar>
                         <div className="min-w-0 flex-1">
-                          <div className="font-medium text-gray-900 truncate">
+                          <div className="font-medium truncate" style={{fontSize: '14px', fontWeight: 500, color: '#2C373B'}}>
                             {employee.firstName} {employee.lastName}
                           </div>
-                          <div className="text-xs text-gray-500 sm:hidden">
+                          <div className="text-xs sm:hidden" style={{color: '#2C373B'}}>
                             {employee.employeeCode}
                           </div>
-                          <div className="text-xs text-gray-500 hidden sm:block">
+                          <div className="text-xs hidden sm:block" style={{color: '#2C373B'}}>
                             {employee.designation || 'No designation'}
                           </div>
                         </div>
@@ -620,32 +625,32 @@ const LeaveAllotment = () => {
                     </td>
 
                     {/* Employee Code */}
-                    <td className="px-2 sm:px-4 py-3 text-gray-900 hidden sm:table-cell">
+                    <td className="px-2 sm:px-4 py-3 hidden sm:table-cell" style={{fontSize: '14px', fontWeight: 500, color: '#2C373B'}}>
                       {employee.employeeCode}
                     </td>
 
                     {/* Casual Leave */}
-                    <td className="px-2 sm:px-4 py-3 text-gray-900 text-center">
+                    <td className="px-2 sm:px-4 py-3 text-center" style={{fontSize: '14px', fontWeight: 500, color: '#2C373B'}}>
                       {employee.leaveBalances.casual.allocated}
                     </td>
 
                     {/* Earned Leave */}
-                    <td className="px-2 sm:px-4 py-3 text-gray-900 text-center">
+                    <td className="px-2 sm:px-4 py-3 text-center" style={{fontSize: '14px', fontWeight: 500, color: '#2C373B'}}>
                       {employee.leaveBalances.earned.allocated}
                     </td>
 
                     {/* Medical Leave */}
-                    <td className="px-2 sm:px-4 py-3 text-gray-900 text-center">
+                    <td className="px-2 sm:px-4 py-3 text-center" style={{fontSize: '14px', fontWeight: 500, color: '#2C373B'}}>
                       {employee.leaveBalances.medical.allocated}
                     </td>
 
                     {/* Paternity */}
-                    <td className="px-2 sm:px-4 py-3 text-gray-900 text-center hidden md:table-cell">
+                    <td className="px-2 sm:px-4 py-3 text-center hidden md:table-cell" style={{fontSize: '14px', fontWeight: 500, color: '#2C373B'}}>
                       {employee.leaveBalances.paternity.allocated}
                     </td>
 
                     {/* Maternity */}
-                    <td className="px-2 sm:px-4 py-3 text-gray-900 text-center hidden md:table-cell">
+                    <td className="px-2 sm:px-4 py-3 text-center hidden md:table-cell" style={{fontSize: '14px', fontWeight: 500, color: '#2C373B'}}>
                       {employee.leaveBalances.maternity.allocated}
                     </td>
 
@@ -655,7 +660,8 @@ const LeaveAllotment = () => {
                         <Button
                           variant="link"
                           size="sm"
-                          className="text-blue-600 hover:text-blue-800 p-0 h-auto text-xs sm:text-sm"
+                          className="hover:text-blue-800 p-0 h-auto text-xs sm:text-sm"
+                          style={{color: '#2C373B'}}
                           onClick={() => {
                             const params = new URLSearchParams({
                               name: `${employee.firstName} ${employee.lastName}`,
@@ -687,6 +693,7 @@ const LeaveAllotment = () => {
                 onClick={() => handlePageChange(currentPage - 1)}
                 disabled={currentPage === 1}
                 className="flex items-center gap-1 text-xs sm:text-sm"
+                style={{backgroundColor: '#4CDC9C', color: '#2C373B'}}
               >
                 <ChevronLeft className="h-3 w-3 sm:h-4 sm:w-4" />
                 <span className="hidden sm:inline">Prev</span>
@@ -703,6 +710,7 @@ const LeaveAllotment = () => {
                       size="sm"
                       onClick={() => handlePageChange(page)}
                       className="w-6 h-6 sm:w-8 sm:h-8 p-0 text-xs sm:text-sm"
+                      style={{backgroundColor: '#4CDC9C', color: '#2C373B'}}
                     >
                       {page}
                     </Button>
@@ -716,6 +724,7 @@ const LeaveAllotment = () => {
                       size="sm"
                       onClick={() => handlePageChange(totalPages)}
                       className="w-6 h-6 sm:w-8 sm:h-8 p-0 text-xs sm:text-sm"
+                      style={{backgroundColor: '#4CDC9C', color: '#2C373B'}}
                     >
                       {totalPages}
                     </Button>
@@ -729,6 +738,7 @@ const LeaveAllotment = () => {
                 onClick={() => handlePageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
                 className="flex items-center gap-1 text-xs sm:text-sm"
+                style={{backgroundColor: '#4CDC9C', color: '#2C373B'}}
               >
                 <span className="hidden sm:inline">Next</span>
                 <span className="sm:hidden">›</span>
@@ -736,7 +746,7 @@ const LeaveAllotment = () => {
               </Button>
             </div>
             
-            <div className="text-xs sm:text-sm text-gray-600">
+            <div className="text-xs sm:text-sm" style={{color: '#2C373B'}}>
               Page {currentPage} of {totalPages}
             </div>
           </div>
