@@ -391,8 +391,8 @@ const LeavePolicy = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-200 via-emerald-100 to-emerald-50 p-6">
-      <div className="max-w-7xl mx-auto space-y-6">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-200 via-emerald-100 to-emerald-50 px-2 sm:px-4 md:px-6 py-6">
+      <div className="w-full space-y-6">
         <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
           <h1 className="text-2xl font-bold" style={{color: '#2C373B'}}>Leave Policy creation</h1>
           {!isFormMode && (
@@ -409,7 +409,7 @@ const LeavePolicy = () => {
         </div>
 
         {isFormMode ? (
-          <Card className="w-full max-w-3xl mx-auto shadow-lg rounded-2xl">
+          <Card className="w-full shadow-lg rounded-2xl">
             <CardHeader>
               <CardTitle style={{color: '#2C373B'}}>Policy Basics</CardTitle>
             </CardHeader>
