@@ -153,7 +153,7 @@ const EmployeesReport = () => {
         {/* Header */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <h2 className="text-base font-medium text-gray-900">
+            <h2 className="text-base font-medium" style={{color: '#2C373B'}}>
               Employees Report - {employees.length} employees
             </h2>
           </div>
@@ -162,7 +162,8 @@ const EmployeesReport = () => {
             {/* Export Report Button */}
             <Button 
               onClick={handleExportReport}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white"
+              className="hover:bg-emerald-700"
+              style={{backgroundColor: '#4CDC9C', color: '#2C373B'}}
             >
               <Download className="h-4 w-4 mr-2" />
               Export Report
@@ -179,7 +180,7 @@ const EmployeesReport = () => {
           <div className="flex items-center gap-2">
             <Label htmlFor="status-filter" className="text-sm font-medium">Status:</Label>
             <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-[140px]">
+              <SelectTrigger className="w-[140px]" style={{height: '36px', backgroundColor: 'rgb(209 250 229)'}}>
                 <SelectValue placeholder="All Status" />
               </SelectTrigger>
               <SelectContent>
@@ -208,12 +209,12 @@ const EmployeesReport = () => {
             <table className="w-full">
               <thead className="bg-emerald-50 border-b border-emerald-200">
                  <tr>
-                   <th className="text-left p-4 font-medium text-emerald-900">Name</th>
-                   <th className="text-left p-4 font-medium text-emerald-900">Employee Code</th>
-                   <th className="text-left p-4 font-medium text-emerald-900">Date of Joining</th>
-                   <th className="text-left p-4 font-medium text-emerald-900">Probation End</th>
-                   <th className="text-left p-4 font-medium text-emerald-900">Email</th>
-                   <th className="text-left p-4 font-medium text-emerald-900">Status</th>
+                   <th className="text-left p-4 font-medium text-emerald-900" style={{fontSize: '12px', fontWeight: 600}}>Name</th>
+                   <th className="text-left p-4 font-medium text-emerald-900" style={{fontSize: '12px', fontWeight: 600}}>Employee Code</th>
+                   <th className="text-left p-4 font-medium text-emerald-900" style={{fontSize: '12px', fontWeight: 600}}>Date of Joining</th>
+                   <th className="text-left p-4 font-medium text-emerald-900" style={{fontSize: '12px', fontWeight: 600}}>Probation End</th>
+                   <th className="text-left p-4 font-medium text-emerald-900" style={{fontSize: '12px', fontWeight: 600}}>Email</th>
+                   <th className="text-left p-4 font-medium text-emerald-900" style={{fontSize: '12px', fontWeight: 600}}>Status</th>
                  </tr>
                </thead>
                <tbody>
@@ -244,7 +245,7 @@ const EmployeesReport = () => {
                              )}
                            </Avatar>
                            <div>
-                             <div className="font-medium text-gray-900">
+                             <div className="font-medium" style={{fontSize: '14px', fontWeight: 500, color: '#2C373B'}}>
                                {employee.firstName} {employee.lastName}
                              </div>
                              <div className="text-sm text-gray-500">
@@ -253,17 +254,17 @@ const EmployeesReport = () => {
                            </div>
                          </div>
                        </td>
-                       <td className="p-4 text-gray-900">{employee.employeeCode}</td>
-                       <td className="p-4 text-gray-900">
+                       <td className="p-4" style={{fontSize: '14px', fontWeight: 500, color: '#2C373B'}}>{employee.employeeCode}</td>
+                       <td className="p-4" style={{fontSize: '14px', fontWeight: 500, color: '#2C373B'}}>
                          {new Date(employee.dateOfJoining).toLocaleDateString()}
                        </td>
-                       <td className="p-4 text-gray-900">
+                       <td className="p-4" style={{fontSize: '14px', fontWeight: 500, color: '#2C373B'}}>
                          {employee.probationEndDate 
                            ? new Date(employee.probationEndDate).toLocaleDateString()
                            : 'N/A'
                          }
                        </td>
-                       <td className="p-4 text-gray-900">{employee.email}</td>
+                       <td className="p-4" style={{fontSize: '14px', fontWeight: 500, color: '#2C373B'}}>{employee.email}</td>
                        <td className="p-4">
                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                            employee.status.toLowerCase() === 'active' 
