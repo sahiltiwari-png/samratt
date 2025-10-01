@@ -276,7 +276,7 @@ const PayrollReport = () => {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <div className="flex-1 overflow-x-hidden">
-        <div className="w-full max-w-none space-y-6 px-4 py-4 md:px-6 md:py-6">
+        <div className="w-full max-w-none space-y-6 px-2 py-4 md:px-6 md:py-6">
           {/* Header */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
@@ -550,7 +550,7 @@ const PayrollReport = () => {
             <>
               {/* Mobile View - Enhanced Card Layout */}
               <div className="lg:hidden">
-                <div className="p-3 border-b border-emerald-200 bg-emerald-50">
+                <div className="p-2 border-b border-emerald-200 bg-emerald-50">
                   <p className="text-xs text-emerald-700 font-medium">
                     Showing {payrollData.length === 0 ? 0 : startIndex + 1} to {Math.min(endIndex, payrollData.length)} of {payrollData.length} records
                   </p>
@@ -561,7 +561,7 @@ const PayrollReport = () => {
                     <p className="text-sm mt-1">Try adjusting your filters</p>
                   </div>
                 ) : (
-                  <div className="p-3 space-y-3">
+                  <div className="p-2 space-y-3">
                     {currentPayrollData.map((item, index) => (
                       <div key={`${item.employeeCode}-${index}`} className="bg-white rounded-lg border border-emerald-200 shadow-sm hover:shadow-md transition-shadow duration-200">
                         <div className="p-4 space-y-4">
