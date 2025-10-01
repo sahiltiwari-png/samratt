@@ -1,37 +1,27 @@
-import { useState, useEffect, useMemo } from "react";
-import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
-import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { User, X, ChevronLeft, ChevronRight, Calendar as CalendarIcon, ChevronDown } from "lucide-react";
-import { toast } from "@/components/ui/use-toast";
-import { cn } from "@/lib/utils";
-import { format } from "date-fns";
-import { getPayrollReport, PayrollReportItem } from "@/api/payroll";
-import { getEmployees, Employee } from "@/api/employees";
+import React, { useState, useEffect, useRef } from 'react';
+import { format } from 'date-fns';
+import { CalendarIcon, Download, Search, User, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
+import { getPayrollReport, PayrollReportItem } from '@/api/payroll';
+import { getEmployees, Employee } from '@/api/employees';
+import { toast } from '@/hooks/use-toast';
 
 interface SelectedEmployee {
   _id: string;
-  name: string;
+  firstName: string;
+  lastName: string;
   employeeCode: string;
+  designation?: string;
+  profilePhotoUrl?: string;
 }
 
 const PayrollReport = () => {
@@ -40,10 +30,11 @@ const PayrollReport = () => {
   const [startDate, setStartDate] = useState<Date | undefined>(undefined);
   const [endDate, setEndDate] = useState<Date | undefined>(undefined);
   const [statusFilter, setStatusFilter] = useState<string>("pending");
-  const [selectedEmployee, setSelectedEmployee] = useState<SelectedEmployee | null>(null);
+  const [selectedEmployees, setSelectedEmployees] = useState<SelectedEmployee[]>([]);
   const [employeeSearchTerm, setEmployeeSearchTerm] = useState("");
   const [employeeSearchResults, setEmployeeSearchResults] = useState<Employee[]>([]);
   const [showEmployeeDropdown, setShowEmployeeDropdown] = useState(false);
+  const [isLoadingEmployees, setIsLoadingEmployees] = useState<boolean>(false);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
@@ -78,8 +69,8 @@ const PayrollReport = () => {
       setLoading(true);
       const params: any = {};
 
-      if (selectedEmployee) {
-        params.employeeId = selectedEmployee._id;
+      if (selectedEmployees.length > 0) {
+        params.employeeId = selectedEmployees.map(emp => emp._id).join(',');
       }
       
       if (startDate) {
@@ -110,19 +101,22 @@ const PayrollReport = () => {
   };
 
   const handleEmployeeSelect = (employee: Employee) => {
-    setSelectedEmployee({
+    const newEmployee: SelectedEmployee = {
       _id: employee._id,
-      name: `${employee.firstName} ${employee.lastName}`,
-      employeeCode: employee.employeeCode || ''
-    });
-    setEmployeeSearchTerm(`${employee.firstName} ${employee.lastName}`);
-    setShowEmployeeDropdown(false);
-    setCurrentPage(1);
-  };
-
-  const clearEmployeeFilter = () => {
-    setSelectedEmployee(null);
+      firstName: employee.firstName,
+      lastName: employee.lastName,
+      employeeCode: employee.employeeCode || '',
+      designation: employee.designation,
+      profilePhotoUrl: employee.profilePhotoUrl
+    };
+    
+    // Check if employee is already selected
+    if (!selectedEmployees.find(emp => emp._id === employee._id)) {
+      setSelectedEmployees(prev => [...prev, newEmployee]);
+    }
+    
     setEmployeeSearchTerm("");
+    setShowEmployeeDropdown(false);
     setCurrentPage(1);
   };
 
@@ -130,8 +124,9 @@ const PayrollReport = () => {
     setStartDate(undefined);
     setEndDate(undefined);
     setStatusFilter("pending");
-    setSelectedEmployee(null);
+    setSelectedEmployees([]);
     setEmployeeSearchTerm("");
+    setEmployeeSearchResults([]);
     setCurrentPage(1);
   };
 
@@ -164,7 +159,7 @@ const PayrollReport = () => {
 
   useEffect(() => {
     fetchPayrollData();
-  }, [startDate, endDate, statusFilter, selectedEmployee]);
+  }, [currentPage, startDate, endDate, statusFilter, selectedEmployees]);
 
   useEffect(() => {
     if (employeeSearchTerm && showEmployeeDropdown) {
@@ -176,172 +171,220 @@ const PayrollReport = () => {
   }, [employeeSearchTerm, showEmployeeDropdown]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-200 via-emerald-100 to-emerald-50 p-4 md:p-6">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="flex flex-col gap-4 mb-6">
-          <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
-              Payroll Report
-            </h1>
-            <p className="text-gray-600 mt-1">
-              View and manage payroll data for employees
-            </p>
+    <div className="h-screen bg-gray-50 overflow-hidden flex flex-col">
+      <div className="flex-1 overflow-y-auto">
+        <div className="max-w-full space-y-6 p-4 md:p-6">
+          {/* Header */}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">
+                Payroll Report
+              </h1>
+              <p className="text-gray-600">
+                View and manage payroll information
+              </p>
+            </div>
+            <Button className="flex items-center gap-2">
+              <Download className="h-4 w-4" />
+              Export Report
+            </Button>
           </div>
 
-          {/* Filters - Single Responsive Line */}
-          <div className="bg-gradient-to-r from-emerald-50 to-green-50 border border-emerald-200 rounded-lg shadow-sm p-4 md:p-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {/* Start Date */}
-              <div className="space-y-2">
-                <Label className="text-emerald-700 font-medium">Start Date</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className={cn(
-                        "w-full justify-start text-left font-normal border-emerald-300 hover:border-emerald-400 hover:bg-emerald-50",
-                        !startDate && "text-muted-foreground"
-                      )}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4 text-emerald-600" />
-                      {startDate ? format(startDate, "PPP") : "Pick a date"}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={startDate}
-                      onSelect={setStartDate}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-              </div>
+          {/* Filters */}
+          <Card>
+            <CardContent className="p-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 items-end">
+                {/* Start Date */}
+                <div className="space-y-2">
+                  <Label className="text-emerald-800 font-medium">Start Date</Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "w-full justify-start text-left font-normal bg-emerald-100 border-emerald-300 text-emerald-700 hover:bg-emerald-200",
+                          !startDate && "text-emerald-600"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4 text-emerald-600" />
+                        {startDate ? format(startDate, "PPP") : "Pick a date"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={startDate}
+                        onSelect={setStartDate}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
 
-              {/* End Date */}
-              <div className="space-y-2">
-                <Label className="text-emerald-700 font-medium">End Date</Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className={cn(
-                        "w-full justify-start text-left font-normal border-emerald-300 hover:border-emerald-400 hover:bg-emerald-50",
-                        !endDate && "text-muted-foreground"
-                      )}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4 text-emerald-600" />
-                      {endDate ? format(endDate, "PPP") : "Pick a date"}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={endDate}
-                      onSelect={setEndDate}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
-              </div>
+                {/* End Date */}
+                <div className="space-y-2">
+                  <Label className="text-emerald-800 font-medium">End Date</Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "w-full justify-start text-left font-normal bg-emerald-100 border-emerald-300 text-emerald-700 hover:bg-emerald-200",
+                          !endDate && "text-emerald-600"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4 text-emerald-600" />
+                        {endDate ? format(endDate, "PPP") : "Pick a date"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={endDate}
+                        onSelect={setEndDate}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
 
-              {/* Status Filter */}
-              <div className="space-y-2">
-                <Label className="text-emerald-700 font-medium">Status</Label>
-                <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger className="w-full border-emerald-300 hover:border-emerald-400 hover:bg-emerald-50">
-                    <SelectValue placeholder="Select Status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {statusOptions.map((status) => (
-                      <SelectItem key={status} value={status}>
-                        {status}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Employee Search */}
-              <div className="space-y-2 relative">
-                <Label className="text-emerald-700 font-medium">Employee</Label>
-                <div className="relative">
-                  <Input
-                    placeholder="Search employees..."
-                    value={employeeSearchTerm}
-                    onChange={(e) => {
-                      setEmployeeSearchTerm(e.target.value);
-                      setShowEmployeeDropdown(true);
-                    }}
-                    onFocus={() => setShowEmployeeDropdown(true)}
-                    className="w-full pr-8 border-emerald-300 hover:border-emerald-400 focus:border-emerald-500 focus:ring-emerald-500"
-                  />
-                  {selectedEmployee && (
-                    <button
-                      onClick={clearEmployeeFilter}
-                      className="absolute right-2 top-1/2 transform -translate-y-1/2 text-emerald-400 hover:text-emerald-600"
-                    >
-                      <X className="h-4 w-4" />
-                    </button>
-                  )}
-                  {showEmployeeDropdown && employeeSearchResults.length > 0 && (
-                    <div className="absolute top-full left-0 right-0 z-50 bg-white border border-emerald-200 rounded-md shadow-lg max-h-60 overflow-y-auto mt-1">
-                      {employeeSearchResults.map((employee) => (
-                        <button
-                          key={employee._id}
-                          onClick={() => handleEmployeeSelect(employee)}
-                          className="w-full px-3 py-2 text-left hover:bg-emerald-50 flex items-center gap-3"
-                        >
-                          <Avatar className="h-8 w-8">
-                            <AvatarImage src={employee.profilePhotoUrl} />
-                            <AvatarFallback>
-                              <User className="h-4 w-4" />
-                            </AvatarFallback>
-                          </Avatar>
-                          <div>
-                            <div className="font-medium text-sm">
-                              {employee.firstName} {employee.lastName}
-                            </div>
-                            <div className="text-sm text-gray-500">
-                              {employee.employeeCode} • {employee.designation}
-                            </div>
-                          </div>
-                        </button>
+                {/* Status Filter */}
+                <div className="space-y-2">
+                  <Label className="text-emerald-800 font-medium">Status</Label>
+                  <Select value={statusFilter} onValueChange={setStatusFilter}>
+                    <SelectTrigger className="bg-emerald-100 border-emerald-300 text-emerald-700 hover:bg-emerald-200">
+                      <SelectValue placeholder="Select Status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {statusOptions.map((status) => (
+                        <SelectItem key={status} value={status}>
+                          {status}
+                        </SelectItem>
                       ))}
-                    </div>
-                  )}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Employee Search */}
+                <div className="space-y-2 relative">
+                  <Label className="text-emerald-800 font-medium">Employee</Label>
+                  <div className="relative">
+                    <Input
+                      placeholder="Search employees..."
+                      value={employeeSearchTerm}
+                      onChange={(e) => {
+                        setEmployeeSearchTerm(e.target.value);
+                        setShowEmployeeDropdown(true);
+                      }}
+                      onFocus={() => setShowEmployeeDropdown(true)}
+                      className="w-full pr-8 bg-emerald-100 border-emerald-300 text-emerald-700 hover:bg-emerald-200 focus:bg-emerald-50"
+                    />
+                    {selectedEmployees.length > 0 && (
+                      <button
+                        onClick={() => {
+                          setSelectedEmployees([]);
+                          setEmployeeSearchTerm("");
+                        }}
+                        className="absolute right-2 top-1/2 transform -translate-y-1/2 text-emerald-400 hover:text-emerald-600"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    )}
+                    {showEmployeeDropdown && employeeSearchResults.length > 0 && (
+                      <div className="absolute top-full left-0 right-0 z-50 bg-white border border-emerald-300 rounded-md shadow-lg max-h-60 overflow-y-auto mt-1">
+                        {employeeSearchResults.map((employee) => (
+                          <button
+                            key={employee._id}
+                            onClick={() => handleEmployeeSelect(employee)}
+                            className="w-full px-3 py-2 text-left hover:bg-emerald-50 flex items-center gap-3"
+                          >
+                            <Avatar className="h-8 w-8">
+                              <AvatarImage src={employee.profilePhotoUrl} />
+                              <AvatarFallback>
+                                <User className="h-4 w-4" />
+                              </AvatarFallback>
+                            </Avatar>
+                            <div>
+                              <div className="font-medium text-sm">
+                                {employee.firstName} {employee.lastName}
+                              </div>
+                              <div className="text-sm text-gray-500">
+                                {employee.employeeCode} • {employee.designation}
+                              </div>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Clear All Filters Button */}
+                <div className="space-y-2">
+                  <Label className="text-transparent">Action</Label>
+                  <Button 
+                    onClick={clearAllFilters} 
+                    variant="outline" 
+                    size="sm"
+                    className="w-full border-emerald-300 text-emerald-700 hover:bg-emerald-100"
+                  >
+                    Clear All Filters
+                  </Button>
                 </div>
               </div>
-            </div>
 
-            {/* Filter Actions */}
-            <div className="flex flex-col sm:flex-row gap-2 mt-4">
-              <Button 
-                onClick={clearAllFilters} 
-                variant="outline" 
-                size="sm"
-                className="border-emerald-300 text-emerald-700 hover:bg-emerald-50 hover:border-emerald-400"
-              >
-                Clear All Filters
-              </Button>
-            </div>
-          </div>
-        </div>
+              {/* Selected Employees Tags */}
+              {selectedEmployees.length > 0 && (
+                <div className="mt-4">
+                  <Label className="text-sm font-medium mb-2 block text-emerald-800">Selected Employees:</Label>
+                  <div className="flex flex-wrap gap-2">
+                    {selectedEmployees.map((employee) => (
+                      <Badge
+                        key={employee._id}
+                        variant="secondary"
+                        className="flex items-center gap-2 px-3 py-1 bg-emerald-100 text-emerald-800 border border-emerald-300"
+                      >
+                        <Avatar className="h-5 w-5">
+                          <AvatarImage src={employee.profilePhotoUrl} />
+                          <AvatarFallback className="text-xs bg-emerald-200 text-emerald-700">
+                            {employee.firstName[0]}{employee.lastName[0]}
+                          </AvatarFallback>
+                        </Avatar>
+                        <span className="text-sm">
+                          {employee.firstName} {employee.lastName}
+                        </span>
+                        <button
+                          onClick={() => {
+                            setSelectedEmployees(prev => 
+                              prev.filter(emp => emp._id !== employee._id)
+                            );
+                          }}
+                          className="ml-1 hover:bg-emerald-200 rounded-full p-0.5"
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+          </CardContent>
+        </Card>
 
         {/* Content */}
-        <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-          {loading ? (
-            <div className="p-8 text-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600 mx-auto"></div>
-              <p className="mt-2 text-gray-600">Loading payroll data...</p>
-            </div>
-          ) : (
+        <Card className="overflow-hidden">
+          <CardContent className="p-0">
+            {loading ? (
+              <div className="p-8 text-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-600 mx-auto"></div>
+                <p className="mt-2 text-gray-600">Loading payroll data...</p>
+              </div>
+            ) : (
             <>
               {/* Mobile View */}
-              <div className="lg:hidden">
-                <div className="p-4 border-b border-gray-200">
-                  <p className="text-sm text-gray-600">
+              <div className="md:hidden">
+                <div className="p-4 border-b border-emerald-200 bg-emerald-50">
+                  <p className="text-sm text-emerald-700">
                     Showing {payrollData.length === 0 ? 0 : startIndex + 1} to {Math.min(endIndex, payrollData.length)} of {payrollData.length} records
                   </p>
                 </div>
@@ -351,23 +394,26 @@ const PayrollReport = () => {
                     <p className="text-sm mt-1">Try adjusting your filters</p>
                   </div>
                 ) : (
-                  <div className="divide-y divide-gray-200">
+                  <div className="divide-y divide-emerald-100">
                     {currentPayrollData.map((item, index) => (
-                      <div key={`${item.employeeCode}-${index}`} className="p-4 space-y-3">
+                      <div key={`${item.employeeCode}-${index}`} className="p-4 space-y-3 hover:bg-emerald-50">
                         {/* Employee Info */}
                         <div className="flex items-center gap-3">
                           <Avatar className="h-10 w-10">
-                            <AvatarImage src={item.profilePhotoUrl} />
-                            <AvatarFallback>
-                              <User className="h-5 w-5" />
-                            </AvatarFallback>
+                            {item.profilePhotoUrl ? (
+                              <AvatarImage src={item.profilePhotoUrl} alt={item.employeeName} />
+                            ) : (
+                              <AvatarFallback>
+                                <User className="h-5 w-5" />
+                              </AvatarFallback>
+                            )}
                           </Avatar>
-                          <div className="flex-1">
-                            <h3 className="font-medium text-gray-900">
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-medium text-emerald-900 truncate">
                               {item.employeeName}
                             </h3>
-                            <p className="text-sm text-gray-600">
-                              {item.employeeCode}
+                            <p className="text-sm text-emerald-600">
+                              {item.employeeCode} • {item.designation}
                             </p>
                           </div>
                           <Badge className={getStatusBadgeColor(item.status)}>
@@ -378,24 +424,24 @@ const PayrollReport = () => {
                         {/* Salary Details */}
                         <div className="grid grid-cols-2 gap-4 text-sm">
                           <div>
-                            <span className="text-gray-600">Basic:</span>
-                            <span className="ml-2 font-medium">₹{item.grossEarnings?.toLocaleString()}</span>
+                            <span className="text-emerald-600">Basic:</span>
+                            <span className="ml-2 font-medium text-emerald-800">₹{item.grossEarnings?.toLocaleString()}</span>
                           </div>
                           <div>
-                            <span className="text-gray-600">HRA:</span>
-                            <span className="ml-2 font-medium">₹0</span>
+                            <span className="text-emerald-600">HRA:</span>
+                            <span className="ml-2 font-medium text-emerald-800">₹0</span>
                           </div>
                           <div>
-                            <span className="text-gray-600">Gross:</span>
-                            <span className="ml-2 font-medium">₹{item.grossEarnings?.toLocaleString()}</span>
+                            <span className="text-emerald-600">Gross:</span>
+                            <span className="ml-2 font-medium text-emerald-800">₹{item.grossEarnings?.toLocaleString()}</span>
                           </div>
                           <div>
-                            <span className="text-gray-600">Deductions:</span>
-                            <span className="ml-2 font-medium">₹{parseFloat(item.deductions || '0').toLocaleString()}</span>
+                            <span className="text-emerald-600">Deductions:</span>
+                            <span className="ml-2 font-medium text-red-600">₹{parseFloat(item.deductions || '0').toLocaleString()}</span>
                           </div>
-                          <div className="col-span-2">
-                            <span className="text-gray-600">Net Salary:</span>
-                            <span className="ml-2 font-medium text-emerald-600">₹{parseFloat(item.netPayable || '0').toLocaleString()}</span>
+                          <div className="col-span-2 pt-2 border-t border-emerald-100">
+                            <span className="text-emerald-600">Net Salary:</span>
+                            <span className="ml-2 font-semibold text-emerald-900">₹{parseFloat(item.netPayable || '0').toLocaleString()}</span>
                           </div>
                         </div>
                       </div>
@@ -405,100 +451,105 @@ const PayrollReport = () => {
               </div>
 
               {/* Desktop View */}
-              <div className="hidden lg:block overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Name
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Employee Code
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Basic
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        HRA
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Gross Earning
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Deduction
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Net Salary
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Status
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {payrollData.length === 0 ? (
+              <div className="hidden lg:block">
+                <div className="overflow-x-auto">
+                  <table className="w-full min-w-[800px] divide-y divide-gray-200">
+                    <thead className="bg-emerald-50">
                       <tr>
-                        <td colSpan={8} className="px-6 py-8 text-center text-gray-500">
-                          <p>No payroll data found</p>
-                          <p className="text-sm mt-1">Try adjusting your filters</p>
-                        </td>
+                        <th className="px-3 py-3 text-left text-xs font-semibold text-emerald-800 uppercase tracking-wider w-[200px]">
+                          Name
+                        </th>
+                        <th className="px-3 py-3 text-left text-xs font-semibold text-emerald-800 uppercase tracking-wider w-[120px]">
+                          Employee Code
+                        </th>
+                        <th className="px-3 py-3 text-right text-xs font-semibold text-emerald-800 uppercase tracking-wider w-[100px]">
+                          Basic
+                        </th>
+                        <th className="px-3 py-3 text-right text-xs font-semibold text-emerald-800 uppercase tracking-wider w-[100px]">
+                          HRA
+                        </th>
+                        <th className="px-3 py-3 text-right text-xs font-semibold text-emerald-800 uppercase tracking-wider w-[120px]">
+                          Gross Earning
+                        </th>
+                        <th className="px-3 py-3 text-right text-xs font-semibold text-emerald-800 uppercase tracking-wider w-[100px]">
+                          Deduction
+                        </th>
+                        <th className="px-3 py-3 text-right text-xs font-semibold text-emerald-800 uppercase tracking-wider w-[120px]">
+                          Net Salary
+                        </th>
+                        <th className="px-3 py-3 text-center text-xs font-semibold text-emerald-800 uppercase tracking-wider w-[100px]">
+                          Status
+                        </th>
                       </tr>
-                    ) : (
-                      currentPayrollData.map((item, index) => (
-                        <tr key={`${item.employeeCode}-${index}`} className="hover:bg-gray-50">
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="flex items-center gap-3">
-                              <Avatar className="h-8 w-8">
-                                <AvatarImage src={item.profilePhotoUrl} />
-                                <AvatarFallback>
-                                  <User className="h-4 w-4" />
-                                </AvatarFallback>
-                              </Avatar>
-                              <div>
-                                <div className="text-sm font-medium text-gray-900">
-                                  {item.employeeName}
-                                </div>
-                                <div className="text-sm text-gray-500">
-                                  {item.designation}
-                                </div>
-                              </div>
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            {item.employeeCode}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            ₹{item.grossEarnings?.toLocaleString()}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            ₹0
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            ₹{item.grossEarnings?.toLocaleString()}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            ₹{parseFloat(item.deductions || '0').toLocaleString()}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-emerald-600">
-                            ₹{parseFloat(item.netPayable || '0').toLocaleString()}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap">
-                            <Badge className={getStatusBadgeColor(item.status)}>
-                              {item.status}
-                            </Badge>
+                    </thead>
+                    <tbody className="bg-white divide-y divide-emerald-100">
+                      {payrollData.length === 0 ? (
+                        <tr>
+                          <td colSpan={8} className="px-3 py-8 text-center text-gray-500">
+                            <p>No payroll data found</p>
+                            <p className="text-sm mt-1">Try adjusting your filters</p>
                           </td>
                         </tr>
-                      ))
-                    )}
-                  </tbody>
-                </table>
+                      ) : (
+                        currentPayrollData.map((item, index) => (
+                          <tr key={`${item.employeeCode}-${index}`} className="hover:bg-emerald-50">
+                            <td className="px-3 py-3">
+                              <div className="flex items-center gap-3">
+                                <Avatar className="h-8 w-8 flex-shrink-0">
+                                  {item.profilePhotoUrl ? (
+                                    <AvatarImage src={item.profilePhotoUrl} alt={item.employeeName} />
+                                  ) : (
+                                    <AvatarFallback>
+                                      <User className="h-4 w-4" />
+                                    </AvatarFallback>
+                                  )}
+                                </Avatar>
+                                <div className="min-w-0">
+                                  <div className="text-sm font-medium text-emerald-900 truncate">
+                                    {item.employeeName}
+                                  </div>
+                                  <div className="text-sm text-emerald-600 truncate">
+                                    {item.designation}
+                                  </div>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="px-3 py-3 text-sm text-emerald-700">
+                              {item.employeeCode}
+                            </td>
+                            <td className="px-3 py-3 text-right text-sm text-emerald-700">
+                              ₹{item.grossEarnings?.toLocaleString()}
+                            </td>
+                            <td className="px-3 py-3 text-right text-sm text-emerald-700">
+                              ₹0
+                            </td>
+                            <td className="px-3 py-3 text-right text-sm font-medium text-emerald-800">
+                              ₹{item.grossEarnings?.toLocaleString()}
+                            </td>
+                            <td className="px-3 py-3 text-right text-sm text-red-600">
+                              ₹{parseFloat(item.deductions || '0').toLocaleString()}
+                            </td>
+                            <td className="px-3 py-3 text-right text-sm font-semibold text-emerald-900">
+                              ₹{parseFloat(item.netPayable || '0').toLocaleString()}
+                            </td>
+                            <td className="px-3 py-3 text-center">
+                              <Badge className={getStatusBadgeColor(item.status)}>
+                                {item.status}
+                              </Badge>
+                            </td>
+                          </tr>
+                        ))
+                      )}
+                    </tbody>
+                  </table>
+                </div>
               </div>
 
               {/* Pagination */}
               {totalPages > 1 && (
-                <div className="bg-white px-4 py-3 border-t border-gray-200 sm:px-6">
+                <div className="bg-emerald-50 px-4 py-3 border-t border-emerald-200 sm:px-6">
                   <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-                    <div className="text-sm text-gray-700">
+                    <div className="text-sm text-emerald-700">
                       Showing {startIndex + 1} to {Math.min(endIndex, payrollData.length)} of {payrollData.length} results
                     </div>
                     <div className="flex items-center gap-2">
@@ -507,9 +558,10 @@ const PayrollReport = () => {
                         size="sm"
                         onClick={() => goToPage(currentPage - 1)}
                         disabled={currentPage === 1}
+                        className="border-emerald-300 text-emerald-700 hover:bg-emerald-100"
                       >
                         <ChevronLeft className="h-4 w-4" />
-                        Previous
+                        <span className="hidden sm:inline">Previous</span>
                       </Button>
                       
                       <div className="flex items-center gap-1">
@@ -531,21 +583,26 @@ const PayrollReport = () => {
                               variant={currentPage === pageNum ? "default" : "outline"}
                               size="sm"
                               onClick={() => goToPage(pageNum)}
-                              className="w-8 h-8 p-0"
+                              className={`w-8 h-8 p-0 ${
+                                currentPage === pageNum 
+                                  ? "bg-emerald-600 text-white hover:bg-emerald-700" 
+                                  : "border-emerald-300 text-emerald-700 hover:bg-emerald-100"
+                              }`}
                             >
                               {pageNum}
                             </Button>
                           );
                         })}
                       </div>
-
+                      
                       <Button
                         variant="outline"
                         size="sm"
                         onClick={() => goToPage(currentPage + 1)}
                         disabled={currentPage === totalPages}
+                        className="border-emerald-300 text-emerald-700 hover:bg-emerald-100"
                       >
-                        Next
+                        <span className="hidden sm:inline">Next</span>
                         <ChevronRight className="h-4 w-4" />
                       </Button>
                     </div>
@@ -554,16 +611,18 @@ const PayrollReport = () => {
               )}
             </>
           )}
+          </CardContent>
+        </Card>
+
+          {/* Click outside to close dropdown */}
+          {showEmployeeDropdown && (
+            <div
+              className="fixed inset-0 z-0"
+              onClick={() => setShowEmployeeDropdown(false)}
+            />
+          )}
         </div>
       </div>
-
-      {/* Click outside to close dropdown */}
-      {showEmployeeDropdown && (
-        <div
-          className="fixed inset-0 z-0"
-          onClick={() => setShowEmployeeDropdown(false)}
-        />
-      )}
     </div>
   );
 };
