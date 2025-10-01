@@ -116,3 +116,49 @@ export const downloadPayroll = async (employeeId: string, month: number, year: n
   });
   return res;
 };
+
+// New interface for payroll reports
+export interface PayrollReportItem {
+  employeeCode: string;
+  employeeName: string;
+  email: string;
+  designation: string;
+  department?: string;
+  profilePhotoUrl: string;
+  month: number;
+  year: number;
+  grossEarnings: number;
+  deductions: string;
+  lossOfPayDays: number;
+  netPayable: string;
+  status: string;
+  generatedAt: string;
+  totalWorkedDays: number;
+}
+
+export interface PayrollReportResponse {
+  success: boolean;
+  data: PayrollReportItem[];
+}
+
+export const getPayrollReport = async (params?: { 
+  employeeId?: string; 
+  month?: number; 
+  year?: number; 
+  status?: string;
+  startDate?: string;
+  endDate?: string;
+}) => {
+  const query: string[] = [];
+  if (params) {
+    if (params.employeeId) query.push(`employeeId=${params.employeeId}`);
+    if (params.month) query.push(`month=${params.month}`);
+    if (params.year) query.push(`year=${params.year}`);
+    if (params.status) query.push(`status=${params.status}`);
+    if (params.startDate) query.push(`startDate=${params.startDate}`);
+    if (params.endDate) query.push(`endDate=${params.endDate}`);
+  }
+  const qs = query.length ? `?${query.join('&')}` : '';
+  const res = await API.get(`/reports/payroll${qs}`);
+  return res.data as PayrollReportResponse;
+};
