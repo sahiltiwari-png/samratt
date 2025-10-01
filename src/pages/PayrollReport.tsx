@@ -29,7 +29,7 @@ const PayrollReport = () => {
   const [loading, setLoading] = useState(true);
   const [startDate, setStartDate] = useState<Date | undefined>(undefined);
   const [endDate, setEndDate] = useState<Date | undefined>(undefined);
-  const [statusFilter, setStatusFilter] = useState<string>("pending");
+  const [statusFilter, setStatusFilter] = useState<string>("All Status");
   const [selectedEmployees, setSelectedEmployees] = useState<SelectedEmployee[]>([]);
   const [employeeSearchTerm, setEmployeeSearchTerm] = useState("");
   const [employeeSearchResults, setEmployeeSearchResults] = useState<Employee[]>([]);
@@ -47,19 +47,37 @@ const PayrollReport = () => {
     "cancelled"
   ];
 
+  // Load all employees when input is focused
+  const loadAllEmployees = async () => {
+    try {
+      setIsLoadingEmployees(true);
+      const response = await getEmployees({ limit: 50 }); // Load first 50 employees
+      setEmployeeSearchResults(response.items || []);
+    } catch (error) {
+      console.error('Error loading employees:', error);
+      setEmployeeSearchResults([]);
+    } finally {
+      setIsLoadingEmployees(false);
+    }
+  };
+
   // Search employees
   const searchEmployees = async (searchTerm: string) => {
     if (!searchTerm.trim()) {
-      setEmployeeSearchResults([]);
+      // If search term is empty, load all employees
+      await loadAllEmployees();
       return;
     }
 
     try {
-      const response = await getEmployees({ search: searchTerm, limit: 10 });
-      setEmployeeSearchResults(response.data || []);
+      setIsLoadingEmployees(true);
+      const response = await getEmployees({ search: searchTerm, limit: 20 });
+      setEmployeeSearchResults(response.items || []);
     } catch (error) {
       console.error('Error searching employees:', error);
       setEmployeeSearchResults([]);
+    } finally {
+      setIsLoadingEmployees(false);
     }
   };
 
@@ -110,20 +128,22 @@ const PayrollReport = () => {
       profilePhotoUrl: employee.profilePhotoUrl
     };
     
-    // Check if employee is already selected
-    if (!selectedEmployees.find(emp => emp._id === employee._id)) {
-      setSelectedEmployees(prev => [...prev, newEmployee]);
-    }
-    
+    // Single selection - replace any existing selection
+    setSelectedEmployees([newEmployee]);
     setEmployeeSearchTerm("");
     setShowEmployeeDropdown(false);
+    setCurrentPage(1);
+  };
+
+  const removeSelectedEmployee = (employeeId: string) => {
+    setSelectedEmployees(prev => prev.filter(emp => emp._id !== employeeId));
     setCurrentPage(1);
   };
 
   const clearAllFilters = () => {
     setStartDate(undefined);
     setEndDate(undefined);
-    setStatusFilter("pending");
+    setStatusFilter("All Status");
     setSelectedEmployees([]);
     setEmployeeSearchTerm("");
     setEmployeeSearchResults([]);
@@ -169,6 +189,21 @@ const PayrollReport = () => {
       return () => clearTimeout(debounceTimer);
     }
   }, [employeeSearchTerm, showEmployeeDropdown]);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Element;
+      if (!target.closest('.employee-search-container')) {
+        setShowEmployeeDropdown(false);
+      }
+    };
+
+    if (showEmployeeDropdown) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [showEmployeeDropdown]);
 
   return (
     <div className="h-screen bg-gray-50 overflow-hidden flex flex-col">
@@ -266,7 +301,7 @@ const PayrollReport = () => {
                 </div>
 
                 {/* Employee Search */}
-                <div className="space-y-2 relative">
+                <div className="space-y-2 relative employee-search-container">
                   <Label className="text-emerald-800 font-medium">Employee</Label>
                   <div className="relative">
                     <Input
@@ -275,8 +310,14 @@ const PayrollReport = () => {
                       onChange={(e) => {
                         setEmployeeSearchTerm(e.target.value);
                         setShowEmployeeDropdown(true);
+                        searchEmployees(e.target.value);
                       }}
-                      onFocus={() => setShowEmployeeDropdown(true)}
+                      onFocus={async () => {
+                        setShowEmployeeDropdown(true);
+                        if (employeeSearchResults.length === 0) {
+                          await loadAllEmployees();
+                        }
+                      }}
                       className="w-full pr-8 bg-emerald-100 border-emerald-300 text-emerald-700 hover:bg-emerald-200 focus:bg-emerald-50"
                     />
                     {selectedEmployees.length > 0 && (
@@ -290,33 +331,75 @@ const PayrollReport = () => {
                         <X className="h-4 w-4" />
                       </button>
                     )}
-                    {showEmployeeDropdown && employeeSearchResults.length > 0 && (
+                    {showEmployeeDropdown && (
                       <div className="absolute top-full left-0 right-0 z-50 bg-white border border-emerald-300 rounded-md shadow-lg max-h-60 overflow-y-auto mt-1">
-                        {employeeSearchResults.map((employee) => (
-                          <button
-                            key={employee._id}
-                            onClick={() => handleEmployeeSelect(employee)}
-                            className="w-full px-3 py-2 text-left hover:bg-emerald-50 flex items-center gap-3"
-                          >
-                            <Avatar className="h-8 w-8">
-                              <AvatarImage src={employee.profilePhotoUrl} />
-                              <AvatarFallback>
-                                <User className="h-4 w-4" />
-                              </AvatarFallback>
-                            </Avatar>
-                            <div>
-                              <div className="font-medium text-sm">
-                                {employee.firstName} {employee.lastName}
+                        {isLoadingEmployees ? (
+                          <div className="px-3 py-4 text-center text-emerald-600">
+                            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-emerald-600 mx-auto"></div>
+                            <div className="mt-2 text-sm">Loading employees...</div>
+                          </div>
+                        ) : employeeSearchResults.length > 0 ? (
+                          employeeSearchResults.map((employee) => (
+                            <button
+                              key={employee._id}
+                              onClick={() => handleEmployeeSelect(employee)}
+                              className="w-full px-3 py-2 text-left hover:bg-emerald-50 flex items-center gap-3 border-b border-emerald-100 last:border-b-0"
+                            >
+                              <Avatar className="h-8 w-8 flex-shrink-0">
+                                <AvatarImage src={employee.profilePhotoUrl} />
+                                <AvatarFallback>
+                                  <User className="h-4 w-4" />
+                                </AvatarFallback>
+                              </Avatar>
+                              <div className="flex-1 min-w-0">
+                                <div className="font-medium text-sm text-emerald-800 truncate">
+                                  {employee.firstName} {employee.lastName}
+                                </div>
+                                <div className="text-sm text-emerald-600 truncate">
+                                  {employee.employeeCode} • {employee.designation}
+                                </div>
                               </div>
-                              <div className="text-sm text-gray-500">
-                                {employee.employeeCode} • {employee.designation}
-                              </div>
-                            </div>
-                          </button>
-                        ))}
+                            </button>
+                          ))
+                        ) : (
+                          <div className="px-3 py-4 text-center text-emerald-600 text-sm">
+                            No employees found
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
+                  
+                  {/* Selected Employee Tags */}
+                  {selectedEmployees.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {selectedEmployees.map((employee) => (
+                        <div
+                          key={employee._id}
+                          className="inline-flex items-center gap-2 px-3 py-1 bg-emerald-100 text-emerald-800 rounded-full text-sm border border-emerald-200"
+                        >
+                          <Avatar className="h-5 w-5">
+                            <AvatarImage src={employee.profilePhotoUrl} />
+                            <AvatarFallback className="text-xs">
+                              <User className="h-3 w-3" />
+                            </AvatarFallback>
+                          </Avatar>
+                          <span className="font-medium">
+                            {employee.firstName} {employee.lastName}
+                          </span>
+                          <span className="text-emerald-600">
+                            ({employee.employeeCode})
+                          </span>
+                          <button
+                            onClick={() => removeSelectedEmployee(employee._id)}
+                            className="text-emerald-500 hover:text-emerald-700 ml-1"
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 {/* Clear All Filters Button */}
