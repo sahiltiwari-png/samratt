@@ -305,10 +305,10 @@ const Dashboard = () => {
               </button>
             </div>
           </div>
-          {/* Right: Cardss */}  
-          <div className="md:w-2/3 grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+          {/* Right: Cards */}  
+          <div className="md:w-2/3 grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Total Employees (full width) */}
-            <div className="bg-white rounded-2xl shadow p-4 sm:p-6 sm:col-span-2">
+            <div className="bg-white rounded-2xl shadow p-3 sm:p-4 sm:col-span-2">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
@@ -334,7 +334,7 @@ const Dashboard = () => {
               </div>
             </div>
             {/* Total Leave Requests (full width) */}
-            <div className="bg-white rounded-2xl shadow p-4 sm:p-6 sm:col-span-2">
+            <div className="bg-white rounded-2xl shadow p-3 sm:p-4 sm:col-span-2">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
@@ -361,7 +361,7 @@ const Dashboard = () => {
               </div>
             </div>
             {/* Leave Policy - Redesigned to match screenshot */}
-            <div className="bg-white rounded-2xl shadow p-4 sm:p-5 flex flex-col justify-between border-2 border-green-200" style={{boxShadow: '0 2px 8px 0 rgba(60, 199, 143, 0.08)'}}>
+            <div className="bg-white rounded-2xl shadow p-3 sm:p-4 flex flex-col justify-between border-2 border-green-200" style={{boxShadow: '0 2px 8px 0 rgba(60, 199, 143, 0.08)'}}>
               <div className="flex items-center gap-3 mb-2">
                 <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
                   <svg width="20" height="20" fill="none" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4" fill="#3CC78F" fillOpacity="0.15"/><path d="M8.5 10.5h7M8.5 13.5h4M12 7.5v9" stroke="#3CC78F" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
@@ -372,7 +372,7 @@ const Dashboard = () => {
                 <span className="text-3xl font-bold leading-none text-[#4CDC9C]">{dashboardStats?.leavePolicies?.activePolicies ?? '-'}</span>
                 <span className="text-base text-gray-700 font-medium mb-1">active policy</span>
               </div>
-              <div className="flex gap-4 text-xs font-medium mb-4">
+              <div className="flex gap-4 text-xs font-medium mb-3">
                 <span className="text-gray-400">Maternity <span className="text-green-500 font-bold">{dashboardStats?.leavePolicies?.leaveTypesSummary?.maternity?.intervalValue ?? '-'}</span></span>
                 <span className="text-gray-400">Earned <span className="text-yellow-500 font-bold">{dashboardStats?.leavePolicies?.leaveTypesSummary?.earned?.intervalValue ?? '-'}</span></span>
               </div>
@@ -384,26 +384,28 @@ const Dashboard = () => {
               </button>
             </div>
             {/* Payroll Processed */}
-            <div className="bg-white rounded-2xl shadow p-4 sm:p-6">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div className="bg-white rounded-2xl shadow p-3 sm:p-4">
+              <div className="flex flex-col gap-3">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
                     <Calculator className="h-5 w-5 text-green-600" />
                   </div>
                   <div>
-                    <div className="text-gray-700 text-sm font-semibold">Payroll Processed <span className="text-xs text-gray-400">this month</span></div>
-                    <div className="mt-1">
-                      <span className="text-3xl font-bold leading-none text-[#4CDC9C]">
-                        {dashboardStats?.payroll?.processed ?? '-'}/{dashboardStats?.payroll?.totalEmployees ?? dashboardStats?.employees?.total ?? '-'}
-                      </span>
-                    </div>
-                    <div className="flex gap-4 text-xs mt-2">
-                      <span className="text-red-500 font-bold">Pending employees {dashboardStats?.payroll?.pending ?? '-'}</span>
-                    </div>
+                    <div className="text-gray-700 text-base font-semibold">Payroll Processed</div>
+                    <div className="text-xs text-gray-400 -mt-1">this month</div>
                   </div>
                 </div>
+                <div>
+                  <span className="text-3xl sm:text-4xl font-bold leading-none text-[#4CDC9C]">
+                    {dashboardStats?.payroll?.processed ?? '-'}/{dashboardStats?.payroll?.totalEmployees ?? dashboardStats?.employees?.total ?? '-'}
+                  </span>
+                  <span className="text-sm text-gray-700 font-medium ml-2">employees</span>
+                </div>
+                <div className="text-xs">
+                  <span className="text-red-500 font-semibold">Pending employees {dashboardStats?.payroll?.pending ?? '-'}</span>
+                </div>
                 <button 
-                  className="w-full sm:w-auto bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3fd190] rounded-lg px-4 py-2 font-semibold transition"
+                  className="w-full bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3fd190] rounded-lg py-2 font-semibold transition"
                   onClick={() => navigate('/payroll')}
                 >
                   Manage Payroll
@@ -411,7 +413,7 @@ const Dashboard = () => {
               </div>
             </div>
             {/* Reports */}
-            <div className="bg-white rounded-2xl shadow p-4 sm:p-6 sm:col-span-2">
+            <div className="bg-white rounded-2xl shadow p-3 sm:p-4 sm:col-span-2">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
