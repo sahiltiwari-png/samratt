@@ -491,6 +491,20 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
                   <DialogTitle className="text-2xl font-bold text-black tracking-tight mb-1">{employeeDetails?.firstName} {employeeDetails?.lastName}</DialogTitle>
                   <div className="text-gray-500 text-xs">{employeeDetails?.designation || ''} {employeeDetails?.department ? `| ${employeeDetails.department}` : ''}</div>
                   <div className="text-gray-400 text-xs mt-1">{employeeDetails?.email}</div>
+                  {(() => {
+                    const primaryRoleName = (
+                      (employeeDetails?.role && (typeof employeeDetails.role === 'string' ? employeeDetails.role : employeeDetails.role?.name)) ||
+                      (Array.isArray(employeeDetails?.roles) && employeeDetails.roles.length > 0 && (typeof employeeDetails.roles[0] === 'string' ? employeeDetails.roles[0] : employeeDetails.roles[0]?.name))
+                    );
+                    return primaryRoleName ? (
+                      <div className="mt-2 flex flex-wrap gap-1 items-center">
+                        <span className="text-xs text-gray-500 mr-1">Role:</span>
+                        <Badge className="text-[#2C373B] bg-[rgb(209,250,229)] border border-emerald-200 px-2 py-0.5">
+                          {String(primaryRoleName)}
+                        </Badge>
+                      </div>
+                    ) : null;
+                  })()}
                 </div>
               </div>
             </DialogHeader>
