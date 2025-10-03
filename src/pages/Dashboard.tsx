@@ -6,7 +6,7 @@ import { uploadFile } from "@/api/uploadFile";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { OrgSearchContext } from "@/components/layout/MainLayout";
-import { Plus, Building, Users, X, LogIn, LogOut } from "lucide-react";
+import { Plus, Building, Users, X, LogIn, LogOut, ClipboardList, Calculator, FileText } from "lucide-react";
 import { getEmployeeById } from "@/api/employees";
 import { getAttendance, clockInEmployee, clockOutEmployee } from "@/api/attendance";
 import { format } from "date-fns";
@@ -264,60 +264,65 @@ const Dashboard = () => {
           </div>
         </div>
         {/* Main Content */}
-        <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="max-w-5xl mx-auto flex flex-col md:flex-row gap-6 items-stretch">
           {/* Left: Events (static for now) */}
-          <div className="md:col-span-1">
-            <div className="bg-white rounded-2xl shadow p-6 mb-6 flex flex-col items-center">
+          <div className="md:w-1/3 h-full">
+            <div className="bg-white rounded-2xl shadow p-6 flex flex-col h-full">
               <div className="text-gray-500 text-sm mb-4 font-semibold">Today</div>
-              <div className="w-full flex flex-col items-center">
+              <div className="w-full flex-1 flex flex-col items-center md:min-h-[580px]">
                 {calendarLoading ? (
-                  <div className="w-full flex justify-center items-center h-32"><span className="text-gray-400">Loading...</span></div>
+                  <div className="w-full flex justify-center items-center h-full"><span className="text-gray-400">Loading...</span></div>
                 ) : calendarData?.calendarFile ? (
                   <>
                     <img 
                       src={calendarData.calendarFile} 
                       alt="Holiday Calendar" 
-                      className="w-full h-64 object-cover rounded mb-2 border cursor-pointer" 
+                      className="w-full h-full object-cover rounded mb-2 border cursor-pointer" 
                       onClick={() => setShowImageModal(true)}
                     />
                   </>
                 ) : (
                   <span className="text-gray-400 mb-2">No calendar uploaded</span>
                 )}
-                <input
-                  id="calendar-upload-input"
-                  type="file"
-                  accept="image/*"
-                  ref={fileInputRef}
-                  style={{ display: 'none' }}
-                  onChange={handleCalendarUpload}
-                />
-                <button
-                  type="button"
-                  className="flex items-center gap-2 text-green-600 hover:text-green-800 text-xs font-semibold border border-green-200 rounded px-3 py-1 bg-green-50 mt-2"
-                  onClick={() => {
-                    if (fileInputRef.current) fileInputRef.current.click();
-                  }}
-                >
-                  <svg width="18" height="18" fill="none" viewBox="0 0 24 24"><path d="M12 16v-8M8 12h8" stroke="#3CC78F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><rect x="3" y="3" width="18" height="18" rx="4" stroke="#3CC78F" strokeWidth="1.5"/></svg>
-                  Upload Calendar
-                </button>
               </div>
+              <input
+                id="calendar-upload-input"
+                type="file"
+                accept="image/*"
+                ref={fileInputRef}
+                style={{ display: 'none' }}
+                onChange={handleCalendarUpload}
+              />
+              <button
+                type="button"
+                className="flex items-center gap-2 text-green-600 hover:text-green-800 text-xs font-semibold border border-green-200 rounded px-3 py-1 bg-green-50 mt-2"
+                onClick={() => {
+                  if (fileInputRef.current) fileInputRef.current.click();
+                }}
+              >
+                <svg width="18" height="18" fill="none" viewBox="0 0 24 24"><path d="M12 16v-8M8 12h8" stroke="#3CC78F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/><rect x="3" y="3" width="18" height="18" rx="4" stroke="#3CC78F" strokeWidth="1.5"/></svg>
+                Upload Calendar
+              </button>
             </div>
           </div>
           {/* Right: Cardss */}  
-          <div className="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+          <div className="md:w-2/3 grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
             {/* Total Employees (full width) */}
             <div className="bg-white rounded-2xl shadow p-4 sm:p-6 sm:col-span-2">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                <div>
-                  <div className="text-gray-700 text-base font-semibold flex items-center gap-2">
-                    <span>Total Employees</span>
-                    <span className="text-3xl font-bold text-green-700 leading-none">{dashboardStats?.employees?.total ?? '-'}</span>
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
+                    <Users className="h-5 w-5 text-green-600" />
                   </div>
-                  <div className="flex gap-4 text-xs mt-2">
-                    <span className="text-green-600 font-bold">Active {dashboardStats?.employees?.active ?? '-'}</span>
-                    <span className="text-red-500 font-bold">Inactive {dashboardStats?.employees?.inactive ?? '-'}</span>
+                  <div>
+                    <div className="text-gray-700 text-base font-semibold flex items-center gap-2">
+                      <span>Total Employees</span>
+                      <span className="text-3xl font-bold leading-none text-[#4CDC9C]">{dashboardStats?.employees?.total ?? '-'}</span>
+                    </div>
+                    <div className="flex gap-4 text-xs mt-2">
+                      <span className="text-green-600 font-bold">Active {dashboardStats?.employees?.active ?? '-'}</span>
+                      <span className="text-red-500 font-bold">Inactive {dashboardStats?.employees?.inactive ?? '-'}</span>
+                    </div>
                   </div>
                 </div>
                 <button
@@ -331,15 +336,20 @@ const Dashboard = () => {
             {/* Total Leave Requests (full width) */}
             <div className="bg-white rounded-2xl shadow p-4 sm:p-6 sm:col-span-2">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                <div>
-                  <div className="text-gray-700 text-base font-semibold flex items-center gap-2">
-                    <span>Total Leave requests</span>
-                    <span className="text-3xl font-bold text-green-700 leading-none">{dashboardStats?.leaves?.total ?? '-'}</span>
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
+                    <ClipboardList className="h-5 w-5 text-green-600" />
                   </div>
-                  <div className="flex gap-4 text-xs mt-2">
-                    <span className="text-green-600 font-bold">Approved {dashboardStats?.leaves?.approved ?? '-'}</span>
-                    <span className="text-red-500 font-bold">Declined {dashboardStats?.leaves?.declined ?? '-'}</span>
-                    <span className="text-yellow-500 font-bold">Pending {dashboardStats?.leaves?.pending ?? '-'}</span>
+                  <div>
+                    <div className="text-gray-700 text-base font-semibold flex items-center gap-2">
+                      <span>Total Leave requests</span>
+                      <span className="text-3xl font-bold leading-none text-[#4CDC9C]">{dashboardStats?.leaves?.total ?? '-'}</span>
+                    </div>
+                    <div className="flex gap-4 text-xs mt-2">
+                      <span className="text-green-600 font-bold">Approved {dashboardStats?.leaves?.approved ?? '-'}</span>
+                      <span className="text-red-500 font-bold">Declined {dashboardStats?.leaves?.declined ?? '-'}</span>
+                      <span className="text-yellow-500 font-bold">Pending {dashboardStats?.leaves?.pending ?? '-'}</span>
+                    </div>
                   </div>
                 </div>
                 <button
@@ -359,7 +369,7 @@ const Dashboard = () => {
                 <span className="text-gray-700 font-semibold text-base">Leave Policy</span>
               </div>
               <div className="flex items-end gap-2 mb-1">
-                <span className="text-3xl font-bold text-green-500 leading-none">{dashboardStats?.leavePolicies?.activePolicies ?? '-'}</span>
+                <span className="text-3xl font-bold leading-none text-[#4CDC9C]">{dashboardStats?.leavePolicies?.activePolicies ?? '-'}</span>
                 <span className="text-base text-gray-700 font-medium mb-1">active policy</span>
               </div>
               <div className="flex gap-4 text-xs font-medium mb-4">
@@ -376,11 +386,20 @@ const Dashboard = () => {
             {/* Payroll Processed */}
             <div className="bg-white rounded-2xl shadow p-4 sm:p-6">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                <div>
-                  <div className="text-gray-700 text-sm font-semibold">Payroll Processed <span className="text-xs text-gray-400">this month</span></div>
-                  <div className="text-3xl font-bold text-green-700 mt-1">{dashboardStats?.payroll?.processed ?? '-'}/{dashboardStats?.payroll?.totalEmployees ?? dashboardStats?.employees?.total ?? '-'}</div>
-                  <div className="flex gap-4 text-xs mt-2">
-                    <span className="text-red-500 font-bold">Pending employees {dashboardStats?.payroll?.pending ?? '-'}</span>
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
+                    <Calculator className="h-5 w-5 text-green-600" />
+                  </div>
+                  <div>
+                    <div className="text-gray-700 text-sm font-semibold">Payroll Processed <span className="text-xs text-gray-400">this month</span></div>
+                    <div className="mt-1">
+                      <span className="text-3xl font-bold leading-none text-[#4CDC9C]">
+                        {dashboardStats?.payroll?.processed ?? '-'}/{dashboardStats?.payroll?.totalEmployees ?? dashboardStats?.employees?.total ?? '-'}
+                      </span>
+                    </div>
+                    <div className="flex gap-4 text-xs mt-2">
+                      <span className="text-red-500 font-bold">Pending employees {dashboardStats?.payroll?.pending ?? '-'}</span>
+                    </div>
                   </div>
                 </div>
                 <button 
@@ -394,7 +413,12 @@ const Dashboard = () => {
             {/* Reports */}
             <div className="bg-white rounded-2xl shadow p-4 sm:p-6 sm:col-span-2">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                <div className="text-gray-700 text-base font-semibold">Reports</div>
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
+                    <FileText className="h-5 w-5 text-green-600" />
+                  </div>
+                  <div className="text-gray-700 text-base font-semibold">Reports</div>
+                </div>
                 <button
                   className="w-full sm:w-auto bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3fd190] rounded-lg px-4 py-2 font-semibold transition"
                   onClick={() => navigate('/reports')}
@@ -402,7 +426,7 @@ const Dashboard = () => {
                   Manage Reports
                 </button>
               </div>
-              <div className="text-3xl font-bold text-green-700 mt-3">{dashboardStats?.reports?.total ?? '-'}</div>
+              <div className="mt-3 text-3xl font-bold leading-none text-[#4CDC9C]">{dashboardStats?.reports?.total ?? '-'}</div>
             </div>
           </div>
         </div>
