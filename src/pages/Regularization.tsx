@@ -351,7 +351,7 @@ const Regularization = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-emerald-100 via-emerald-50 to-white p-6">
+      <div className="min-h-screen bg-gradient-to-br from-emerald-100 via-emerald-50 to-white px-3 py-6 sm:px-6">
         <div className="max-w-7xl mx-auto space-y-6">
           <div className="animate-pulse">
             <div className="h-8 bg-emerald-200 rounded w-1/4 mb-4"></div>
@@ -367,12 +367,12 @@ const Regularization = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-100 via-emerald-50 to-white p-6">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-100 via-emerald-50 to-white px-2 py-6 sm:px-6">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
            <div>
-             <h2 className="text-base font-medium text-gray-900">
+             <h2 className="text-base font-medium text-[#2C373B]">
                Regularization Request - {totalRequests}
              </h2>
            </div>
@@ -381,7 +381,7 @@ const Regularization = () => {
             {/* Request Regularization Button */}
             <Button 
               onClick={() => setShowForm(true)}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white"
+              className="bg-[#4CDC9C] hover:bg-[#43c58d] text-[#2C373B]"
             >
               <Plus className="h-4 w-4 mr-2" />
               Request Regularization
@@ -389,7 +389,7 @@ const Regularization = () => {
             {/* Employee Search Filter */}
             <div className="relative employee-search-container">
               <div 
-                className="flex items-center gap-2 border border-emerald-300 rounded-lg px-3 py-2 bg-white w-[320px] hover:border-emerald-400 focus-within:border-emerald-500 transition-colors h-10 cursor-pointer"
+                className="flex items-center gap-2 border border-emerald-300 rounded-lg px-2 py-1 bg-[rgb(209,250,229)] w-[320px] hover:border-emerald-400 focus-within:border-emerald-500 transition-colors h-8 cursor-pointer"
                 onClick={handleSearchClick}
               >
                 <Search className="h-4 w-4 text-emerald-500 flex-shrink-0" />
@@ -420,7 +420,7 @@ const Regularization = () => {
                       value={employeeSearch}
                       onChange={(e) => setEmployeeSearch(e.target.value)}
                       onFocus={handleSearchFocus}
-                      className="border-0 p-0 h-auto focus-visible:ring-0 focus-visible:ring-offset-0 text-sm flex-1"
+                      className="border-0 p-0 h-auto focus-visible:ring-0 focus-visible:ring-offset-0 text-[14px] font-medium flex-1 bg-[rgb(209,250,229)] text-[#2C373B]"
                     />
                     <ChevronDown className="h-4 w-4 text-gray-400 flex-shrink-0" />
                   </>
@@ -473,7 +473,7 @@ const Regularization = () => {
 
             {/* Status Filter */}
             <Select value={status} onValueChange={setStatus}>
-              <SelectTrigger className="w-[140px] border-emerald-300 focus:border-emerald-500 h-10">
+              <SelectTrigger className="w-[140px] border-emerald-300 focus:border-emerald-500 h-8 bg-[rgb(209,250,229)] text-[#2C373B]">
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
@@ -490,32 +490,32 @@ const Regularization = () => {
         {!showForm ? (
           /* Table */
           <div className="bg-white rounded-xl shadow-sm border border-emerald-200 overflow-hidden">
-          <div>
-            <table className="w-full table-fixed">
+          <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-emerald-300 scrollbar-track-emerald-100" style={{ WebkitOverflowScrolling: 'touch' }}>
+            <table className="min-w-[820px] w-full table-fixed">
               <thead className="bg-emerald-50 border-b border-emerald-200">
                 <tr>
-                  <th className="px-3 py-3 text-left font-semibold text-gray-700 w-[18%]">
+                  <th className="px-3 py-3 text-left text-[12px] font-semibold text-[#2C373B] w-[18%]">
                     Employee
                   </th>
-                  <th className="px-3 py-3 text-left font-semibold text-gray-700 w-[10%]">
+                  <th className="px-3 py-3 text-left text-[12px] font-semibold text-[#2C373B] w-[10%]">
                     Date
                   </th>
-                  <th className="px-3 py-3 text-left font-semibold text-gray-700 w-[8%]">
+                  <th className="px-5 py-3 text-left text-[12px] font-semibold text-[#2C373B] w-[8%] min-w-[110px]">
                     Field
                   </th>
-                  <th className="px-3 py-3 text-left font-semibold text-gray-700 w-[10%]">
+                  <th className="px-6 py-3 text-left text-[12px] font-semibold text-[#2C373B] w-[10%] min-w-[120px]">
                     Time
                   </th>
-                  <th className="px-3 py-3 text-left font-semibold text-gray-700 w-[20%]">
+                  <th className="px-6 py-3 text-left text-[12px] font-semibold text-[#2C373B] w-[20%] min-w-[160px]">
                     Reason
                   </th>
-                  <th className="px-3 py-3 text-left font-semibold text-gray-700 w-[12%]">
+                  <th className="px-3 py-3 text-left text-[12px] font-semibold text-[#2C373B] w-[12%]">
                      Status
                    </th>
-                   <th className="px-3 py-3 text-left font-semibold text-gray-700 w-[12%]">
+                   <th className="px-3 py-3 text-left text-[12px] font-semibold text-[#2C373B] w-[12%]">
                      Remarks
                    </th>
-                   <th className="px-3 py-3 text-left font-semibold text-gray-700 w-[10%]">
+                   <th className="px-3 py-3 text-left text-[12px] font-semibold text-[#2C373B] w-[10%]">
                      Actions
                    </th>
                 </tr>
@@ -554,10 +554,10 @@ const Regularization = () => {
                           )}
                         </Avatar>
                         <div className="min-w-0 flex-1">
-                          <div className="font-medium text-sm truncate">
+                          <div className="text-[14px] font-medium text-[#2C373B] truncate">
                             {req.employeeId.firstName} {req.employeeId.lastName}
                           </div>
-                          <div className="text-xs text-gray-500 truncate">
+                          <div className="text-[14px] font-medium text-[#2C373B] truncate">
                             {req.employeeId.employeeCode}
                           </div>
                         </div>
@@ -565,23 +565,23 @@ const Regularization = () => {
                     </td>
 
                     {/* Date */}
-                    <td className="px-3 py-3 text-sm text-gray-600">
+                    <td className="px-3 py-3 text-[14px] font-medium text-[#2C373B] whitespace-nowrap">
                       {new Date(req.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                     </td>
 
                     {/* Field */}
-                    <td className="px-3 py-3 text-sm text-gray-600">
-                      <span className="capitalize text-xs">{req.field}</span>
+                    <td className="pl-4 pr-8 py-3 text-[14px] font-medium text-[#2C373B] whitespace-nowrap">
+                      <span className="capitalize text-[14px] font-medium text-[#2C373B]">{req.field}</span>
                     </td>
 
                     {/* Requested Time */}
-                    <td className="px-3 py-3 text-sm text-gray-600">
+                    <td className="pl-8 pr-10 py-3 text-[14px] font-medium text-[#2C373B] whitespace-nowrap">
                       {new Date(req.requestedTime).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
                     </td>
 
                     {/* Reason */}
-                    <td className="px-3 py-3">
-                      <span className="text-gray-700 text-sm truncate block" title={req.reason}>
+                    <td className="pl-8 pr-4 py-3">
+                      <span className="text-[#2C373B] text-[14px] font-medium truncate block" title={req.reason}>
                         {req.reason}
                       </span>
                     </td>
@@ -593,7 +593,7 @@ const Regularization = () => {
                           value={editValues[req._id]?.status || req.status}
                           onValueChange={(value) => handleEditValueChange(req._id, 'status', value)}
                         >
-                          <SelectTrigger className="w-full h-8 text-xs">
+                          <SelectTrigger className="w-full h-8 text-[14px] font-medium bg-[rgb(209,250,229)] text-[#2C373B]">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
@@ -603,12 +603,12 @@ const Regularization = () => {
                         </Select>
                       ) : (
                         <span
-                          className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+                          className={`inline-flex items-center px-2 py-1 rounded-full text-[14px] font-medium ${
                             req.status === "approved"
-                              ? "bg-green-100 text-green-800"
+                              ? "bg-green-100 text-[#2C373B]"
                               : req.status === "rejected"
-                              ? "bg-red-100 text-red-800"
-                              : "bg-yellow-100 text-yellow-800"
+                              ? "bg-red-100 text-[#2C373B]"
+                              : "bg-yellow-100 text-[#2C373B]"
                           }`}
                         >
                           {req.status.charAt(0).toUpperCase() + req.status.slice(1)}
@@ -623,10 +623,10 @@ const Regularization = () => {
                           value={editValues[req._id]?.remarks || ''}
                           onChange={(e) => handleEditValueChange(req._id, 'remarks', e.target.value)}
                           placeholder="Add remarks..."
-                          className="w-full h-8 text-xs"
+                          className="w-full h-8 text-[14px] font-medium bg-[rgb(209,250,229)] text-[#2C373B]"
                         />
                       ) : (
-                        <span className="text-gray-700 text-sm truncate block" title={req.remarks || '-'}>
+                        <span className="text-[#2C373B] text-[14px] font-medium truncate block" title={req.remarks || '-'}>
                           {req.remarks || '-'}
                         </span>
                       )}
@@ -640,7 +640,7 @@ const Regularization = () => {
                             size="sm"
                             onClick={() => handleSave(req._id)}
                             disabled={updating.has(req._id)}
-                            className="h-7 px-2 text-xs bg-emerald-600 hover:bg-emerald-700"
+                            className="h-7 px-2 text-xs bg-[#4CDC9C] hover:bg-[#43c58d] text-[#2C373B]"
                           >
                             {updating.has(req._id) ? (
                               <div className="animate-spin h-3 w-3 border border-white border-t-transparent rounded-full" />
@@ -653,7 +653,7 @@ const Regularization = () => {
                             variant="outline"
                             onClick={() => handleCancel(req._id)}
                             disabled={updating.has(req._id)}
-                            className="h-7 px-2 text-xs"
+                            className="h-7 px-2 text-xs bg-[#4CDC9C] border-[#4CDC9C] text-[#2C373B] hover:bg-[#43c58d]"
                           >
                             Cancel
                           </Button>
@@ -663,7 +663,7 @@ const Regularization = () => {
                           size="sm"
                           variant="outline"
                           onClick={() => handleEdit(req._id, req.status, req.remarks || '')}
-                          className="text-emerald-600 border-emerald-600 hover:bg-emerald-50 h-7 px-2 text-xs"
+                          className="text-[#2C373B] border-[#4CDC9C] bg-[#4CDC9C] hover:bg-[#43c58d] h-7 px-2 text-xs"
                         >
                           Edit
                         </Button>
@@ -678,7 +678,7 @@ const Regularization = () => {
           {/* Pagination */}
           {totalPages > 1 && (
             <div className="flex items-center justify-between px-4 py-3 border-t border-emerald-200 bg-emerald-50">
-              <div className="text-sm text-gray-600">
+              <div className="text-[14px] font-medium text-[#2C373B]">
                 Showing {startIndex + 1} to {Math.min(startIndex + itemsPerPage, totalRequests)} of {totalRequests} results
               </div>
               <div className="flex items-center gap-2">
@@ -687,11 +687,11 @@ const Regularization = () => {
                   size="sm"
                   onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                   disabled={currentPage === 1}
-                  className="h-8 w-8 p-0"
+                  className="h-8 w-8 p-0 bg-[#4CDC9C] border-[#4CDC9C] text-[#2C373B] hover:bg-[#43c58d]"
                 >
                   <ChevronLeft className="h-4 w-4" />
                 </Button>
-                <span className="text-sm text-gray-600">
+                <span className="text-[14px] font-medium text-[#2C373B]">
                   Page {currentPage} of {totalPages}
                 </span>
                 <Button
@@ -699,7 +699,7 @@ const Regularization = () => {
                   size="sm"
                   onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
                   disabled={currentPage === totalPages}
-                  className="h-8 w-8 p-0"
+                  className="h-8 w-8 p-0 bg-[#4CDC9C] border-[#4CDC9C] text-[#2C373B] hover:bg-[#43c58d]"
                 >
                   <ChevronRight className="h-4 w-4" />
                 </Button>
@@ -717,7 +717,7 @@ const Regularization = () => {
               <Button
                 variant="outline"
                 onClick={() => setShowForm(false)}
-                className="text-gray-600 hover:text-gray-800"
+                className="bg-[#4CDC9C] border-[#4CDC9C] text-[#2C373B] hover:bg-[#43c58d]"
               >
                 <X className="h-4 w-4 mr-2" />
                 Cancel
@@ -731,7 +731,7 @@ const Regularization = () => {
                   Employee Name
                 </Label>
                 <div className="relative form-employee-search-container">
-                  <div className="border border-gray-300 rounded-md px-3 py-2 bg-white focus-within:ring-2 focus-within:ring-emerald-500 focus-within:border-emerald-500 min-h-[40px] flex items-center gap-2 flex-wrap">
+                  <div className="border border-gray-300 rounded-md px-3 py-2 bg-[rgb(209,250,229)] focus-within:ring-2 focus-within:ring-emerald-500 focus-within:border-emerald-500 min-h-[40px] flex items-center gap-2 flex-wrap">
                     {formSelectedEmployee ? (
                       <div className="flex items-center gap-2 bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full text-sm">
                         <Avatar className="h-6 w-6">
@@ -768,7 +768,7 @@ const Regularization = () => {
                           onChange={(e) => setFormEmployeeSearch(e.target.value)}
                           onFocus={handleFormSearchFocus}
                           onClick={handleFormSearchClick}
-                          className="border-0 p-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-sm placeholder:text-gray-400 cursor-pointer flex-1"
+                          className="border-0 p-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-sm placeholder:text-[#2C373B] cursor-pointer flex-1 bg-[rgb(209,250,229)] text-[#2C373B]"
                         />
                         <ChevronDown className="h-4 w-4 text-gray-400 flex-shrink-0" />
                       </>
@@ -825,7 +825,7 @@ const Regularization = () => {
                     value={formData.field}
                     onValueChange={(value) => handleFormChange('field', value as 'clockIn' | 'clockOut')}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="bg-[rgb(209,250,229)] text-[#2C373B] h-8">
                       <SelectValue placeholder="Select entry type" />
                     </SelectTrigger>
                     <SelectContent>
@@ -846,7 +846,7 @@ const Regularization = () => {
                       type="date"
                       value={formData.date}
                       onChange={(e) => handleFormChange('date', e.target.value)}
-                      className="pr-10"
+                      className="pr-10 bg-[rgb(209,250,229)] text-[#2C373B]"
                       required
                     />
                     <Calendar className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -887,7 +887,7 @@ const Regularization = () => {
                         handleFormChange('requestedTime', `${formattedHour}:${currentMinute}`);
                       }}
                     >
-                      <SelectTrigger className="w-full">
+                      <SelectTrigger className="w-full bg-[rgb(209,250,229)] text-[#2C373B] h-8">
                         <SelectValue placeholder="Hr" />
                       </SelectTrigger>
                       <SelectContent>
@@ -911,7 +911,7 @@ const Regularization = () => {
                         handleFormChange('requestedTime', `${currentHour}:${value}`);
                       }}
                     >
-                      <SelectTrigger className="w-full">
+                      <SelectTrigger className="w-full bg-[rgb(209,250,229)] text-[#2C373B] h-8">
                         <SelectValue placeholder="Min" />
                       </SelectTrigger>
                       <SelectContent className="max-h-48">
@@ -952,7 +952,7 @@ const Regularization = () => {
                         handleFormChange('requestedTime', `${formattedHour}:${minute}`);
                       }}
                     >
-                      <SelectTrigger className="w-full">
+                      <SelectTrigger className="w-full bg-[rgb(209,250,229)] text-[#2C373B] h-8">
                         <SelectValue placeholder="AM/PM" />
                       </SelectTrigger>
                       <SelectContent>
@@ -976,7 +976,7 @@ const Regularization = () => {
                   value={formData.reason}
                   onChange={(e) => handleFormChange('reason', e.target.value)}
                   placeholder="Please provide a reason for the regularization request..."
-                  className="min-h-[100px] resize-none"
+                  className="min-h-[100px] resize-none bg-[rgb(209,250,229)] text-[#2C373B]"
                   required
                 />
               </div>
@@ -988,13 +988,14 @@ const Regularization = () => {
                   variant="outline"
                   onClick={() => setShowForm(false)}
                   disabled={submitting}
+                  className="bg-[#4CDC9C] border-[#4CDC9C] text-[#2C373B] hover:bg-[#43c58d]"
                 >
                   Cancel
                 </Button>
                 <Button
                   type="submit"
                   disabled={submitting}
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white px-8 py-2"
+                  className="bg-[#4CDC9C] hover:bg-[#43c58d] text-[#2C373B] px-8 py-2"
                 >
                   {submitting ? "Submitting..." : "Submit"}
                 </Button>
