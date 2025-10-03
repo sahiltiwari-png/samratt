@@ -206,7 +206,7 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
-          {/* Right: Cards */}
+          {/* Right: Cardss */}  
           <div className="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-6">
             {/* Total Employees (full width) */}
             <div className="bg-white rounded-2xl shadow p-6 sm:col-span-2">
