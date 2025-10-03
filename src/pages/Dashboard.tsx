@@ -50,9 +50,9 @@ const Dashboard = () => {
     }
   }, [user?.role]);
 
-  // Company Admin Dashboard UI (matches provided image)
+  // Company Admin & HR Dashboard UI (matches provided image)
   useEffect(() => {
-    if (user?.role === 'companyAdmin') {
+    if (user?.role === 'companyAdmin' || user?.role === 'hr') {
       setDashboardLoading(true);
       setDashboardError("");
       getDashboardStats()
@@ -84,7 +84,7 @@ const Dashboard = () => {
 
   // Fetch employee profile and today's attendance for banner
   useEffect(() => {
-    if (user?.role === 'companyAdmin') {
+    if (user?.role === 'companyAdmin' || user?.role === 'hr') {
       const id = user?._id || user?.id;
       if (!id) return;
       // Employee details
@@ -176,7 +176,7 @@ const Dashboard = () => {
     }
   };
 
-  if (user?.role === 'companyAdmin') {
+  if (user?.role === 'companyAdmin' || user?.role === 'hr') {
     return (
       <div className="min-h-screen bg-gradient-to-br from-green-200 to-green-50 py-6 px-2 md:px-8">
         {/* Image Modal */}
