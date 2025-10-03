@@ -279,6 +279,11 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
   const [loadingDetails, setLoadingDetails] = useState(false);
   const [updateLoading, setUpdateLoading] = useState(false);
   const [updateMessage, setUpdateMessage] = useState<string | null>(null);
+  // Roles dropdown state for edit modal
+  const [roles, setRoles] = useState<any[]>([]);
+  const [rolesOpen, setRolesOpen] = useState(false);
+  const [rolesLoading, setRolesLoading] = useState(false);
+  const [selectedRole, setSelectedRole] = useState<any>(null);
 
   const navigate = useNavigate();
 
@@ -514,6 +519,91 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
                   <div>Loading...</div>
                 ) : employeeDetails ? (
                   <form className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3">
+                    {/* Role Field */}
+                    <div className="flex flex-col mb-2">
+                      <label className="font-semibold capitalize mb-1" style={{color: '#2C373B'}}>Role</label>
+                      {editMode ? (
+                        <Popover
+                          open={rolesOpen}
+                          onOpenChange={async (open) => {
+                            setRolesOpen(open);
+                            if (open) {
+                              setRolesLoading(true);
+                              try {
+                                const res = await API.get('/roles');
+                                const list = res?.data?.roles || [];
+                                setRoles(Array.isArray(list) ? list : []);
+                              } catch (e) {
+                                // silently fail
+                              } finally {
+                                setRolesLoading(false);
+                              }
+                            }
+                          }}
+                        >
+                          <PopoverTrigger asChild>
+                            <button
+                              type="button"
+                              className="border border-emerald-300 rounded px-2 py-1 bg-[rgb(209,250,229)] text-[#2C373B] text-left hover:bg-emerald-100"
+                            >
+                              {selectedRole?.name || (
+                                (employeeDetails?.role && (typeof employeeDetails.role === 'string' ? employeeDetails.role : employeeDetails.role?.name)) ||
+                                (Array.isArray(employeeDetails?.roles) && employeeDetails.roles.length > 0 && (typeof employeeDetails.roles[0] === 'string' ? employeeDetails.roles[0] : employeeDetails.roles[0]?.name)) ||
+                                'Select role'
+                              )}
+                            </button>
+                          </PopoverTrigger>
+                          <PopoverContent className="p-0 w-64" align="start">
+                            <Command>
+                              <CommandInput placeholder="Search roles..." />
+                              <CommandList className="max-h-64 overflow-auto">
+                                <CommandEmpty>No roles found.</CommandEmpty>
+                                <CommandGroup heading="Roles">
+                                  {rolesLoading ? (
+                                    <div className="p-2 text-sm text-gray-500">Loading...</div>
+                                  ) : (
+                                    roles.map((r: any) => (
+                                      <CommandItem
+                                        key={r._id}
+                                        value={r.name}
+                                        onSelect={async () => {
+                                          setSelectedRole(r);
+                                          setRolesOpen(false);
+                                          try {
+                                            const userId = selectedEmployee?._id || employeeDetails?._id;
+                                            await API.post('/auth/assign-role', { userId, roleId: r._id, isDefault: true });
+                                            setUpdateMessage('Role updated successfully');
+                                            // reflect change locally
+                                            setEmployeeDetails((prev: any) => ({ ...prev, role: { _id: r._id, name: r.name } }));
+                                            setFormData((fd: any) => ({ ...fd, role: r.name }));
+                                          } catch (e) {
+                                            setUpdateMessage('Failed to update role');
+                                          }
+                                        }}
+                                      >
+                                        {r.name}
+                                      </CommandItem>
+                                    ))
+                                  )}
+                                </CommandGroup>
+                              </CommandList>
+                            </Command>
+                          </PopoverContent>
+                        </Popover>
+                      ) : (
+                        (() => {
+                          const primaryRoleName = (
+                            (employeeDetails?.role && (typeof employeeDetails.role === 'string' ? employeeDetails.role : employeeDetails.role?.name)) ||
+                            (Array.isArray(employeeDetails?.roles) && employeeDetails.roles.length > 0 && (typeof employeeDetails.roles[0] === 'string' ? employeeDetails.roles[0] : employeeDetails.roles[0]?.name))
+                          );
+                          return (
+                            <span className="rounded px-2 py-1 border border-emerald-200 bg-[rgb(209,250,229)] text-[#2C373B]">
+                              {primaryRoleName || '-'}
+                            </span>
+                          );
+                        })()
+                      )}
+                    </div>
                     {[
                       "firstName","lastName","phone","department","designation","grade","dateOfJoining","probationEndDate","employmentType","shiftId","status","reportingManagerId","dob","gender","bloodGroup","maritalStatus","nationality","addressLine1","addressLine2","country","state","city","zipCode","aadhaarNo","panNo","passportNo","salaryStructureId","benefits","skills","loginEnabled","isActive","camsEmployeeId"
                     ].map((key) => {
