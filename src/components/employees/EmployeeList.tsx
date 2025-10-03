@@ -18,7 +18,138 @@ const EmployeeFilterBar = ({
 }) => {
   // Example options, replace with dynamic if needed
   const statusOptions = ["Active", "Inactive"];
-  const designationOptions = ["Manager", "Developer", "HR", "Designer"];
+  // Provided designations list
+  const designations = [
+    // Entry Level
+    "Intern",
+    "Trainee",
+    "Associate",
+    "Junior Executive",
+    "Executive",
+    "Coordinator",
+
+    // Mid Level
+    "Senior Executive",
+    "Specialist",
+    "Analyst",
+    "Consultant",
+    "Assistant Manager",
+    "Team Lead",
+    "Supervisor",
+
+    // Managerial
+    "Manager",
+    "Senior Manager",
+    "Project Manager",
+    "Program Manager",
+    "Product Manager",
+    "Operations Manager",
+    "Delivery Manager",
+
+    // Leadership
+    "General Manager",
+    "Associate Director",
+    "Director",
+    "Vice President",
+    "Senior Vice President",
+    "CEO",
+    "CTO",
+    "CIO",
+    "COO",
+    "CFO",
+    "CMO",
+    "CHRO",
+    "CSO",
+
+    // IT / Technical
+    "Software Engineer",
+    "Senior Software Engineer",
+    "Full Stack Developer",
+    "Backend Developer",
+    "Frontend Developer",
+    "Mobile App Developer",
+    "DevOps Engineer",
+    "Cloud Engineer",
+    "QA Engineer",
+    "Test Analyst",
+    "Automation Tester",
+    "UI/UX Designer",
+    "System Administrator",
+    "Database Administrator",
+    "Network Engineer",
+    "Security Analyst",
+    "Technical Lead",
+    "Solution Architect",
+    "Technical Project Manager",
+    "Engineering Manager",
+    "VP Engineering",
+
+    // Sales
+    "Sales Executive",
+    "Business Development Executive",
+    "Business Development Manager",
+    "Inside Sales Executive",
+    "Sales Consultant",
+    "Relationship Manager",
+    "Key Account Manager",
+    "Territory Sales Manager",
+    "Regional Sales Manager",
+    "National Sales Manager",
+    "Head of Sales",
+    "Vice President Sales",
+    "Chief Sales Officer",
+
+    // Marketing
+    "Marketing Executive",
+    "Digital Marketing Executive",
+    "SEO Specialist",
+    "PPC Specialist",
+    "Content Writer",
+    "Copywriter",
+    "Social Media Executive",
+    "Brand Executive",
+    "Marketing Analyst",
+    "Marketing Manager",
+    "Product Marketing Manager",
+    "Campaign Manager",
+    "Growth Manager",
+    "Regional Marketing Manager",
+    "Head of Marketing",
+    "Vice President Marketing",
+    "Chief Marketing Officer",
+
+    // HR & Admin
+    "HR Executive",
+    "HR Generalist",
+    "Recruiter",
+    "Talent Acquisition Specialist",
+    "HR Manager",
+    "HR Business Partner",
+    "Training & Development Manager",
+    "Payroll Specialist",
+    "Admin Executive",
+    "Office Manager",
+
+    // Finance & Accounts
+    "Accounts Executive",
+    "Junior Accountant",
+    "Senior Accountant",
+    "Finance Analyst",
+    "Accounts Manager",
+    "Finance Manager",
+    "Internal Auditor",
+    "Financial Controller",
+
+    // Operations / Support
+    "Operations Executive",
+    "Operations Manager",
+    "Process Specialist",
+    "Customer Support Executive",
+    "Client Service Manager",
+    "Technical Support Engineer",
+    "Service Delivery Manager"
+  ];
+  const [designationOpen, setDesignationOpen] = useState(false);
   return (
     <div className="flex flex-col md:flex-row md:flex-nowrap md:items-center md:justify-between gap-3 mb-4 w-full pb-2 rounded-lg p-3 bg-white">
       <div className="flex items-center gap-2 flex-wrap md:flex-nowrap">
@@ -31,14 +162,41 @@ const EmployeeFilterBar = ({
           <option value="">Status</option>
           {statusOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
         </select>
-        <select
-          className="rounded border border-emerald-300 h-8 px-3 bg-[rgb(209,250,229)] text-[#2C373B] focus:outline-none focus:ring-2 focus:ring-emerald-200 min-w-[140px]"
-          value={designationFilter || ""}
-          onChange={e => setDesignationFilter(e.target.value === "" ? null : e.target.value)}
-        >
-          <option value="">Designation</option>
-          {designationOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
-        </select>
+        {/* Searchable Designation Dropdown */}
+        <Popover open={designationOpen} onOpenChange={setDesignationOpen}>
+          <PopoverTrigger asChild>
+            <button
+              type="button"
+              aria-expanded={designationOpen}
+              className="rounded border border-emerald-300 h-8 px-3 bg-[rgb(209,250,229)] text-[#2C373B] focus:outline-none focus:ring-2 focus:ring-emerald-200 min-w-[180px] inline-flex items-center justify-between"
+            >
+              <span className="truncate">{designationFilter || "Designation"}</span>
+              <ChevronDown className="ml-2 h-4 w-4 opacity-60" />
+            </button>
+          </PopoverTrigger>
+          <PopoverContent className="p-0 w-[240px]">
+            <Command>
+              <CommandInput placeholder="Search designation..." />
+              <CommandList>
+                <CommandEmpty>No results found.</CommandEmpty>
+                <CommandGroup>
+                  {designations.map((d) => (
+                    <CommandItem
+                      key={d}
+                      value={d}
+                      onSelect={(value) => {
+                        setDesignationFilter(value === "" ? null : value);
+                        setDesignationOpen(false);
+                      }}
+                    >
+                      {d}
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </CommandList>
+            </Command>
+          </PopoverContent>
+        </Popover>
         <button
           className="inline-flex items-center gap-1 h-8 px-3 rounded border border-[#4CDC9C] bg-[#4CDC9C] text-[#2C373B] text-sm transition shadow-sm hover:bg-[#3fd190]"
           onClick={onClear}
@@ -65,7 +223,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Mail, Phone, MapPin, MoreVertical } from "lucide-react";
+import { Mail, Phone, MapPin, MoreVertical, ChevronDown } from "lucide-react";
 import { Eye, Pencil } from "lucide-react";
 import {
   DropdownMenu,
@@ -73,6 +231,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Command, CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem } from "@/components/ui/command";
 import { getEmployees, getEmployeeById } from "@/api/employees";
 import { uploadFile } from "@/api/uploadFile";
 import { useRef } from "react";
