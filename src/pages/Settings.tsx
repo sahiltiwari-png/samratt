@@ -12,6 +12,8 @@ import { uploadFile } from '@/api/uploadFile';
 const Settings = () => {
   const { user, setUser } = useAuth();
   const [form, setForm] = useState({
+    firstName: '',
+    lastName: '',
     name: '',
     email: '',
     phone: '',
@@ -25,7 +27,9 @@ const Settings = () => {
         if (!id) return;
         const data = await getEmployeeById(id);
         setForm({
-          name: data.name || '',
+          firstName: data.firstName || '',
+          lastName: data.lastName || '',
+          name: (data.name || `${data.firstName || ''} ${data.lastName || ''}`).trim(),
           email: data.email || '',
           phone: data.phone || '',
           password: '',
@@ -64,7 +68,9 @@ const Settings = () => {
     try {
       // Assume /auth/employees/:id for all roles (superadmin, admin, etc.)
       const res = await API.put(`/auth/employees/${user._id || user.id}`, {
-        name: form.name,
+        firstName: form.firstName,
+        lastName: form.lastName,
+        name: `${form.firstName} ${form.lastName}`.trim(),
         email: form.email,
         phone: form.phone,
         profilePhotoUrl: form.profileImage,
@@ -73,7 +79,7 @@ const Settings = () => {
       setSuccess('Profile updated successfully!');
       setIsEditing(false);
       // Update user in localStorage and AuthContext
-      const updatedUser = { ...user, name: form.name, email: form.email, phone: form.phone, profileImage: form.profileImage };
+      const updatedUser = { ...user, firstName: form.firstName, lastName: form.lastName, name: `${form.firstName} ${form.lastName}`.trim(), email: form.email, phone: form.phone, profileImage: form.profileImage };
       localStorage.setItem('user', JSON.stringify(updatedUser));
   if (setUser) setUser(updatedUser);
     } catch (err: any) {
@@ -100,9 +106,14 @@ const Settings = () => {
             )}
           </div>
           <div className="space-y-2">
-            <Label htmlFor="name">Name</Label>
-            <Input id="name" name="name" value={form.name} onChange={handleChange} disabled={!isEditing} />
+            <Label htmlFor="firstName">First Name</Label>
+            <Input id="firstName" name="firstName" value={form.firstName} onChange={handleChange} disabled={!isEditing} />
           </div>
+          <div className="space-y-2">
+            <Label htmlFor="lastName">Last Name</Label>
+            <Input id="lastName" name="lastName" value={form.lastName} onChange={handleChange} disabled={!isEditing} />
+          </div>
+          
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <Input id="email" name="email" value={form.email} onChange={handleChange} disabled={!isEditing} />
