@@ -305,7 +305,7 @@ const Payroll = () => {
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap sm:flex-nowrap items-center gap-3 w-full sm:w-auto">
             <Select
               value={String(month)}
               onValueChange={(val) => {
@@ -313,7 +313,7 @@ const Payroll = () => {
                 setCurrentPage(1);
               }}
             >
-              <SelectTrigger className="h-9 w-[160px] text-sm border-[#4CDC9C] bg-[rgb(209,250,229)] text-[#2C373B] hover:bg-[#4CDC9C]/70 focus:outline-none focus:ring-0">
+              <SelectTrigger className="h-9 w-[140px] sm:w-[160px] shrink-0 text-sm border-[#4CDC9C] bg-[rgb(209,250,229)] text-[#2C373B] hover:bg-[#4CDC9C]/70 focus:outline-none focus:ring-0">
                 <SelectValue placeholder="Month" />
               </SelectTrigger>
               <SelectContent className="bg-white">
@@ -330,7 +330,7 @@ const Payroll = () => {
                 setCurrentPage(1);
               }}
             >
-              <SelectTrigger className="h-9 w-[140px] text-sm border-[#4CDC9C] bg-[rgb(209,250,229)] text-[#2C373B] hover:bg-[#4CDC9C]/70 focus:outline-none focus:ring-0">
+              <SelectTrigger className="h-9 w-[110px] sm:w-[140px] shrink-0 text-sm border-[#4CDC9C] bg-[rgb(209,250,229)] text-[#2C373B] hover:bg-[#4CDC9C]/70 focus:outline-none focus:ring-0">
                 <SelectValue placeholder="Year" />
               </SelectTrigger>
               <SelectContent className="bg-white">
@@ -342,13 +342,13 @@ const Payroll = () => {
 
             <button
               onClick={clearFilters}
-              className="text-sm px-3 py-2 rounded-md bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3AC586] focus:outline-none focus:ring-0"
+              className="text-sm px-3 py-2 rounded-md bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3AC586] focus:outline-none focus:ring-0 shrink-0"
             >
               Clear filters
             </button>
 
             <Button
-              className="bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3AC586] focus:outline-none focus:ring-0"
+              className="bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3AC586] focus:outline-none focus:ring-0 shrink-0"
               onClick={handleCreatePayroll}
             >
               Create Payroll
