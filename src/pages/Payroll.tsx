@@ -292,15 +292,15 @@ const Payroll = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-200 via-emerald-100 to-emerald-50 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-200 via-emerald-100 to-emerald-50 p-3 sm:p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
           <div>
-            <h2 className="text-2xl font-semibold text-gray-900">
+            <h2 className="text-2xl font-semibold text-[#2C373B]">
               Payroll processed - {visibleRows.length}
             </h2>
-            <p className="text-sm text-gray-700">
+            <p className="text-sm text-[#2C373B]">
               Payroll runs overview — manage and send payrolls
             </p>
           </div>
@@ -313,7 +313,7 @@ const Payroll = () => {
                 setCurrentPage(1);
               }}
             >
-              <SelectTrigger className="w-[160px] text-sm border-emerald-300 bg-emerald-100 text-emerald-700 hover:bg-emerald-200 focus:outline-none focus:ring-0">
+              <SelectTrigger className="h-9 w-[160px] text-sm border-[#4CDC9C] bg-[rgb(209,250,229)] text-[#2C373B] hover:bg-[#4CDC9C]/70 focus:outline-none focus:ring-0">
                 <SelectValue placeholder="Month" />
               </SelectTrigger>
               <SelectContent className="bg-white">
@@ -330,7 +330,7 @@ const Payroll = () => {
                 setCurrentPage(1);
               }}
             >
-              <SelectTrigger className="w-[140px] text-sm border-emerald-300 bg-emerald-100 text-emerald-700 hover:bg-emerald-200 focus:outline-none focus:ring-0">
+              <SelectTrigger className="h-9 w-[140px] text-sm border-[#4CDC9C] bg-[rgb(209,250,229)] text-[#2C373B] hover:bg-[#4CDC9C]/70 focus:outline-none focus:ring-0">
                 <SelectValue placeholder="Year" />
               </SelectTrigger>
               <SelectContent className="bg-white">
@@ -342,13 +342,13 @@ const Payroll = () => {
 
             <button
               onClick={clearFilters}
-              className="text-sm px-3 py-2 border border-emerald-300 rounded-md bg-emerald-100 text-emerald-700 hover:bg-emerald-200 focus:outline-none focus:ring-0"
+              className="text-sm px-3 py-2 rounded-md bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3AC586] focus:outline-none focus:ring-0"
             >
               Clear filters
             </button>
 
             <Button
-              className="bg-emerald-600 text-white hover:bg-emerald-700 focus:outline-none focus:ring-0"
+              className="bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3AC586] focus:outline-none focus:ring-0"
               onClick={handleCreatePayroll}
             >
               Create Payroll
@@ -359,48 +359,48 @@ const Payroll = () => {
         {/* Table with horizontal scroll on small devices */}
         <div className="bg-white rounded-xl shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="min-w-[900px] w-full border-collapse text-xs sm:text-sm">
+            <table className="min-w-[900px] w-full border-collapse">
               <thead className="bg-gray-50 border-b">
                 <tr>
-                  <th className="px-2 py-2 text-left font-medium text-gray-600">
+                  <th className="px-2 py-2 text-left text-[12px] font-semibold text-[#2C373B]">
                     Name
                   </th>
-                  <th className="px-2 py-2 text-left font-medium text-gray-600">
+                  <th className="px-2 py-2 text-left text-[12px] font-semibold text-[#2C373B]">
                     Code
                   </th>
-                  <th className="px-2 py-2 text-left font-medium text-gray-600">
+                  <th className="px-2 py-2 text-left text-[12px] font-semibold text-[#2C373B]">
                     Basic
                   </th>
-                  <th className="px-2 py-2 text-left font-medium text-gray-600">
+                  <th className="px-2 py-2 text-left text-[12px] font-semibold text-[#2C373B]">
                     HRA
                   </th>
-                  <th className="px-2 py-2 text-left font-medium text-gray-600">
+                  <th className="px-2 py-2 text-left text-[12px] font-semibold text-[#2C373B]">
                     Gross
                   </th>
-                  <th className="px-2 py-2 text-left font-medium text-gray-600">
+                  <th className="px-2 py-2 text-left text-[12px] font-semibold text-[#2C373B]">
                     Deductions
                   </th>
-                  <th className="px-2 py-2 text-left font-medium text-gray-600">
+                  <th className="px-2 py-2 text-left text-[12px] font-semibold text-[#2C373B]">
                     Net
                   </th>
-                  <th className="px-2 py-2 text-left font-medium text-gray-600">
+                  <th className="px-2 py-2 text-left text-[12px] font-semibold text-[#2C373B]">
                     Status
                   </th>
-                  <th className="px-2 py-2 text-left font-medium text-gray-600">
+                  <th className="px-2 py-2 text-left text-[12px] font-semibold text-[#2C373B]">
                     Actions
                   </th>
                 </tr>
               </thead>
 
-              <tbody>
+              <tbody className="text-[14px] text-[#2C373B] font-medium">
                 {loading && (
                   <tr>
-                    <td colSpan={9} className="px-4 py-6 text-center text-gray-600">Loading...</td>
+                    <td colSpan={9} className="px-4 py-6 text-center text-[#2C373B]">Loading...</td>
                   </tr>
                 )}
                 {!loading && visibleRows.length === 0 && (
                   <tr>
-                    <td colSpan={9} className="px-4 py-6 text-center text-gray-600">No data available</td>
+                    <td colSpan={9} className="px-4 py-6 text-center text-[#2C373B]">No data available</td>
                   </tr>
                 )}
                 {!loading && visibleRows.map((p) => (
@@ -423,10 +423,10 @@ const Payroll = () => {
                           )}
                         </Avatar>
                         <div className="leading-tight">
-                          <div className="text-xs font-medium text-gray-900">
+                          <div className="text-[14px] font-medium text-[#2C373B]">
                             {p.employeeId?.firstName ?? ''} {p.employeeId?.lastName ?? ''}
                           </div>
-                          <div className="text-[11px] text-gray-500">
+                          <div className="text-[11px] text-[#2C373B]">
                             {p.employeeId?.designation ?? ''}
                           </div>
                         </div>
@@ -437,7 +437,7 @@ const Payroll = () => {
                     <td className="px-2 py-2">₹{Number(p.hra || 0).toLocaleString()}</td>
                     <td className="px-2 py-2">₹{Number(p.grossEarnings || 0).toLocaleString()}</td>
                     <td className="px-2 py-2">₹{computeDeductions(p).toLocaleString()}</td>
-                    <td className="px-2 py-2 font-semibold">₹{Number(p.netPayable || 0).toLocaleString()}</td>
+                    <td className="px-2 py-2 font-medium">₹{Number(p.netPayable || 0).toLocaleString()}</td>
                     <td className="px-2 py-2">
                       <span
                         className={cn(
@@ -457,13 +457,13 @@ const Payroll = () => {
                       <div className="flex items-center gap-1.5">
                         <button
                           onClick={() => openEdit(p)}
-                          className="h-7 w-7 flex items-center justify-center rounded text-emerald-600 hover:bg-emerald-100 focus:outline-none focus:ring-0"
+                          className="h-7 w-7 flex items-center justify-center rounded bg-[#4CDC9C] text-[#2C373B] hover:opacity-90 focus:outline-none focus:ring-0"
                         >
                           <Edit className="w-3.5 h-3.5" />
                         </button>
                         <button
                           onClick={() => openView(p)}
-                          className="h-7 w-7 flex items-center justify-center rounded text-blue-600 hover:bg-emerald-100 focus:outline-none focus:ring-0"
+                          className="h-7 w-7 flex items-center justify-center rounded bg-[#4CDC9C] text-[#2C373B] hover:opacity-90 focus:outline-none focus:ring-0"
                         >
                           <Eye className="w-3.5 h-3.5" />
                         </button>
@@ -473,7 +473,7 @@ const Payroll = () => {
                               <button
                                 onClick={() => handleSend(p)}
                                 disabled={sendingId === p._id}
-                                className="h-7 w-7 flex items-center justify-center rounded text-indigo-600 hover:bg-emerald-100 focus:outline-none focus:ring-0"
+                                className="h-7 w-7 flex items-center justify-center rounded bg-[#4CDC9C] text-[#2C373B] hover:opacity-90 focus:outline-none focus:ring-0"
                               >
                                 <Send className="w-3.5 h-3.5" />
                               </button>
@@ -488,7 +488,7 @@ const Payroll = () => {
                             <TooltipTrigger asChild>
                               <button
                                 onClick={() => handleDownload(p)}
-                                className="h-7 w-7 flex items-center justify-center rounded text-gray-700 hover:bg-emerald-100 focus:outline-none focus:ring-0"
+                                className="h-7 w-7 flex items-center justify-center rounded bg-[#4CDC9C] text-[#2C373B] hover:opacity-90 focus:outline-none focus:ring-0"
                               >
                                 <DownloadCloud className="w-3.5 h-3.5" />
                               </button>
