@@ -306,9 +306,9 @@ const Dashboard = () => {
             </div>
           </div>
           {/* Right: Cards */}  
-          <div className="md:w-2/3 grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="md:w-2/3 grid grid-cols-1 sm:grid-cols-2 gap-4 items-stretch">
             {/* Total Employees (full width) */}
-            <div className="bg-white rounded-2xl shadow p-3 sm:p-4 sm:col-span-2">
+            <div className="bg-white rounded-2xl border-[1.5px] border-[#2C373B]/30 shadow-none p-3 sm:p-4 sm:col-span-2">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
@@ -334,7 +334,7 @@ const Dashboard = () => {
               </div>
             </div>
             {/* Total Leave Requests (full width) */}
-            <div className="bg-white rounded-2xl shadow p-3 sm:p-4 sm:col-span-2">
+            <div className="bg-white rounded-2xl border-[1.5px] border-[#2C373B]/30 shadow-none p-3 sm:p-4 sm:col-span-2">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
@@ -361,7 +361,7 @@ const Dashboard = () => {
               </div>
             </div>
             {/* Leave Policy - Redesigned to match screenshot */}
-            <div className="bg-white rounded-2xl shadow p-3 sm:p-4 flex flex-col justify-between border-2 border-green-200" style={{boxShadow: '0 2px 8px 0 rgba(60, 199, 143, 0.08)'}}>
+            <div className="bg-white rounded-2xl border-[1.5px] border-[#2C373B]/30 shadow-none p-3 sm:p-4 flex flex-col justify-between">
               <div className="flex items-center gap-3 mb-2">
                 <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
                   <svg width="20" height="20" fill="none" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4" fill="#3CC78F" fillOpacity="0.15"/><path d="M8.5 10.5h7M8.5 13.5h4M12 7.5v9" stroke="#3CC78F" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
@@ -377,14 +377,14 @@ const Dashboard = () => {
                 <span className="text-gray-400">Earned <span className="text-yellow-500 font-bold">{dashboardStats?.leavePolicies?.leaveTypesSummary?.earned?.intervalValue ?? '-'}</span></span>
               </div>
               <button 
-                className="w-full bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3fd190] rounded-lg py-2 font-semibold transition text-base shadow-none"
+                className="w-[85%] mx-auto bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3fd190] rounded-lg py-2 font-semibold transition text-base shadow-none"
                 onClick={() => navigate('/leaves/policy')}
               >
                 Manage Leave Policy
               </button>
             </div>
             {/* Payroll Processed */}
-            <div className="bg-white rounded-2xl shadow p-3 sm:p-4">
+            <div className="bg-white rounded-2xl border-[1.5px] border-[#2C373B]/30 shadow-none p-3 sm:p-4">
               <div className="flex flex-col gap-3">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
@@ -405,7 +405,7 @@ const Dashboard = () => {
                   <span className="text-red-500 font-semibold">Pending employees {dashboardStats?.payroll?.pending ?? '-'}</span>
                 </div>
                 <button 
-                  className="w-full bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3fd190] rounded-lg py-2 font-semibold transition"
+                  className="w-[85%] mx-auto bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3fd190] rounded-lg py-2 font-semibold transition"
                   onClick={() => navigate('/payroll')}
                 >
                   Manage Payroll
@@ -413,7 +413,7 @@ const Dashboard = () => {
               </div>
             </div>
             {/* Reports */}
-            <div className="bg-white rounded-2xl shadow p-3 sm:p-4 sm:col-span-2">
+            <div className="bg-white rounded-2xl border-[1.5px] border-[#2C373B]/30 shadow-none p-3 sm:p-4 sm:col-span-2">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
