@@ -6,7 +6,7 @@ import { uploadFile } from "@/api/uploadFile";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { OrgSearchContext } from "@/components/layout/MainLayout";
-import { Plus, Building, Users, X } from "lucide-react";
+import { Plus, Building, Users, X, LogIn, LogOut } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from '@/contexts/AuthContext';
 import EmployeeList from "@/components/employees/EmployeeList";
@@ -140,20 +140,31 @@ const Dashboard = () => {
         {/* Header Card */}
         <div className="max-w-5xl mx-auto">
           <div className="rounded-2xl bg-[#23292F] flex flex-col md:flex-row items-center justify-between px-8 py-6 mb-8 shadow-lg">
-            <div className="flex items-center gap-4 w-full md:w-auto mb-4 md:mb-0">
-              <div className="w-16 h-16 rounded-full bg-gray-200 border-4 border-white overflow-hidden">
-                {/* Avatar Placeholder */}
-                <span className="w-full h-full block bg-gray-300" />
-              </div>
-              <div>
-                <div className="text-lg font-semibold text-green-300">Vishal Rathore</div>
-                <div className="text-sm text-white opacity-80">HR Manager</div>
+            {/* Left: Greeting + Profile */}
+            <div className="w-full md:w-auto mb-4 md:mb-0">
+              <div className="text-white text-base font-semibold mb-2">Hello <span role="img" aria-label="waving hand">👋</span></div>
+              <div className="flex items-center gap-4">
+                <div className="w-16 h-16 rounded-full bg-gray-200 border-4 border-white overflow-hidden">
+                  {/* Avatar Placeholder */}
+                  <span className="w-full h-full block bg-gray-300" />
+                </div>
+                <div>
+                  <div className="text-lg font-semibold text-green-300">Vishal Rathore</div>
+                  <div className="text-sm text-white opacity-80">HR Manager</div>
+                </div>
               </div>
             </div>
+            {/* Right: Clock icons + Metrics */}
             <div className="flex flex-col md:items-end w-full md:w-auto">
               <div className="flex gap-2 mb-2">
-                <span className="flex items-center gap-1 px-3 py-1 rounded-lg bg-green-100 text-green-700 text-xs font-semibold"><span className="inline-block w-2 h-2 rounded-full bg-green-500"></span>Clock in</span>
-                <span className="flex items-center gap-1 px-3 py-1 rounded-lg bg-red-100 text-red-700 text-xs font-semibold"><span className="inline-block w-2 h-2 rounded-full bg-red-500"></span>Clock Out</span>
+                <span className="flex items-center gap-1 px-3 py-1 rounded-lg bg-green-100 text-green-700 text-xs font-semibold">
+                  <LogIn className="h-4 w-4" />
+                  Clock in
+                </span>
+                <span className="flex items-center gap-1 px-3 py-1 rounded-lg bg-red-100 text-red-700 text-xs font-semibold">
+                  <LogOut className="h-4 w-4" />
+                  Clock Out
+                </span>
               </div>
               <div className="bg-white rounded-lg px-4 py-2 flex flex-col md:flex-row gap-4 items-center shadow">
                 <div className="text-xs text-gray-500">Date<br /><span className="text-base text-gray-800 font-semibold">19/09/2025</span></div>
