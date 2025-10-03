@@ -7,6 +7,9 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { OrgSearchContext } from "@/components/layout/MainLayout";
 import { Plus, Building, Users, X, LogIn, LogOut } from "lucide-react";
+import { getEmployeeById } from "@/api/employees";
+import { getAttendance } from "@/api/attendance";
+import { format } from "date-fns";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from '@/contexts/AuthContext';
 import EmployeeList from "@/components/employees/EmployeeList";
@@ -25,6 +28,8 @@ const Dashboard = () => {
   const [calendarLoading, setCalendarLoading] = useState(false);
   const [showImageModal, setShowImageModal] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [employee, setEmployee] = useState<any | null>(null);
+  const [attendanceToday, setAttendanceToday] = useState<any | null>(null);
 
   useEffect(() => {
     if (user?.role === 'superAdmin') {
@@ -74,6 +79,26 @@ const Dashboard = () => {
       }
     }
   }, [user?.role, user?.organizationId]);
+
+  // Fetch employee profile and today's attendance for banner
+  useEffect(() => {
+    if (user?.role === 'companyAdmin') {
+      const id = user?._id || user?.id;
+      if (!id) return;
+      // Employee details
+      getEmployeeById(id)
+        .then((data) => setEmployee(data))
+        .catch(() => setEmployee(null));
+      // Today's attendance
+      const today = format(new Date(), 'yyyy-MM-dd');
+      getAttendance({ page: 1, limit: 1, startDate: today, endDate: today, employeeId: id })
+        .then((res: any) => {
+          const item = Array.isArray(res?.items) ? res.items[0] : null;
+          setAttendanceToday(item);
+        })
+        .catch(() => setAttendanceToday(null));
+    }
+  }, [user?.role, user?._id, user?.id]);
 
   const handleCalendarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || !e.target.files[0] || !user?.organizationId) {
@@ -144,13 +169,16 @@ const Dashboard = () => {
             <div className="w-full md:w-auto mb-4 md:mb-0">
               <div className="text-white text-base font-semibold mb-2">Hello <span role="img" aria-label="waving hand">👋</span></div>
               <div className="flex items-center gap-4">
-                <div className="w-16 h-16 rounded-full bg-gray-200 border-4 border-white overflow-hidden">
-                  {/* Avatar Placeholder */}
-                  <span className="w-full h-full block bg-gray-300" />
+                <div className="w-16 h-16 rounded-full bg-gray-200 overflow-hidden">
+                  {employee?.profilePhotoUrl ? (
+                    <img src={employee.profilePhotoUrl} alt={(employee?.name) || `${employee?.firstName || ''} ${employee?.lastName || ''}`.trim()} className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="w-full h-full block bg-gray-300" />
+                  )}
                 </div>
                 <div>
-                  <div className="text-lg font-semibold text-green-300">Vishal Rathore</div>
-                  <div className="text-sm text-white opacity-80">HR Manager</div>
+                  <div className="text-lg font-semibold text-green-300">{(employee?.name) || `${employee?.firstName || ''} ${employee?.lastName || ''}`.trim() || user?.name || '-'}</div>
+                  <div className="text-sm text-white opacity-80">{employee?.designation || user?.designation || '—'}</div>
                 </div>
               </div>
             </div>
@@ -167,10 +195,10 @@ const Dashboard = () => {
                 </span>
               </div>
               <div className="bg-white rounded-lg px-4 py-2 flex flex-col md:flex-row gap-4 items-center shadow">
-                <div className="text-xs text-gray-500">Date<br /><span className="text-base text-gray-800 font-semibold">19/09/2025</span></div>
-                <div className="text-xs text-gray-500">Clockin<br /><span className="text-base text-gray-800 font-semibold">10:00:00</span></div>
-                <div className="text-xs text-gray-500">Clockout<br /><span className="text-base text-gray-800 font-semibold">19:00:00</span></div>
-                <div className="text-xs text-gray-500">Working hours<br /><span className="text-base text-gray-800 font-semibold">9 hours</span></div>
+                <div className="text-xs text-gray-500">Date<br /><span className="text-base text-gray-800 font-semibold">{format(new Date(), 'dd/MM/yyyy')}</span></div>
+                <div className="text-xs text-gray-500">Clockin<br /><span className="text-base text-gray-800 font-semibold">{attendanceToday?.clockIn ? format(new Date(attendanceToday.clockIn), 'HH:mm:ss') : '-'}</span></div>
+                <div className="text-xs text-gray-500">Clockout<br /><span className="text-base text-gray-800 font-semibold">{attendanceToday?.clockOut ? format(new Date(attendanceToday.clockOut), 'HH:mm:ss') : '-'}</span></div>
+                <div className="text-xs text-gray-500">Working hours<br /><span className="text-base text-gray-800 font-semibold">{attendanceToday?.totalWorkingHours != null ? `${attendanceToday.totalWorkingHours} hours` : '-'}</span></div>
               </div>
             </div>
           </div>
