@@ -69,8 +69,12 @@ export interface PayrollDetailResponse {
   data: PayrollItem;
 }
 
-export const getPayrollByEmployee = async (employeeId: string) => {
-  const res = await API.get(`/payroll/${employeeId}`);
+export const getPayrollByEmployee = async (employeeId: string, month?: number, year?: number) => {
+  const query: string[] = [];
+  if (month) query.push(`month=${month}`);
+  if (year) query.push(`year=${year}`);
+  const qs = query.length ? `?${query.join('&')}` : '';
+  const res = await API.get(`/payroll/${employeeId}${qs}`);
   return res.data as PayrollDetailResponse;
 };
 

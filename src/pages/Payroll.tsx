@@ -183,7 +183,7 @@ const Payroll = () => {
     try {
       setViewLoading(true);
       const empId = (record as any)?.employeeId?._id ?? (record as any)?.employeeId;
-      const detail = await getPayrollByEmployee(String(empId));
+      const detail = await getPayrollByEmployee(String(empId), month + 1, year);
       setViewDetail(detail.data);
       setViewOpen(true);
     } catch (e: any) {
@@ -200,7 +200,7 @@ const Payroll = () => {
     try {
       setEditLoading(true);
       const empId = (record as any)?.employeeId?._id ?? (record as any)?.employeeId;
-      const detail = await getPayrollByEmployee(String(empId));
+      const detail = await getPayrollByEmployee(String(empId), month + 1, year);
       const d = detail.data as any;
       setEditPayrollId(String(d?._id || (record as any)?._id));
       setEditForm({

@@ -8,13 +8,14 @@ import { uploadFile } from "../api/uploadFile";
 import API from "../api/auth";
 
 const getRoles = async () => {
-  // Mock roles data
-  return [
-    { id: 1, name: "Admin", value: "admin" },
-    { id: 2, name: "Manager", value: "manager" },
-    { id: 3, name: "Employee", value: "employee" },
-    { id: 4, name: "HR", value: "hr" }
-  ];
+  try {
+    const res = await API.get("/roles");
+    const apiRoles = res?.data?.roles || [];
+    // Normalize to only what we need
+    return apiRoles.map((r: any) => ({ _id: r._id, name: r.name }));
+  } catch (e) {
+    return [];
+  }
 };
 
 
@@ -50,12 +51,13 @@ const Input = ({ label, type = "text", value, onChange, fullWidth = false, place
 );
 
 // Select Component
-const Select = ({ label, value, onChange, options, placeholder = "Select..." }: any) => (
+const Select = ({ label, value, onChange, options, placeholder = "Select...", onFocus }: any) => (
   <div className="flex flex-col">
     <label className="mb-2 text-sm font-medium text-gray-700">{label}</label>
     <select
       value={value}
       onChange={(e) => onChange(e.target.value)}
+      onFocus={onFocus}
       className="w-full rounded-md border border-gray-300 px-3 py-2.5 text-sm bg-white
                  focus:border-green-500 focus:ring-2 focus:ring-green-100 transition-colors"
     >
@@ -96,9 +98,7 @@ const AddEmployeeStepper = () => {
   const [roles, setRoles] = useState<any[]>([]);
   const [role, setRole] = useState("");
 
-  useEffect(() => {
-    getRoles().then(setRoles).catch(() => setRoles([]));
-  }, []);
+  // Fetch roles lazily on focus of the Role field
 
   const steps = [
     { title: "Employee Details", subtitle: "Fill in Employee details" },
@@ -246,6 +246,19 @@ const AddEmployeeStepper = () => {
                   label="Designation" 
                   value={form.designation} 
                   onChange={(e:any)=>setForm({...form, designation:e.target.value})}
+                />
+                <Select
+                  label="Role"
+                  value={role}
+                  onChange={(val: string) => setRole(val)}
+                  options={roles.map((r: any) => ({ value: r._id, label: r.name }))}
+                  placeholder="Select Role"
+                  onFocus={async () => {
+                    if (!roles || roles.length === 0) {
+                      const fetched = await getRoles();
+                      setRoles(fetched);
+                    }
+                  }}
                 />
                 <Select
                   label="Employment Type"
