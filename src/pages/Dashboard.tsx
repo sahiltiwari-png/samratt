@@ -207,10 +207,10 @@ const Dashboard = () => {
             </div>
           </div>
           {/* Right: Cardss */}  
-          <div className="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div className="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
             {/* Total Employees (full width) */}
-            <div className="bg-white rounded-2xl shadow p-6 sm:col-span-2">
-              <div className="flex items-center justify-between">
+            <div className="bg-white rounded-2xl shadow p-4 sm:p-6 sm:col-span-2">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                 <div>
                   <div className="text-gray-700 text-base font-semibold flex items-center gap-2">
                     <span>Total Employees</span>
@@ -222,7 +222,7 @@ const Dashboard = () => {
                   </div>
                 </div>
                 <button
-                  className="self-end bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3fd190] rounded-lg px-4 py-2 font-semibold transition"
+                  className="w-full sm:w-auto bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3fd190] rounded-lg px-4 py-2 font-semibold transition"
                   onClick={() => navigate('/employees')}
                 >
                   Manage Employees
@@ -230,8 +230,8 @@ const Dashboard = () => {
               </div>
             </div>
             {/* Total Leave Requests (full width) */}
-            <div className="bg-white rounded-2xl shadow p-6 sm:col-span-2">
-              <div className="flex items-center justify-between">
+            <div className="bg-white rounded-2xl shadow p-4 sm:p-6 sm:col-span-2">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                 <div>
                   <div className="text-gray-700 text-base font-semibold flex items-center gap-2">
                     <span>Total Leave requests</span>
@@ -244,7 +244,7 @@ const Dashboard = () => {
                   </div>
                 </div>
                 <button
-                  className="self-end bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3fd190] rounded-lg px-4 py-2 font-semibold transition"
+                  className="w-full sm:w-auto bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3fd190] rounded-lg px-4 py-2 font-semibold transition"
                   onClick={() => navigate('/leaves/requests')}
                 >
                   Manage leaves requests
@@ -252,7 +252,7 @@ const Dashboard = () => {
               </div>
             </div>
             {/* Leave Policy - Redesigned to match screenshot */}
-            <div className="bg-white rounded-2xl shadow p-5 flex flex-col justify-between border-2 border-green-200" style={{boxShadow: '0 2px 8px 0 rgba(60, 199, 143, 0.08)'}}>
+            <div className="bg-white rounded-2xl shadow p-4 sm:p-5 flex flex-col justify-between border-2 border-green-200" style={{boxShadow: '0 2px 8px 0 rgba(60, 199, 143, 0.08)'}}>
               <div className="flex items-center gap-3 mb-2">
                 <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
                   <svg width="20" height="20" fill="none" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4" fill="#3CC78F" fillOpacity="0.15"/><path d="M8.5 10.5h7M8.5 13.5h4M12 7.5v9" stroke="#3CC78F" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
@@ -276,28 +276,30 @@ const Dashboard = () => {
               </button>
             </div>
             {/* Payroll Processed */}
-            <div className="bg-white rounded-2xl shadow p-6 flex flex-col justify-between">
-              <div className="flex items-center justify-between mb-2">
-                <div className="text-gray-700 text-sm font-semibold">Payroll Processed <span className="text-xs text-gray-400">this month</span></div>
+            <div className="bg-white rounded-2xl shadow p-4 sm:p-6">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                <div>
+                  <div className="text-gray-700 text-sm font-semibold">Payroll Processed <span className="text-xs text-gray-400">this month</span></div>
+                  <div className="text-3xl font-bold text-green-700 mt-1">{dashboardStats?.payroll?.processed ?? '-'}/{dashboardStats?.employees?.total ?? '-'}</div>
+                  <div className="flex gap-4 text-xs mt-2">
+                    <span className="text-green-600 font-bold">{dashboardStats?.payroll?.processed ?? '-'} / {dashboardStats?.employees?.total ?? '-'} employees</span>
+                    <span className="text-red-500 font-bold">Pending employees {dashboardStats?.payroll?.pending ?? '-'}</span>
+                  </div>
+                </div>
+                <button 
+                  className="w-full sm:w-auto bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3fd190] rounded-lg px-4 py-2 font-semibold transition"
+                  onClick={() => navigate('/payroll')}
+                >
+                  Manage Payroll
+                </button>
               </div>
-              <div className="text-3xl font-bold text-green-700 mb-1">{dashboardStats?.payroll?.processed ?? '-'}/{dashboardStats?.employees?.total ?? '-'}</div>
-              <div className="flex gap-4 text-xs mb-3">
-                <span className="text-green-600 font-bold">{dashboardStats?.payroll?.processed ?? '-'} / {dashboardStats?.employees?.total ?? '-'} employees</span>
-                <span className="text-red-500 font-bold">Pending employees {dashboardStats?.payroll?.pending ?? '-'}</span>
-              </div>
-              <button 
-                className="self-end bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3fd190] rounded-lg px-4 py-2 font-semibold transition"
-                onClick={() => navigate('/payroll')}
-              >
-                Manage Payroll
-              </button>
             </div>
             {/* Reports */}
-            <div className="bg-white rounded-2xl shadow p-6 sm:col-span-2">
-              <div className="flex items-center justify-between">
+            <div className="bg-white rounded-2xl shadow p-4 sm:p-6 sm:col-span-2">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                 <div className="text-gray-700 text-base font-semibold">Reports</div>
                 <button
-                  className="bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3fd190] rounded-lg px-4 py-2 font-semibold transition"
+                  className="w-full sm:w-auto bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3fd190] rounded-lg px-4 py-2 font-semibold transition"
                   onClick={() => navigate('/reports')}
                 >
                   Manage Reports
