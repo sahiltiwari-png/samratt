@@ -320,8 +320,8 @@ const Dashboard = () => {
                       <span className="text-3xl font-bold leading-none text-[#4CDC9C]">{dashboardStats?.employees?.total ?? '-'}</span>
                     </div>
                     <div className="flex gap-4 text-xs mt-2">
-                      <span className="text-green-600 font-bold">Active {dashboardStats?.employees?.active ?? '-'}</span>
-                      <span className="text-red-500 font-bold">Inactive {dashboardStats?.employees?.inactive ?? '-'}</span>
+                      <span className="text-[#9E9E9E] font-medium">Active <span className="text-green-600 font-medium">{dashboardStats?.employees?.active ?? '-'}</span></span>
+                      <span className="text-[#9E9E9E] font-medium">Inactive <span className="text-red-500 font-medium">{dashboardStats?.employees?.inactive ?? '-'}</span></span>
                     </div>
                   </div>
                 </div>
@@ -346,9 +346,9 @@ const Dashboard = () => {
                       <span className="text-3xl font-bold leading-none text-[#4CDC9C]">{dashboardStats?.leaves?.total ?? '-'}</span>
                     </div>
                     <div className="flex gap-4 text-xs mt-2">
-                      <span className="text-green-600 font-bold">Approved {dashboardStats?.leaves?.approved ?? '-'}</span>
-                      <span className="text-red-500 font-bold">Declined {dashboardStats?.leaves?.declined ?? '-'}</span>
-                      <span className="text-yellow-500 font-bold">Pending {dashboardStats?.leaves?.pending ?? '-'}</span>
+                      <span className="text-[#9E9E9E] font-medium">Approved <span className="text-green-600 font-medium">{dashboardStats?.leaves?.approved ?? '-'}</span></span>
+                      <span className="text-[#9E9E9E] font-medium">Declined <span className="text-red-500 font-medium">{dashboardStats?.leaves?.declined ?? '-'}</span></span>
+                      <span className="text-[#9E9E9E] font-medium">Pending <span className="text-yellow-500 font-medium">{dashboardStats?.leaves?.pending ?? '-'}</span></span>
                     </div>
                   </div>
                 </div>
@@ -402,7 +402,7 @@ const Dashboard = () => {
                   <span className="text-sm text-gray-700 font-medium ml-2">employees</span>
                 </div>
                 <div className="text-xs">
-                  <span className="text-red-500 font-semibold">Pending employees {dashboardStats?.payroll?.pending ?? '-'}</span>
+                  <span className="text-[#9E9E9E] font-medium">Pending employees <span className="text-red-500 font-medium">{dashboardStats?.payroll?.pending ?? '-'}</span></span>
                 </div>
                 <button 
                   className="w-[85%] mx-auto bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3fd190] rounded-lg py-2 font-semibold transition"
