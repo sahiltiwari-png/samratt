@@ -208,40 +208,48 @@ const Dashboard = () => {
           </div>
           {/* Right: Cards */}
           <div className="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-6">
-            {/* Total Employees */}
-            <div className="bg-white rounded-2xl shadow p-6 flex flex-col justify-between">
-              <div className="flex items-center justify-between mb-2">
-                <div className="text-gray-500 text-sm font-semibold">Total Employees</div>
+            {/* Total Employees (full width) */}
+            <div className="bg-white rounded-2xl shadow p-6 sm:col-span-2">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="text-gray-700 text-base font-semibold flex items-center gap-2">
+                    <span>Total Employees</span>
+                    <span className="text-3xl font-bold text-green-700 leading-none">{dashboardStats?.employees?.total ?? '-'}</span>
+                  </div>
+                  <div className="flex gap-4 text-xs mt-2">
+                    <span className="text-green-600 font-bold">Active {dashboardStats?.employees?.active ?? '-'}</span>
+                    <span className="text-red-500 font-bold">Inactive {dashboardStats?.employees?.inactive ?? '-'}</span>
+                  </div>
+                </div>
+                <button
+                  className="self-end bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3fd190] rounded-lg px-4 py-2 font-semibold transition"
+                  onClick={() => navigate('/employees')}
+                >
+                  Manage Employees
+                </button>
               </div>
-              <div className="text-3xl font-bold text-green-700 mb-1">{dashboardStats?.employees?.total ?? '-'}</div>
-              <div className="flex gap-4 text-xs mb-3">
-                <span className="text-green-600 font-bold">Active {dashboardStats?.employees?.active ?? '-'}</span>
-                <span className="text-red-500 font-bold">Inactive {dashboardStats?.employees?.inactive ?? '-'}</span>
-              </div>
-              <button 
-                className="bg-green-500 hover:bg-green-600 text-white rounded-lg py-2 font-semibold transition"
-                onClick={() => navigate('/employees')}
-              >
-                Manage Employees
-              </button>
             </div>
-            {/* Total Leave Requests */}
-            <div className="bg-white rounded-2xl shadow p-6 flex flex-col justify-between">
-              <div className="flex items-center justify-between mb-2">
-                <div className="text-gray-500 text-sm font-semibold">Total Leave requests</div>
+            {/* Total Leave Requests (full width) */}
+            <div className="bg-white rounded-2xl shadow p-6 sm:col-span-2">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="text-gray-700 text-base font-semibold flex items-center gap-2">
+                    <span>Total Leave requests</span>
+                    <span className="text-3xl font-bold text-green-700 leading-none">{dashboardStats?.leaves?.total ?? '-'}</span>
+                  </div>
+                  <div className="flex gap-4 text-xs mt-2">
+                    <span className="text-green-600 font-bold">Approved {dashboardStats?.leaves?.approved ?? '-'}</span>
+                    <span className="text-red-500 font-bold">Declined {dashboardStats?.leaves?.declined ?? '-'}</span>
+                    <span className="text-yellow-500 font-bold">Pending {dashboardStats?.leaves?.pending ?? '-'}</span>
+                  </div>
+                </div>
+                <button
+                  className="self-end bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3fd190] rounded-lg px-4 py-2 font-semibold transition"
+                  onClick={() => navigate('/leaves/requests')}
+                >
+                  Manage leaves requests
+                </button>
               </div>
-              <div className="text-3xl font-bold text-green-700 mb-1">{dashboardStats?.leaves?.total ?? '-'}</div>
-              <div className="flex gap-4 text-xs mb-3">
-                <span className="text-green-600 font-bold">Approved {dashboardStats?.leaves?.approved ?? '-'}</span>
-                <span className="text-red-500 font-bold">Declined {dashboardStats?.leaves?.declined ?? '-'}</span>
-                <span className="text-yellow-500 font-bold">Pending {dashboardStats?.leaves?.pending ?? '-'}</span>
-              </div>
-              <button 
-                className="bg-green-500 hover:bg-green-600 text-white rounded-lg py-2 font-semibold transition"
-                onClick={() => navigate('/leaves/requests')}
-              >
-                Manage leaves requests
-              </button>
             </div>
             {/* Leave Policy - Redesigned to match screenshot */}
             <div className="bg-white rounded-2xl shadow p-5 flex flex-col justify-between border-2 border-green-200" style={{boxShadow: '0 2px 8px 0 rgba(60, 199, 143, 0.08)'}}>
@@ -261,16 +269,16 @@ const Dashboard = () => {
                 <span className="text-gray-400">Earned <span className="text-yellow-500 font-bold">{dashboardStats?.leavePolicy?.earned ?? '-'}</span></span>
               </div>
               <button 
-                className="w-full bg-[#3CC78F] hover:bg-[#2fa06e] text-white rounded-lg py-2 font-semibold transition text-base shadow-none"
+                className="w-full bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3fd190] rounded-lg py-2 font-semibold transition text-base shadow-none"
                 onClick={() => navigate('/leaves/policy')}
               >
-                Edit Policy
+                Manage Leave Policy
               </button>
             </div>
             {/* Payroll Processed */}
             <div className="bg-white rounded-2xl shadow p-6 flex flex-col justify-between">
               <div className="flex items-center justify-between mb-2">
-                <div className="text-gray-500 text-sm font-semibold">Payroll Processed <span className="text-xs text-gray-400">this month</span></div>
+                <div className="text-gray-700 text-sm font-semibold">Payroll Processed <span className="text-xs text-gray-400">this month</span></div>
               </div>
               <div className="text-3xl font-bold text-green-700 mb-1">{dashboardStats?.payroll?.processed ?? '-'}/{dashboardStats?.employees?.total ?? '-'}</div>
               <div className="flex gap-4 text-xs mb-3">
@@ -278,19 +286,24 @@ const Dashboard = () => {
                 <span className="text-red-500 font-bold">Pending employees {dashboardStats?.payroll?.pending ?? '-'}</span>
               </div>
               <button 
-                className="bg-green-500 hover:bg-green-600 text-white rounded-lg py-2 font-semibold transition"
+                className="self-end bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3fd190] rounded-lg px-4 py-2 font-semibold transition"
                 onClick={() => navigate('/payroll')}
               >
                 Manage Payroll
               </button>
             </div>
             {/* Reports */}
-            <div className="bg-white rounded-2xl shadow p-6 flex flex-col justify-between">
-              <div className="flex items-center justify-between mb-2">
-                <div className="text-gray-500 text-sm font-semibold">Reports</div>
+            <div className="bg-white rounded-2xl shadow p-6 sm:col-span-2">
+              <div className="flex items-center justify-between">
+                <div className="text-gray-700 text-base font-semibold">Reports</div>
+                <button
+                  className="bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3fd190] rounded-lg px-4 py-2 font-semibold transition"
+                  onClick={() => navigate('/reports')}
+                >
+                  Manage Reports
+                </button>
               </div>
-              <div className="text-3xl font-bold text-green-700 mb-4">{dashboardStats?.reports?.total ?? '-'}</div>
-              <button className="bg-green-500 hover:bg-green-600 text-white rounded-lg py-2 font-semibold transition">Manage Reports</button>
+              <div className="text-3xl font-bold text-green-700 mt-3">{dashboardStats?.reports?.total ?? '-'}</div>
             </div>
           </div>
         </div>
