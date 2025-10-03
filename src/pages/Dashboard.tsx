@@ -183,10 +183,6 @@ const Dashboard = () => {
         {showImageModal && calendarData?.calendarFile && (
           <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
             <div className="relative max-w-md w-full bg-white rounded-lg overflow-hidden shadow-xl">
-              <div className="bg-green-400 text-center py-3">
-                <h3 className="font-bold text-lg uppercase">HOLIDAYS LIST</h3>
-                <p className="text-sm">Year 2025</p>
-              </div>
               <div className="p-4 max-h-[70vh] overflow-y-auto">
                 <img 
                   src={calendarData.calendarFile} 
