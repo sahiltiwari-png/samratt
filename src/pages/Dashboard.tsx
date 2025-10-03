@@ -359,13 +359,12 @@ const Dashboard = () => {
                 <span className="text-gray-700 font-semibold text-base">Leave Policy</span>
               </div>
               <div className="flex items-end gap-2 mb-1">
-                <span className="text-3xl font-bold text-green-500 leading-none">{dashboardStats?.leavePolicy?.active ?? '-'}</span>
+                <span className="text-3xl font-bold text-green-500 leading-none">{dashboardStats?.leavePolicies?.activePolicies ?? '-'}</span>
                 <span className="text-base text-gray-700 font-medium mb-1">active policy</span>
               </div>
               <div className="flex gap-4 text-xs font-medium mb-4">
-                <span className="text-gray-400">Casual <span className="text-green-500 font-bold">{dashboardStats?.leavePolicy?.casual ?? '-'}</span></span>
-                <span className="text-gray-400">Medical <span className="text-red-400 font-bold">{dashboardStats?.leavePolicy?.medical ?? '-'}</span></span>
-                <span className="text-gray-400">Earned <span className="text-yellow-500 font-bold">{dashboardStats?.leavePolicy?.earned ?? '-'}</span></span>
+                <span className="text-gray-400">Maternity <span className="text-green-500 font-bold">{dashboardStats?.leavePolicies?.leaveTypesSummary?.maternity?.intervalValue ?? '-'}</span></span>
+                <span className="text-gray-400">Earned <span className="text-yellow-500 font-bold">{dashboardStats?.leavePolicies?.leaveTypesSummary?.earned?.intervalValue ?? '-'}</span></span>
               </div>
               <button 
                 className="w-full bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3fd190] rounded-lg py-2 font-semibold transition text-base shadow-none"
@@ -379,9 +378,8 @@ const Dashboard = () => {
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                 <div>
                   <div className="text-gray-700 text-sm font-semibold">Payroll Processed <span className="text-xs text-gray-400">this month</span></div>
-                  <div className="text-3xl font-bold text-green-700 mt-1">{dashboardStats?.payroll?.processed ?? '-'}/{dashboardStats?.employees?.total ?? '-'}</div>
+                  <div className="text-3xl font-bold text-green-700 mt-1">{dashboardStats?.payroll?.processed ?? '-'}/{dashboardStats?.payroll?.totalEmployees ?? dashboardStats?.employees?.total ?? '-'}</div>
                   <div className="flex gap-4 text-xs mt-2">
-                    <span className="text-green-600 font-bold">{dashboardStats?.payroll?.processed ?? '-'} / {dashboardStats?.employees?.total ?? '-'} employees</span>
                     <span className="text-red-500 font-bold">Pending employees {dashboardStats?.payroll?.pending ?? '-'}</span>
                   </div>
                 </div>
