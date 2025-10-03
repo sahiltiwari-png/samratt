@@ -8,11 +8,12 @@ import { Card } from "@/components/ui/card";
 import { OrgSearchContext } from "@/components/layout/MainLayout";
 import { Plus, Building, Users, X, LogIn, LogOut } from "lucide-react";
 import { getEmployeeById } from "@/api/employees";
-import { getAttendance } from "@/api/attendance";
+import { getAttendance, clockInEmployee, clockOutEmployee } from "@/api/attendance";
 import { format } from "date-fns";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from '@/contexts/AuthContext';
 import EmployeeList from "@/components/employees/EmployeeList";
+import { toast } from "@/hooks/use-toast";
 const Dashboard = () => {
   const [organizations, setOrganizations] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -30,6 +31,7 @@ const Dashboard = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [employee, setEmployee] = useState<any | null>(null);
   const [attendanceToday, setAttendanceToday] = useState<any | null>(null);
+  const [clocking, setClocking] = useState<{in:boolean; out:boolean}>({in:false, out:false});
 
   useEffect(() => {
     if (user?.role === 'superAdmin') {
@@ -99,6 +101,54 @@ const Dashboard = () => {
         .catch(() => setAttendanceToday(null));
     }
   }, [user?.role, user?._id, user?.id]);
+
+  const getGeolocation = (): Promise<{lat:number; lng:number}> => {
+    return new Promise((resolve) => {
+      if (!("geolocation" in navigator)) {
+        resolve({ lat: 12.9716, lng: 77.5946 });
+        return;
+      }
+      navigator.geolocation.getCurrentPosition(
+        (pos) => resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
+        () => resolve({ lat: 12.9716, lng: 77.5946 }),
+        { enableHighAccuracy: true, timeout: 5000 }
+      );
+    });
+  };
+
+  const handleClockIn = async () => {
+    if (clocking.in) return;
+    const id = user?._id || user?.id;
+    if (!id) return;
+    setClocking((s) => ({ ...s, in: true }));
+    try {
+      const { lat, lng } = await getGeolocation();
+      const res = await clockInEmployee(id, { latitude: lat, longitude: lng, markedBy: 'user' });
+      setAttendanceToday(res?.attendance || attendanceToday);
+      toast({ title: 'Clock in recorded', description: res?.message || 'You have clocked in.' });
+    } catch (err: any) {
+      toast({ title: 'Clock in failed', description: err?.response?.data?.message || err?.message || 'Please try again.' });
+    } finally {
+      setClocking((s) => ({ ...s, in: false }));
+    }
+  };
+
+  const handleClockOut = async () => {
+    if (clocking.out) return;
+    const id = user?._id || user?.id;
+    if (!id) return;
+    setClocking((s) => ({ ...s, out: true }));
+    try {
+      const { lat, lng } = await getGeolocation();
+      const res = await clockOutEmployee(id, { latitude: lat, longitude: lng });
+      setAttendanceToday(res?.attendance || attendanceToday);
+      toast({ title: 'Clock out recorded', description: res?.message || 'You have clocked out.' });
+    } catch (err: any) {
+      toast({ title: 'Clock out failed', description: err?.response?.data?.message || err?.message || 'Please try again.' });
+    } finally {
+      setClocking((s) => ({ ...s, out: false }));
+    }
+  };
 
   const handleCalendarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || !e.target.files[0] || !user?.organizationId) {
@@ -185,20 +235,30 @@ const Dashboard = () => {
             {/* Right: Clock icons + Metrics */}
             <div className="flex flex-col md:items-end w-full md:w-auto">
               <div className="flex gap-2 mb-2">
-                <span className="flex items-center gap-1 px-3 py-1 rounded-lg bg-green-100 text-green-700 text-xs font-semibold">
+                <button
+                  type="button"
+                  onClick={handleClockIn}
+                  disabled={clocking.in || !!attendanceToday?.clockIn}
+                  className={`flex items-center gap-1 px-3 py-1 rounded-lg text-xs font-semibold transition ${clocking.in ? 'opacity-60 cursor-not-allowed' : ''} ${attendanceToday?.clockIn ? 'bg-gray-200 text-gray-500' : 'bg-green-100 text-green-700 hover:bg-green-200'}`}
+                >
                   <LogIn className="h-4 w-4" />
-                  Clock in
-                </span>
-                <span className="flex items-center gap-1 px-3 py-1 rounded-lg bg-red-100 text-red-700 text-xs font-semibold">
+                  {attendanceToday?.clockIn ? 'Clocked in' : 'Clock in'}
+                </button>
+                <button
+                  type="button"
+                  onClick={handleClockOut}
+                  disabled={clocking.out || !attendanceToday?.clockIn || !!attendanceToday?.clockOut}
+                  className={`flex items-center gap-1 px-3 py-1 rounded-lg text-xs font-semibold transition ${clocking.out ? 'opacity-60 cursor-not-allowed' : ''} ${(attendanceToday?.clockOut || !attendanceToday?.clockIn) ? 'bg-gray-200 text-gray-500' : 'bg-red-100 text-red-700 hover:bg-red-200'}`}
+                >
                   <LogOut className="h-4 w-4" />
-                  Clock Out
-                </span>
+                  {attendanceToday?.clockOut ? 'Clocked out' : 'Clock Out'}
+                </button>
               </div>
               <div className="bg-white rounded-lg px-4 py-2 flex flex-col md:flex-row gap-4 items-center shadow">
                 <div className="text-xs text-gray-500">Date<br /><span className="text-base text-gray-800 font-semibold">{format(new Date(), 'dd/MM/yyyy')}</span></div>
                 <div className="text-xs text-gray-500">Clockin<br /><span className="text-base text-gray-800 font-semibold">{attendanceToday?.clockIn ? format(new Date(attendanceToday.clockIn), 'HH:mm:ss') : '-'}</span></div>
                 <div className="text-xs text-gray-500">Clockout<br /><span className="text-base text-gray-800 font-semibold">{attendanceToday?.clockOut ? format(new Date(attendanceToday.clockOut), 'HH:mm:ss') : '-'}</span></div>
-                <div className="text-xs text-gray-500">Working hours<br /><span className="text-base text-gray-800 font-semibold">{attendanceToday?.totalWorkingHours != null ? `${attendanceToday.totalWorkingHours} hours` : '-'}</span></div>
+                <div className="text-xs text-gray-500">Working hours<br /><span className="text-base text-gray-800 font-semibold">{attendanceToday?.totalWorkingHours != null ? `${attendanceToday.totalWorkingHours}` : '-'}</span></div>
               </div>
             </div>
           </div>

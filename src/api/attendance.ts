@@ -56,3 +56,31 @@ export const updateAttendance = async (employeeId: string, attendanceId: string,
     throw error;
   }
 };
+
+// Clock-in an employee for today
+export const clockInEmployee = async (
+  employeeId: string,
+  data: { latitude: number; longitude: number; markedBy: string }
+) => {
+  try {
+    const response = await API.post(`/attendance/clock-in/${employeeId}`, data);
+    return response.data;
+  } catch (error) {
+    console.error("Error clocking in:", error);
+    throw error;
+  }
+};
+
+// Clock-out an employee for today
+export const clockOutEmployee = async (
+  employeeId: string,
+  data: { latitude: number; longitude: number }
+) => {
+  try {
+    const response = await API.post(`/attendance/clock-out/${employeeId}`, data);
+    return response.data;
+  } catch (error) {
+    console.error("Error clocking out:", error);
+    throw error;
+  }
+};
