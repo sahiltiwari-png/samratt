@@ -20,11 +20,11 @@ const EmployeeFilterBar = ({
   const statusOptions = ["Active", "Inactive"];
   const designationOptions = ["Manager", "Developer", "HR", "Designer"];
   return (
-    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4 w-full pb-4">
-      <div className="flex items-center gap-4 flex-wrap">
-        <span className="font-medium text-base text-gray-800">Total Employees - {total}</span>
+    <div className="flex flex-col md:flex-row md:flex-nowrap md:items-center md:justify-between gap-3 mb-4 w-full pb-2 rounded-lg p-3 bg-white">
+      <div className="flex items-center gap-2 flex-wrap md:flex-nowrap">
+        <span className="font-medium text-base text-[#2C373B]">Total Employees - {total}</span>
         <select
-          className="rounded border px-3 py-1 bg-green-50 text-gray-800 focus:outline-none focus:ring-2 focus:ring-green-200 min-w-[120px]"
+          className="rounded border border-emerald-300 h-8 px-3 bg-[rgb(209,250,229)] text-[#2C373B] focus:outline-none focus:ring-2 focus:ring-emerald-200 min-w-[120px]"
           value={statusFilter || ""}
           onChange={e => setStatusFilter(e.target.value === "" ? null : e.target.value)}
         >
@@ -32,7 +32,7 @@ const EmployeeFilterBar = ({
           {statusOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
         </select>
         <select
-          className="rounded border px-3 py-1 bg-gray-50 text-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-200 min-w-[140px]"
+          className="rounded border border-emerald-300 h-8 px-3 bg-[rgb(209,250,229)] text-[#2C373B] focus:outline-none focus:ring-2 focus:ring-emerald-200 min-w-[140px]"
           value={designationFilter || ""}
           onChange={e => setDesignationFilter(e.target.value === "" ? null : e.target.value)}
         >
@@ -40,16 +40,16 @@ const EmployeeFilterBar = ({
           {designationOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
         </select>
         <button
-          className="inline-flex items-center gap-1 px-3 py-1 rounded border border-gray-200 bg-white text-gray-500 hover:text-green-600 hover:border-green-300 text-sm transition shadow-sm"
+          className="inline-flex items-center gap-1 h-8 px-3 rounded border border-[#4CDC9C] bg-[#4CDC9C] text-[#2C373B] text-sm transition shadow-sm hover:bg-[#3fd190]"
           onClick={onClear}
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
           Clear Filters
         </button>
       </div>
-      <div>
+      <div className="flex-shrink-0">
         <button
-          className="bg-green-400 hover:bg-green-500 text-white font-semibold px-6 py-2 rounded transition"
+          className="bg-[#4CDC9C] hover:bg-[#3fd190] text-[#2C373B] font-semibold px-4 h-8 rounded transition"
           onClick={onAddEmployee}
         >
           Add Employee
@@ -165,7 +165,7 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
           total={total}
         />
         <div className="rounded-lg border bg-white overflow-x-auto max-h-[500px] overflow-y-auto mx-auto" style={{ width: '100%', maxWidth: '1200px', minWidth: '0', touchAction: 'pan-y' }}>
-          <table className="w-full text-[11px] border-separate border-spacing-0" style={{ width: '100%', borderRadius: '12px', overflow: 'hidden', background: '#fff', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', tableLayout: 'auto' }}>
+          <table className="w-full border-separate border-spacing-0" style={{ width: '100%', borderRadius: '12px', overflow: 'hidden', background: '#fff', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', tableLayout: 'auto' }}>
             <colgroup>
               <col style={{ width: '16%' }} />
               <col style={{ width: '13%' }} />
@@ -176,26 +176,26 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
               <col style={{ width: '8%' }} />
               <col style={{ width: '6%' }} />
             </colgroup>
-            <thead>
-              <tr className="text-gray-700 font-semibold border-b bg-gradient-to-r from-green-50 to-white">
-                <th className="px-1 py-1 text-left rounded-tl-lg">Name</th>
-                <th className="px-1 py-1 text-left">Code</th>
-                <th className="px-1 py-1 text-left">Designation</th>
-                <th className="px-1 py-1 text-left">Joining</th>
-                <th className="px-1 py-1 text-left">Probation</th>
-                <th className="px-1 py-1 text-left">Email</th>
-                <th className="px-1 py-1 text-left">Status</th>
-                <th className="px-1 py-1 text-left rounded-tr-lg">Actions</th>
+            <thead className="text-[#2C373B]">
+              <tr className="border-b bg-white">
+                <th className="px-1 py-1 text-left rounded-tl-lg" style={{fontSize: '12px', fontWeight: 600}}>Name</th>
+                <th className="px-1 py-1 text-left" style={{fontSize: '12px', fontWeight: 600}}>Code</th>
+                <th className="px-1 py-1 text-left" style={{fontSize: '12px', fontWeight: 600}}>Designation</th>
+                <th className="px-1 py-1 text-left" style={{fontSize: '12px', fontWeight: 600}}>Joining</th>
+                <th className="px-1 py-1 text-left" style={{fontSize: '12px', fontWeight: 600}}>Probation</th>
+                <th className="px-1 py-1 text-left" style={{fontSize: '12px', fontWeight: 600}}>Email</th>
+                <th className="px-1 py-1 text-left" style={{fontSize: '12px', fontWeight: 600}}>Status</th>
+                <th className="px-1 py-1 text-left rounded-tr-lg" style={{fontSize: '12px', fontWeight: 600}}>Actions</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="text-[#2C373B]" style={{fontSize: '14px', fontWeight: 500}}>
               {loading ? (
                 <tr><td colSpan={8} className="text-center py-8">Loading...</td></tr>
               ) : employees.length === 0 ? (
                 <tr><td colSpan={8} className="text-center py-8 text-muted-foreground">No employees found.</td></tr>
               ) : (
                 employees.map((emp) => (
-                  <tr key={emp._id} className="border-b last:border-b-0 hover:bg-green-50 transition-colors">
+                  <tr key={emp._id} className="border-b last:border-b-0 bg-white hover:bg-gray-50 transition-colors">
                     <td className="px-1 py-1 max-w-xs truncate align-middle">
                       <div className="flex flex-row items-center gap-1 w-full">
                         <Avatar className="h-8 w-8">
@@ -206,7 +206,7 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
                           )}
                         </Avatar>
                         <div className="truncate flex items-center gap-1">
-                          <span className="font-medium text-gray-900 leading-tight text-xs truncate">{emp.firstName} {emp.lastName}</span>
+                          <span className="font-medium text-[#2C373B] leading-tight text-[14px] truncate">{emp.firstName} {emp.lastName}</span>
                         </div>
                       </div>
                     </td>
@@ -218,20 +218,19 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
                     <td className="px-1 py-1 align-middle">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button size="sm" variant="outline" className={`min-w-[70px] px-2 py-1 ${emp.status === 'active' ? 'text-green-600 border-green-200' : 'text-red-500 border-red-200'}`}>{emp.status === 'active' ? 'Active' : 'Inactive'}</Button>
+                          <Button size="sm" className="min-w-[90px] px-3 py-1 bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3fd190] border-none">{emp.status === 'active' ? 'Active' : 'Inactive'}</Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent>
-                          <DropdownMenuItem onClick={() => handleStatusChange(emp._id, 'active')} className="text-green-600">Active</DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => handleStatusChange(emp._id, 'inactive')} className="text-red-500">Inactive</DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleStatusChange(emp._id, 'active')} className="text-[#2C373B]">Active</DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => handleStatusChange(emp._id, 'inactive')} className="text-[#2C373B]">Inactive</DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </td>
                     <td className="px-4 py-3 align-middle">
                       <div className="flex gap-2">
                         <Button
-                          variant="link"
                           size="icon"
-                          className="text-blue-600"
+                          className="bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3fd190]"
                           title="View details"
                           onClick={async () => {
                             setSelectedEmployee(emp);
@@ -253,9 +252,8 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
                           <Eye className="w-4 h-4" />
                         </Button>
                         <Button
-                          variant="link"
                           size="icon"
-                          className="text-green-600"
+                          className="bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3fd190]"
                           title="Edit details"
                           onClick={async () => {
                             setSelectedEmployee(emp);
@@ -355,16 +353,16 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
                       }
                       return (
                         <div key={key} className="flex flex-col mb-2">
-                          <label className="font-semibold capitalize mb-1 text-gray-700">{key.replace(/([A-Z])/g, ' $1')}</label>
+                          <label className="font-semibold capitalize mb-1" style={{color: '#2C373B'}}>{key.replace(/([A-Z])/g, ' $1')}</label>
                           {editMode ? (
                             <input
-                              className="border rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-400 transition"
+                              className="border border-emerald-300 rounded px-2 py-1 bg-[rgb(209,250,229)] text-[#2C373B] focus:outline-none focus:ring-2 focus:ring-emerald-200 transition"
                               type={inputType}
                               value={inputValue}
                               onChange={e => setFormData((fd: any) => ({ ...fd, [key]: e.target.value }))}
                             />
                           ) : (
-                            <span className="bg-gray-50 rounded px-2 py-1 border border-gray-100">{inputType === 'date' && value ? new Date(value).toLocaleDateString() : (value !== undefined && value !== null && value !== '' ? value.toString() : '-')}</span>
+                            <span className="rounded px-2 py-1 border border-emerald-200 bg-[rgb(209,250,229)] text-[#2C373B]">{inputType === 'date' && value ? new Date(value).toLocaleDateString() : (value !== undefined && value !== null && value !== '' ? value.toString() : '-')}</span>
                           )}
                         </div>
                       );
@@ -372,33 +370,33 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
                     {/* Bank Details */}
                     {employeeDetails.bankDetails && Object.entries(employeeDetails.bankDetails).map(([k, v]) => (
                       <div key={"bankDetails" + k} className="flex flex-col">
-                        <label className="font-semibold capitalize">Bank {k.replace(/([A-Z])/g, ' $1')}</label>
+                        <label className="font-semibold capitalize" style={{color: '#2C373B'}}>Bank {k.replace(/([A-Z])/g, ' $1')}</label>
                         {editMode ? (
-                          <input className="border rounded px-2 py-1" value={formData.bankDetails?.[k] || ''} onChange={e => setFormData((fd: any) => ({ ...fd, bankDetails: { ...fd.bankDetails, [k]: e.target.value } }))} />
+                          <input className="border border-emerald-300 rounded px-2 py-1 bg-[rgb(209,250,229)] text-[#2C373B]" value={formData.bankDetails?.[k] || ''} onChange={e => setFormData((fd: any) => ({ ...fd, bankDetails: { ...fd.bankDetails, [k]: e.target.value } }))} />
                         ) : (
-                          <span>{v || '-'}</span>
+                          <span className="rounded px-2 py-1 border border-emerald-200 bg-[rgb(209,250,229)] text-[#2C373B]">{v || '-'}</span>
                         )}
                       </div>
                     ))}
                     {/* Tax Details */}
                     {employeeDetails.taxDetails && Object.entries(employeeDetails.taxDetails).map(([k, v]) => (
                       <div key={"taxDetails" + k} className="flex flex-col">
-                        <label className="font-semibold capitalize">Tax {k.replace(/([A-Z])/g, ' $1')}</label>
+                        <label className="font-semibold capitalize" style={{color: '#2C373B'}}>Tax {k.replace(/([A-Z])/g, ' $1')}</label>
                         {editMode ? (
-                          <input className="border rounded px-2 py-1" value={formData.taxDetails?.[k] || ''} onChange={e => setFormData((fd: any) => ({ ...fd, taxDetails: { ...fd.taxDetails, [k]: e.target.value } }))} />
+                          <input className="border border-emerald-300 rounded px-2 py-1 bg-[rgb(209,250,229)] text-[#2C373B]" value={formData.taxDetails?.[k] || ''} onChange={e => setFormData((fd: any) => ({ ...fd, taxDetails: { ...fd.taxDetails, [k]: e.target.value } }))} />
                         ) : (
-                          <span>{v || '-'}</span>
+                          <span className="rounded px-2 py-1 border border-emerald-200 bg-[rgb(209,250,229)] text-[#2C373B]">{v || '-'}</span>
                         )}
                       </div>
                     ))}
                     {/* Emergency Contact */}
                     {employeeDetails.emergencyContact && Object.entries(employeeDetails.emergencyContact).map(([k, v]) => (
                       <div key={"emergencyContact" + k} className="flex flex-col">
-                        <label className="font-semibold capitalize">Emergency {k.replace(/([A-Z])/g, ' $1')}</label>
+                        <label className="font-semibold capitalize" style={{color: '#2C373B'}}>Emergency {k.replace(/([A-Z])/g, ' $1')}</label>
                         {editMode ? (
-                          <input className="border rounded px-2 py-1" value={formData.emergencyContact?.[k] || ''} onChange={e => setFormData((fd: any) => ({ ...fd, emergencyContact: { ...fd.emergencyContact, [k]: e.target.value } }))} />
+                          <input className="border border-emerald-300 rounded px-2 py-1 bg-[rgb(209,250,229)] text-[#2C373B]" value={formData.emergencyContact?.[k] || ''} onChange={e => setFormData((fd: any) => ({ ...fd, emergencyContact: { ...fd.emergencyContact, [k]: e.target.value } }))} />
                         ) : (
-                          <span>{v || '-'}</span>
+                          <span className="rounded px-2 py-1 border border-emerald-200 bg-[rgb(209,250,229)] text-[#2C373B]">{v || '-'}</span>
                         )}
                       </div>
                     ))}
@@ -412,8 +410,8 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
             <DialogFooter>
               {/* Only show Update button if in edit mode */}
               {employeeDetails && editMode && (
-                <>
-                  <button className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700" disabled={updateLoading}
+                <> 
+                  <button className="bg-[#4CDC9C] text-[#2C373B] px-4 py-2 rounded hover:bg-[#3fd190]" disabled={updateLoading}
                     onClick={async () => {
                       setUpdateLoading(true);
                       setUpdateMessage(null);
@@ -433,7 +431,7 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
                     {updateLoading ? 'Saving...' : 'Save'}
                   </button>
                   <button
-                    className="ml-2 px-4 py-2 rounded border"
+                    className="ml-2 px-4 py-2 rounded bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3fd190]"
                     onClick={() => { setEditMode(false); setFormData(employeeDetails); setProfilePreview(null); }}
                   >
                     Cancel
@@ -446,11 +444,11 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
         {/* Pagination */}
         <div className="flex items-center justify-between mt-4">
           <div>
-            <Button variant="ghost" size="sm" disabled={page === 1} onClick={() => setPage(page - 1)}>Prev</Button>
+            <Button size="sm" className="bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3fd190]" disabled={page === 1} onClick={() => setPage(page - 1)}>Prev</Button>
             {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-              <Button key={p} variant={p === page ? 'default' : 'ghost'} size="sm" className="mx-1" onClick={() => setPage(p)}>{p}</Button>
+              <Button key={p} size="sm" className={`mx-1 ${p === page ? 'bg-[#3fd190]' : 'bg-[#4CDC9C]'} text-[#2C373B] hover:bg-[#3fd190]`} onClick={() => setPage(p)}>{p}</Button>
             ))}
-            <Button variant="ghost" size="sm" disabled={page === totalPages} onClick={() => setPage(page + 1)}>Next</Button>
+            <Button size="sm" className="bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3fd190]" disabled={page === totalPages} onClick={() => setPage(page + 1)}>Next</Button>
           </div>
         </div>
       </CardContent>
