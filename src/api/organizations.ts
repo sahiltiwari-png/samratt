@@ -47,7 +47,7 @@ export const getOrganizations = async () => {
   }
 };
 
-// Get organization by ID
+// Get organization by ID 
 export const getOrganizationById = async (id: string) => {
   try {
     const response = await API.get(`/organizations/${id}`);

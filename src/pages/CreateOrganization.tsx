@@ -9,11 +9,14 @@ import { ChevronLeft, Upload, CheckCircle, ArrowRight } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { createOrganization, getOrganizationById, updateOrganization } from "@/api/organizations";
 import { uploadFile } from "@/api/uploadFile";
+import { saveHolidayCalendar, getHolidayCalendar } from "@/api/holidayCalendar";
 import { toast } from "@/components/ui/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
 
 const CreateOrganization = () => {
   const navigate = useNavigate();
   const { orgId } = useParams();
+  const { organizationId } = useAuth();
   const [currentStep, setCurrentStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [formError, setFormError] = useState(null);
@@ -40,6 +43,7 @@ const CreateOrganization = () => {
     status: "",
     dayStartTime: "",
     dayEndTime: "",
+    holidayCalendarFileName: "",
     admin: {
       firstName: "",
       lastName: "",
@@ -69,6 +73,22 @@ const CreateOrganization = () => {
               phone: org.admin?.phone || ""
             }
           });
+          
+          // Fetch holiday calendar if organization exists
+          try {
+            // Use the global organizationId from AuthContext
+            const currentOrgId = organizationId || orgId;
+            
+            const holidayCalendar = await getHolidayCalendar(currentOrgId);
+            if (holidayCalendar && holidayCalendar.calendarFileName) {
+              setFormData(prev => ({
+                ...prev,
+                holidayCalendarFileName: holidayCalendar.calendarFileName
+              }));
+            }
+          } catch (err) {
+            console.error("Failed to fetch holiday calendar", err);
+          }
         } catch (err) {
           toast({ title: "Error", description: "Failed to load organization.", variant: "destructive" });
         } finally {
@@ -78,7 +98,7 @@ const CreateOrganization = () => {
     };
     fetchOrg();
     // eslint-disable-next-line
-  }, [orgId]);
+  }, [orgId, organizationId]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -497,6 +517,54 @@ const CreateOrganization = () => {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="dayEndTime">Day End Time</Label>
+                  <div className="mt-4">
+                      <Label htmlFor="holidayCalendar">Holiday Calendar</Label>
+                      <Input 
+                        id="holidayCalendar" 
+                        name="holidayCalendar" 
+                        type="file"
+                        accept=".csv,.xlsx"
+                        onChange={async (e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            setLoading(true);
+                            try {
+                              // First upload the file to get the URL
+                              const fileUrl = await uploadFile(file);
+                              // Get organization ID from localStorage or use current form data
+                              const userDataString = localStorage.getItem('user');
+                              let organizationId = formData.id || "ORG123";
+                              
+                              if (userDataString) {
+                                const userData = JSON.parse(userDataString);
+                                if (userData && userData.organizationId) {
+                                  organizationId = userData.organizationId;
+                                }
+                              }
+                              // Then save the holiday calendar with the organization ID
+                              await saveHolidayCalendar(organizationId, file.name);
+                              // Update the form data with the new filename
+                              setFormData(prev => ({
+                                ...prev,
+                                holidayCalendarFileName: file.name
+                              }));
+                              toast({ title: "Success", description: "Holiday calendar uploaded successfully." });
+                            } catch (err) {
+                              toast({ title: "Upload failed", description: "Could not upload holiday calendar.", variant: "destructive" });
+                            } finally {
+                              setLoading(false);
+                            }
+                          }
+                        }}
+                      />
+                      {formData.holidayCalendarFileName && (
+                        <div className="mt-2 text-sm flex items-center">
+                          <CheckCircle className="h-4 w-4 text-green-500 mr-1" />
+                          <span>Current calendar: {formData.holidayCalendarFileName}</span>
+                        </div>
+                      )}
+                      <p className="text-xs text-muted-foreground mt-1">Upload CSV or Excel file with holiday dates</p>
+                    </div>
                   <Input 
                     id="dayEndTime" 
                     name="dayEndTime" 
@@ -505,6 +573,47 @@ const CreateOrganization = () => {
                     onChange={handleChange} 
                     required 
                   />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="holidayCalendar">Holiday Calendar</Label>
+                  <Input 
+                    id="holidayCalendar" 
+                    name="holidayCalendar" 
+                    type="file"
+                    accept=".csv,.xlsx"
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        setLoading(true);
+                        try {
+                          // First upload the file to get the URL
+                          const fileUrl = await uploadFile(file);
+                          // Use the global organizationId from AuthContext
+                          const currentOrgId = organizationId || formData.id || "ORG123";
+                          
+                          // Then save the holiday calendar with the organization ID
+                          await saveHolidayCalendar(currentOrgId, file.name);
+                          // Update the form data with the new filename
+                          setFormData(prev => ({
+                            ...prev,
+                            holidayCalendarFileName: file.name
+                          }));
+                          toast({ title: "Success", description: "Holiday calendar uploaded successfully." });
+                        } catch (err) {
+                          toast({ title: "Upload failed", description: "Could not upload holiday calendar.", variant: "destructive" });
+                        } finally {
+                          setLoading(false);
+                        }
+                      }
+                    }}
+                  />
+                  {formData.holidayCalendarFileName && (
+                    <div className="mt-2 text-sm flex items-center">
+                      <CheckCircle className="h-4 w-4 text-green-500 mr-1" />
+                      <span>Current calendar: {formData.holidayCalendarFileName}</span>
+                    </div>
+                  )}
+                  <p className="text-xs text-muted-foreground mt-1">Upload CSV or Excel file with holiday dates</p>
                 </div>
               </div>
             </div>
@@ -656,18 +765,30 @@ const CreateOrganization = () => {
   };
 
   return (
-    <div className="container mx-auto py-8 px-4">
+    <div className="container mx-auto py-8 px-4 create-org-page" style={{ color: '#2C373B' }}>
+      <style>{`
+        .create-org-page input,
+        .create-org-page select,
+        .create-org-page textarea {
+          background-color: rgb(209 250 229) !important;
+        }
+        .create-org-page button {
+          background-color: #4CDC9C !important;
+          color: #2C373B !important;
+        }
+      `}</style>
       <Button 
         variant="ghost" 
         className="mb-4" 
         onClick={() => navigate('/dashboard')}
+        style={{ background: '#4CDC9C', color: '#2C373B' }}
       >
         <ChevronLeft className="mr-2 h-4 w-4" /> Back to Dashboard
       </Button>
       
       <Card className="max-w-4xl mx-auto">
         <CardHeader>
-          <CardTitle>{isEditMode ? "Edit Organization" : "Create Organization"}</CardTitle>
+          <CardTitle style={{ color: '#2C373B' }}>{isEditMode ? "Edit Organization" : "Create Organization"}</CardTitle>
           <Progress 
             value={(currentStep / 5) * 100} 
             className="h-2" 
@@ -687,16 +808,17 @@ const CreateOrganization = () => {
               variant="outline"
               onClick={prevStep}
               disabled={currentStep === 1 || loading}
+              style={{ background: '#4CDC9C', color: '#2C373B', borderColor: '#4CDC9C' }}
             >
               Previous
             </Button>
             
             {currentStep < 5 ? (
-              <Button onClick={nextStep} disabled={loading}>
+              <Button onClick={nextStep} disabled={loading} style={{ background: '#4CDC9C', color: '#2C373B' }}>
                 Next <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             ) : (
-              <Button onClick={handleSubmit} disabled={loading}>
+              <Button onClick={handleSubmit} disabled={loading} style={{ background: '#4CDC9C', color: '#2C373B' }}>
                 {loading ? (isEditMode ? "Updating..." : "Creating...") : (isEditMode ? "Update Details" : "Create Organization")}
               </Button>
             )}

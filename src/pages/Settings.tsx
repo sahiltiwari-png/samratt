@@ -12,11 +12,14 @@ import { uploadFile } from '@/api/uploadFile';
 const Settings = () => {
   const { user, setUser } = useAuth();
   const [form, setForm] = useState({
+    firstName: '',
+    lastName: '',
     name: '',
     email: '',
     phone: '',
     password: '',
     profileImage: '',
+    reportingManagerId: '',
   });
   useEffect(() => {
     const fetchUser = async () => {
@@ -24,12 +27,23 @@ const Settings = () => {
         const id = user?._id || user?.id;
         if (!id) return;
         const data = await getEmployeeById(id);
+        // Normalize reportingManagerId: accept valid ObjectId string or object with _id; else clear
+        const rawRm: any = (data as any)?.reportingManagerId;
+        let normalizedRmId: string = '';
+        if (typeof rawRm === 'string') {
+          normalizedRmId = /^[0-9a-fA-F]{24}$/.test(rawRm) ? rawRm : '';
+        } else if (rawRm && typeof rawRm === 'object') {
+          normalizedRmId = rawRm?._id || '';
+        }
         setForm({
-          name: data.name || '',
+          firstName: data.firstName || '',
+          lastName: data.lastName || '',
+          name: (data.name || `${data.firstName || ''} ${data.lastName || ''}`).trim(),
           email: data.email || '',
           phone: data.phone || '',
           password: '',
           profileImage: data.profilePhotoUrl || '',
+          reportingManagerId: normalizedRmId,
         });
       } catch (err) {
         setError('Failed to fetch user details');
@@ -63,17 +77,25 @@ const Settings = () => {
     setSuccess('');
     try {
       // Assume /auth/employees/:id for all roles (superadmin, admin, etc.)
+      // Sanitize reportingManagerId: send valid ObjectId or null to clear invalid value
+      const isValidObjectId = (id: string) => /^[0-9a-fA-F]{24}$/.test(id);
+      const safeReportingManagerId = form.reportingManagerId && isValidObjectId(form.reportingManagerId)
+        ? form.reportingManagerId
+        : null;
       const res = await API.put(`/auth/employees/${user._id || user.id}`, {
-        name: form.name,
+        firstName: form.firstName,
+        lastName: form.lastName,
+        name: `${form.firstName} ${form.lastName}`.trim(),
         email: form.email,
         phone: form.phone,
         profilePhotoUrl: form.profileImage,
+        reportingManagerId: safeReportingManagerId,
         ...(form.password ? { password: form.password } : {}),
       });
       setSuccess('Profile updated successfully!');
       setIsEditing(false);
       // Update user in localStorage and AuthContext
-      const updatedUser = { ...user, name: form.name, email: form.email, phone: form.phone, profileImage: form.profileImage };
+      const updatedUser = { ...user, firstName: form.firstName, lastName: form.lastName, name: `${form.firstName} ${form.lastName}`.trim(), email: form.email, phone: form.phone, profileImage: form.profileImage };
       localStorage.setItem('user', JSON.stringify(updatedUser));
   if (setUser) setUser(updatedUser);
     } catch (err: any) {
@@ -100,9 +122,14 @@ const Settings = () => {
             )}
           </div>
           <div className="space-y-2">
-            <Label htmlFor="name">Name</Label>
-            <Input id="name" name="name" value={form.name} onChange={handleChange} disabled={!isEditing} />
+            <Label htmlFor="firstName">First Name</Label>
+            <Input id="firstName" name="firstName" value={form.firstName} onChange={handleChange} disabled={!isEditing} />
           </div>
+          <div className="space-y-2">
+            <Label htmlFor="lastName">Last Name</Label>
+            <Input id="lastName" name="lastName" value={form.lastName} onChange={handleChange} disabled={!isEditing} />
+          </div>
+          
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <Input id="email" name="email" value={form.email} onChange={handleChange} disabled={!isEditing} />

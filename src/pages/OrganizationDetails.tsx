@@ -122,12 +122,18 @@ const OrganizationDetails = () => {
         toast({ title: "Error", description: "No admin ID found.", variant: "destructive" });
         return;
       }
-      const payload = {
+      const payload: any = {
         firstName: formData.admin.firstName,
         lastName: formData.admin.lastName,
         phone: formData.admin.phone,
         password: formData.admin.password || undefined // Only send if filled
       };
+      // Defensive: if reportingManagerId exists in admin form, normalize to valid ObjectId or null
+      if (formData?.admin?.reportingManagerId !== undefined) {
+        const rm = (formData as any).admin.reportingManagerId;
+        const isValidObjectId = (id: string) => typeof id === 'string' && /^[0-9a-fA-F]{24}$/.test(id);
+        payload.reportingManagerId = typeof rm === 'object' ? (isValidObjectId(rm?._id) ? rm._id : null) : (isValidObjectId(rm) ? rm : null);
+      }
   await API.put(`/auth/employees/${adminId}`, payload);
       toast({ title: "Success", description: "Admin details updated successfully" });
       setFormData((prev) => ({ ...prev, admin: { ...prev.admin, password: "" } })); // Clear password field
@@ -516,16 +522,41 @@ const OrganizationDetails = () => {
   };
 
   return (
-    <div className="container mx-auto py-8 px-4">
+    <div className="org-details-page container mx-auto py-8 px-4">
+      {/* Scoped styles matching Create Organization UI request */}
+      <style>{`
+        .org-details-page button {
+          background-color: #4CDC9C !important;
+          color: #2C373B !important;
+          border-color: transparent !important;
+        }
+        .org-details-page button:hover {
+          filter: brightness(0.95);
+        }
+        .org-details-page input,
+        .org-details-page select,
+        .org-details-page textarea {
+          background-color: rgb(209 250 229) !important;
+          color: #2C373B !important;
+        }
+        .org-details-page h1,
+        .org-details-page h2,
+        .org-details-page h3,
+        .org-details-page .text-muted-foreground,
+        .org-details-page .font-medium {
+          color: #2C373B !important;
+        }
+      `}</style>
       <Button
-        className="mb-4 bg-green-600 hover:bg-green-700 text-white"
+        className="mb-4"
         onClick={() => navigate('/dashboard')}
+        style={{ backgroundColor: '#4CDC9C', color: '#2C373B' }}
       >
         <ChevronLeft className="mr-2 h-4 w-4" /> Back to Dashboard
       </Button>
       <Card className="max-w-4xl mx-auto">
         <CardHeader>
-          <CardTitle>Edit Organization</CardTitle>
+          <CardTitle style={{ color: '#2C373B' }}>Edit Organization</CardTitle>
           <Progress value={(currentStep / 5) * 100} className="h-2" />
         </CardHeader>
         <CardContent>
