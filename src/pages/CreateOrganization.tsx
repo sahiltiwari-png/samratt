@@ -765,18 +765,30 @@ const CreateOrganization = () => {
   };
 
   return (
-    <div className="container mx-auto py-8 px-4">
+    <div className="container mx-auto py-8 px-4 create-org-page" style={{ color: '#2C373B' }}>
+      <style>{`
+        .create-org-page input,
+        .create-org-page select,
+        .create-org-page textarea {
+          background-color: rgb(209 250 229) !important;
+        }
+        .create-org-page button {
+          background-color: #4CDC9C !important;
+          color: #2C373B !important;
+        }
+      `}</style>
       <Button 
         variant="ghost" 
         className="mb-4" 
         onClick={() => navigate('/dashboard')}
+        style={{ background: '#4CDC9C', color: '#2C373B' }}
       >
         <ChevronLeft className="mr-2 h-4 w-4" /> Back to Dashboard
       </Button>
       
       <Card className="max-w-4xl mx-auto">
         <CardHeader>
-          <CardTitle>{isEditMode ? "Edit Organization" : "Create Organization"}</CardTitle>
+          <CardTitle style={{ color: '#2C373B' }}>{isEditMode ? "Edit Organization" : "Create Organization"}</CardTitle>
           <Progress 
             value={(currentStep / 5) * 100} 
             className="h-2" 
@@ -796,16 +808,17 @@ const CreateOrganization = () => {
               variant="outline"
               onClick={prevStep}
               disabled={currentStep === 1 || loading}
+              style={{ background: '#4CDC9C', color: '#2C373B', borderColor: '#4CDC9C' }}
             >
               Previous
             </Button>
             
             {currentStep < 5 ? (
-              <Button onClick={nextStep} disabled={loading}>
+              <Button onClick={nextStep} disabled={loading} style={{ background: '#4CDC9C', color: '#2C373B' }}>
                 Next <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             ) : (
-              <Button onClick={handleSubmit} disabled={loading}>
+              <Button onClick={handleSubmit} disabled={loading} style={{ background: '#4CDC9C', color: '#2C373B' }}>
                 {loading ? (isEditMode ? "Updating..." : "Creating...") : (isEditMode ? "Update Details" : "Create Organization")}
               </Button>
             )}
