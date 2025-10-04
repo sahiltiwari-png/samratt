@@ -10,7 +10,7 @@ import { Plus, Building, Users, X, LogIn, LogOut, ClipboardList, Calculator, Fil
 import { getEmployeeById } from "@/api/employees";
 import { getAttendance, clockInEmployee, clockOutEmployee } from "@/api/attendance";
 import { format } from "date-fns";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from '@/contexts/AuthContext';
 import EmployeeList from "@/components/employees/EmployeeList";
 import { toast } from "@/hooks/use-toast";
@@ -25,6 +25,7 @@ const Dashboard = () => {
   const { search } = useContext(OrgSearchContext);
   const { user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [calendarData, setCalendarData] = useState<{calendarFile?: string; calendarFileName?: string} | null>(null);
   const [calendarLoading, setCalendarLoading] = useState(false);
   const [showImageModal, setShowImageModal] = useState(false);
@@ -32,6 +33,18 @@ const Dashboard = () => {
   const [employee, setEmployee] = useState<any | null>(null);
   const [attendanceToday, setAttendanceToday] = useState<any | null>(null);
   const [clocking, setClocking] = useState<{in:boolean; out:boolean}>({in:false, out:false});
+
+  useEffect(() => {
+    // Show access denied message when redirected from restricted routes
+    const state = location.state as any;
+    if (state?.accessDenied && state?.from) {
+      toast({
+        title: "Access denied",
+        description: `You don’t have access to ${state.from}. Redirected to dashboard.`,
+        variant: "destructive",
+      });
+    }
+  }, [location.state]);
 
   useEffect(() => {
     if (user?.role === 'superAdmin') {
@@ -419,7 +432,7 @@ const Dashboard = () => {
                 </div>
                 <button
                   className="w-full sm:w-auto bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3fd190] rounded-lg px-4 py-2 font-semibold transition"
-                  onClick={() => navigate('/reports')}
+                  onClick={() => navigate('/reports/employees')}
                 >
                   Manage Reports
                 </button>

@@ -17,6 +17,7 @@ import LeavePolicy from "./pages/LeavePolicy";
 import LeaveRequests from "./pages/LeaveRequests";
 import LeaveAllotment from "./pages/LeaveAllotment";
 import LeaveAllotmentHistory from "./pages/LeaveAllotmentHistory";
+import ApplyLeave from "./pages/ApplyLeave";
 import Employees from "./pages/Employees";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
@@ -25,6 +26,7 @@ import NotFound from "./pages/NotFound";
 import AddEmployeeStepper from "./pages/AddEmployeeStepper";
 import HR from "./pages/HR";
 import Regularization from "./pages/Regularization";
+import SubmitRegularization from "./pages/SubmitRegularization";
 import Payroll from "./pages/Payroll";
 import SalarySlips from "./pages/SalarySlips";  
 import Reports from "./pages/Reports";
@@ -56,7 +58,14 @@ const App = () => (
                     <Routes>
                       <Route path="/" element={<Navigate to="/dashboard" replace />} />
                       <Route path="/dashboard" element={<Dashboard />} />
-                      <Route path="/employees" element={<Employees />} />
+                      <Route
+                        path="/employees"
+                        element={
+                          <RoleRoute allowedRoles={["companyAdmin","hr"]} redirectTo="/dashboard">
+                            <Employees />
+                          </RoleRoute>
+                        }
+                      />
                       <Route path="/add-employee" element={<AddEmployeeStepper />} />
                       {/* SuperAdmin-only routes */}
                       <Route
@@ -83,7 +92,22 @@ const App = () => (
                           </RoleRoute>
                         }
                       />
-                      <Route path="/regularization" element={<Regularization />} />
+                      <Route
+                        path="/regularization"
+                        element={
+                          <RoleRoute allowedRoles={["companyAdmin","hr"]} redirectTo="/dashboard">
+                            <Regularization />
+                          </RoleRoute>
+                        }
+                      />
+                      <Route
+                        path="/regularization/submit"
+                        element={
+                          <RoleRoute allowedRoles={["companyAdmin","hr"]} redirectTo="/dashboard">
+                            <SubmitRegularization />
+                          </RoleRoute>
+                        }
+                      />
                       <Route path="/organizations/:id" element={<OrganizationDetails />} />
                       {/* CompanyAdmin-only routes */}
                       <Route
@@ -115,6 +139,14 @@ const App = () => (
                         element={
                           <RoleRoute allowedRoles={["companyAdmin","hr"]} redirectTo="/dashboard">
                             <EmployeeAttendanceDetail />
+                          </RoleRoute>
+                        }
+                      />
+                      <Route
+                        path="/apply-leave"
+                        element={
+                          <RoleRoute allowedRoles={["companyAdmin"]} redirectTo="/dashboard">
+                            <ApplyLeave />
                           </RoleRoute>
                         }
                       />
@@ -159,14 +191,6 @@ const App = () => (
                         }
                       />
                       <Route
-                        path="/reports"
-                        element={
-                          <RoleRoute allowedRoles={["companyAdmin","hr"]} redirectTo="/dashboard">
-                            <Reports />
-                          </RoleRoute>
-                        }
-                      />
-                      <Route
                         path="/reports/employees"
                         element={
                           <RoleRoute allowedRoles={["companyAdmin","hr"]} redirectTo="/dashboard">
@@ -192,7 +216,14 @@ const App = () => (
                       />
                       <Route path="/settings" element={<Settings />} />
                       <Route path="/profile" element={<Profile />} />
-                      <Route path="/create-organization" element={<CreateOrganization />} />
+                      <Route
+                        path="/create-organization"
+                        element={
+                          <RoleRoute allowedRoles={["superAdmin"]} redirectTo="/dashboard">
+                            <CreateOrganization />
+                          </RoleRoute>
+                        }
+                      />
                       <Route path="*" element={<NotFound />} />
                     </Routes>
                   </MainLayout>

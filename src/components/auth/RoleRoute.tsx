@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 
 interface RoleRouteProps {
@@ -10,6 +10,7 @@ interface RoleRouteProps {
 
 const RoleRoute = ({ children, allowedRoles, redirectTo = '/dashboard' }: RoleRouteProps) => {
   const { user, loading } = useAuth();
+  const location = useLocation();
 
   // Show loading state while checking authentication/role
   if (loading) {
@@ -20,7 +21,13 @@ const RoleRoute = ({ children, allowedRoles, redirectTo = '/dashboard' }: RoleRo
   const isAllowed = role ? allowedRoles.includes(role) : false;
 
   if (!isAllowed) {
-    return <Navigate to={redirectTo} replace />;
+    return (
+      <Navigate
+        to={redirectTo}
+        replace
+        state={{ accessDenied: true, from: location.pathname }}
+      />
+    );
   }
 
   return <>{children}</>;

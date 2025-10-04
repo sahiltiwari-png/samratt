@@ -193,6 +193,40 @@ export function AppSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+
+        {role === 'companyAdmin' && (
+          <SidebarGroup>
+            <SidebarGroupLabel className="uppercase text-xs font-medium px-2 mb-2 bg-[#4CDC9C] text-[#23292F] rounded-md">
+              {state !== "collapsed" ? "My space" : ""}
+            </SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu className="space-y-1">
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild className="w-full">
+                    <NavLink
+                      to="/apply-leave"
+                      className={`${getNavClassName('/apply-leave')} transition-all duration-200 flex items-center gap-3 px-3 py-2.5 rounded-md w-full text-sm !text-[#4CDC9C] hover:!text-[#4CDC9C]`}
+                    >
+                      <Clock className="h-4 w-4 flex-shrink-0" />
+                      {state !== "collapsed" && <span>Apply leave</span>}
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild className="w-full">
+                    <NavLink
+                      to="/regularization/submit"
+                      className={`${getNavClassName('/regularization/submit')} transition-all duration-200 flex items-center gap-3 px-3 py-2.5 rounded-md w-full text-sm !text-[#4CDC9C] hover:!text-[#4CDC9C]`}
+                    >
+                      <Clock className="h-4 w-4 flex-shrink-0" />
+                      {state !== "collapsed" && <span>Attendance Regularization</span>}
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
       </SidebarContent>
 
       <SidebarFooter className="border-t border-gray-700 p-4">

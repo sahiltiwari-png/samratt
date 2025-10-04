@@ -466,14 +466,14 @@ const LeaveAllotment = () => {
             </div>
 
             {/* Submit Button */}
-            <div className="flex justify-end">
+            <div className="w-full">
               <Button
                 type="submit"
                 disabled={submitting || !selectedEmployee || !leaveType || !days}
-                className="hover:bg-emerald-700 px-8"
+                className="hover:bg-emerald-700 w-full"
                 style={{backgroundColor: '#4CDC9C', color: '#2C373B'}}
               >
-                {submitting ? "Adding..." : "Add Leave"}
+                {submitting ? "Saving..." : "Save"}
               </Button>
             </div>
           </form>

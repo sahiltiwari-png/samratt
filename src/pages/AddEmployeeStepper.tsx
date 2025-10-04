@@ -76,7 +76,7 @@ const AddEmployeeStepper = () => {
 
   const [form, setForm] = useState<any>({
     firstName: "", lastName: "", email: "", password: "", phone: "", department: "", designation: "",
-    grade: "", dateOfJoining: "", employmentType: "", reportingManager: "", probationEndDate: "",
+    departmentCode: "", grade: "", dateOfJoining: "", employmentType: "", reportingManagerId: "", reportingManagerName: "", probationEndDate: "",
     isActive: true, dob: "", gender: "", bloodGroup: "", maritalStatus: "", nationality: "", country: "",
     state: "", city: "", zipCode: "", passportNo: "", addressLine1: "", addressLine2: "", aadhaarNo: "",
     panNo: "", profilePhotoUrl: "", status: "active",
@@ -97,6 +97,9 @@ const AddEmployeeStepper = () => {
   // Roles dropdown state
   const [roles, setRoles] = useState<any[]>([]);
   const [role, setRole] = useState("");
+  const [rmOpen, setRmOpen] = useState(false);
+  const [rmLoading, setRmLoading] = useState(false);
+  const [rmList, setRmList] = useState<any[]>([]);
 
   // Fetch roles lazily on focus of the Role field
 
@@ -247,6 +250,11 @@ const AddEmployeeStepper = () => {
                   value={form.designation} 
                   onChange={(e:any)=>setForm({...form, designation:e.target.value})}
                 />
+                <Input 
+                  label="Department Code" 
+                  value={form.departmentCode} 
+                  onChange={(e:any)=>setForm({...form, departmentCode:e.target.value})}
+                />
                 <Select
                   label="Role"
                   value={role}
@@ -267,11 +275,76 @@ const AddEmployeeStepper = () => {
                   options={employmentTypeOptions}
                   placeholder="Select Employment Type"
                 />
-                <Input 
-                  label="Reporting Manager" 
-                  value={form.reportingManager} 
-                  onChange={(e:any)=>setForm({...form, reportingManager:e.target.value})}
-                />
+                {/* Reporting Manager searchable dropdown */}
+                <div className="flex flex-col">
+                  <label className="mb-2 text-sm font-medium text-gray-700">Reporting Manager</label>
+                  <div>
+                    <button
+                      type="button"
+                      className="w-full rounded-md border border-gray-300 px-3 py-2.5 text-sm bg-white focus:border-green-500 focus:ring-2 focus:ring-green-100 text-left"
+                      onClick={async () => {
+                        setRmOpen(true);
+                        if (rmList.length === 0) {
+                          setRmLoading(true);
+                          try {
+                            const res = await API.get('/employees', { params: { page: 1, limit: 50 } });
+                            const items = Array.isArray(res?.data?.items) ? res.data.items : [];
+                            setRmList(items);
+                          } catch (e) {
+                            setRmList([]);
+                          } finally {
+                            setRmLoading(false);
+                          }
+                        }
+                      }}
+                    >
+                      {form.reportingManagerName || 'Select Reporting Manager'}
+                    </button>
+                  </div>
+                  {rmOpen && (
+                    <div className="mt-2 border rounded-md shadow-sm">
+                      <div className="p-2">
+                        <input
+                          type="text"
+                          placeholder="Search employees..."
+                          className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+                          onChange={(e) => {
+                            const q = e.target.value.toLowerCase();
+                            setRmList((prev) => prev.filter((u:any) => (`${u.firstName || ''} ${u.lastName || ''}`).toLowerCase().includes(q)));
+                          }}
+                        />
+                      </div>
+                      <div className="max-h-56 overflow-auto">
+                        {rmLoading ? (
+                          <div className="p-3 text-sm text-gray-500">Loading...</div>
+                        ) : (
+                          rmList.map((u:any) => (
+                            <div
+                              key={u._id}
+                              className="px-3 py-2 cursor-pointer hover:bg-gray-50"
+                              onClick={() => {
+                                setForm({...form, reportingManagerId: u._id, reportingManagerName: `${u.firstName || ''} ${u.lastName || ''}`.trim()});
+                                setRmOpen(false);
+                              }}
+                            >
+                              {(u.firstName || '') + ' ' + (u.lastName || '')}
+                            </div>
+                          ))
+                        )}
+                      </div>
+                    </div>
+                  )}
+                  {form.reportingManagerName && (
+                    <div className="mt-2 inline-flex items-center gap-2">
+                      <span className="px-2 py-1 text-xs rounded-md bg-green-100 text-green-700 border border-green-300">{form.reportingManagerName}</span>
+                      <button
+                        type="button"
+                        className="text-xs text-red-600"
+                        onClick={() => setForm({...form, reportingManagerId: '', reportingManagerName: ''})}
+                      >Remove</button>
+                    </div>
+                  )}
+                </div>
                 <Input 
                   label="Date of Joining" 
                   type="date" 
@@ -653,6 +726,7 @@ const AddEmployeeStepper = () => {
                           ESIC: form.taxDetails.ESIC,
                         },
                         role: role,
+                        reportingManagerId: form.reportingManagerId || undefined,
                       };
                       await API.post("/auth/employees", payload);
                       setSuccess(true);

@@ -27,6 +27,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     
     if (storedUser && token) {
       const userData = JSON.parse(storedUser);
+      // Normalize photo field for UI avatar: prefer profilePhotoUrl, fallback to existing profileImage
+      if (!userData.profileImage && userData.profilePhotoUrl) {
+        userData.profileImage = userData.profilePhotoUrl;
+        localStorage.setItem('user', JSON.stringify(userData));
+      }
       setUser(userData);
       if (userData.organizationId) {
         setOrganizationId(userData.organizationId);
@@ -41,6 +46,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const response = await apiLogin(email, password);
       // Store user data, token, and role
       const userData = response.user || { email };
+      // Normalize photo field for UI avatar
+      if (!userData.profileImage && userData.profilePhotoUrl) {
+        userData.profileImage = userData.profilePhotoUrl;
+      }
       if (response.role) {
         userData.role = response.role;
       }

@@ -160,7 +160,10 @@ const EmployeeFilterBar = ({
           onChange={e => setStatusFilter(e.target.value === "" ? null : e.target.value)}
         >
           <option value="">Status</option>
-          {statusOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+          {statusOptions.map(opt => {
+            const value = opt.toLowerCase();
+            return <option key={opt} value={value}>{opt}</option>;
+          })}
         </select>
         {/* Searchable Designation Dropdown */}
         <Popover open={designationOpen} onOpenChange={setDesignationOpen}>
@@ -233,6 +236,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command, CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem } from "@/components/ui/command";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { getEmployees, getEmployeeById } from "@/api/employees";
 import { uploadFile } from "@/api/uploadFile";
 import { useRef } from "react";
@@ -257,6 +261,7 @@ interface Employee {
   dateOfJoining?: string;
   probationEndDate?: string;
   profilePhotoUrl?: string;
+  departmentCode?: string;
 }
 
 
@@ -284,6 +289,33 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
   const [rolesOpen, setRolesOpen] = useState(false);
   const [rolesLoading, setRolesLoading] = useState(false);
   const [selectedRole, setSelectedRole] = useState<any>(null);
+  // Designation dropdown state in edit modal
+  const [designationOpen, setDesignationOpen] = useState(false);
+  // Reporting manager dropdown state in edit modal
+  const [rmOpen, setRmOpen] = useState(false);
+  const [rmLoading, setRmLoading] = useState(false);
+  const [rmList, setRmList] = useState<any[]>([]);
+  const [selectedRM, setSelectedRM] = useState<any>(null);
+  const employmentTypeOptions = [
+    { value: "full-time", label: "Full-time" },
+    { value: "part-time", label: "Part-time" },
+    { value: "contract", label: "Contract" },
+    { value: "intern", label: "Intern" },
+    { value: "consultant", label: "Consultant" }
+  ];
+  // Provided designations list for searchable dropdown
+  const DESIGNATIONS = [
+    "Intern","Trainee","Associate","Junior Executive","Executive","Coordinator",
+    "Senior Executive","Specialist","Analyst","Consultant","Assistant Manager","Team Lead","Supervisor",
+    "Manager","Senior Manager","Project Manager","Program Manager","Product Manager","Operations Manager","Delivery Manager",
+    "General Manager","Associate Director","Director","Vice President","Senior Vice President","CEO","CTO","CIO","COO","CFO","CMO","CHRO","CSO",
+    "Software Engineer","Senior Software Engineer","Full Stack Developer","Backend Developer","Frontend Developer","Mobile App Developer","DevOps Engineer","Cloud Engineer","QA Engineer","Test Analyst","Automation Tester","UI/UX Designer","System Administrator","Database Administrator","Network Engineer","Security Analyst","Technical Lead","Solution Architect","Technical Project Manager","Engineering Manager","VP Engineering",
+    "Sales Executive","Business Development Executive","Business Development Manager","Inside Sales Executive","Sales Consultant","Relationship Manager","Key Account Manager","Territory Sales Manager","Regional Sales Manager","National Sales Manager","Head of Sales","Vice President Sales","Chief Sales Officer",
+    "Marketing Executive","Digital Marketing Executive","SEO Specialist","PPC Specialist","Content Writer","Copywriter","Social Media Executive","Brand Executive","Marketing Analyst","Marketing Manager","Product Marketing Manager","Campaign Manager","Growth Manager","Regional Marketing Manager","Head of Marketing","Vice President Marketing","Chief Marketing Officer",
+    "HR Executive","HR Generalist","Recruiter","Talent Acquisition Specialist","HR Manager","HR Business Partner","Training & Development Manager","Payroll Specialist","Admin Executive","Office Manager",
+    "Accounts Executive","Junior Accountant","Senior Accountant","Finance Analyst","Accounts Manager","Finance Manager","Internal Auditor","Financial Controller",
+    "Operations Executive","Operations Manager","Process Specialist","Customer Support Executive","Client Service Manager","Technical Support Engineer","Service Delivery Manager"
+  ];
 
   const navigate = useNavigate();
 
@@ -292,7 +324,13 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
       setLoading(true);
       try {
         // Assume getEmployees accepts params for page, limit, status, designation, search
-        const data = await getEmployees({ page, limit: 10, status: statusFilter, designation: designationFilter, search: searchTerm });
+        const data = await getEmployees({
+          page,
+          limit: 10,
+          status: statusFilter ? statusFilter.toLowerCase() : statusFilter,
+          designation: designationFilter,
+          search: searchTerm
+        });
         setEmployees(Array.isArray(data.items) ? data.items : []);
         setTotal(data.total || 0);
         setTotalPages(data.totalPages || 1);
@@ -333,13 +371,13 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
           <table className="w-full border-separate border-spacing-0" style={{ width: '100%', borderRadius: '12px', overflow: 'hidden', background: '#fff', boxShadow: '0 2px 8px rgba(0,0,0,0.04)', tableLayout: 'auto' }}>
             <colgroup>
               <col style={{ width: '16%' }} />
-              <col style={{ width: '13%' }} />
-              <col style={{ width: '13%' }} />
-              <col style={{ width: '13%' }} />
-              <col style={{ width: '13%' }} />
-              <col style={{ width: '18%' }} />
+              <col style={{ width: '12%' }} />
+              <col style={{ width: '12%' }} />
+              <col style={{ width: '12%' }} />
+              <col style={{ width: '12%' }} />
+              <col style={{ width: '16%' }} />
               <col style={{ width: '8%' }} />
-              <col style={{ width: '6%' }} />
+              <col style={{ width: '12%' }} />
             </colgroup>
             <thead className="text-[#2C373B]">
               <tr className="border-b bg-white">
@@ -379,7 +417,22 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
                     <td className="px-1 py-1 max-w-xs truncate align-middle">{emp.designation || '-'}</td>
                     <td className="px-1 py-1 max-w-xs truncate align-middle">{emp.dateOfJoining ? new Date(emp.dateOfJoining).toLocaleDateString() : (emp.createdAt ? new Date(emp.createdAt).toLocaleDateString() : '-')}</td>
                     <td className="px-1 py-1 max-w-xs truncate align-middle">{emp.probationEndDate ? new Date(emp.probationEndDate).toLocaleDateString() : '-'}</td>
-                    <td className="px-1 py-1 align-middle">{emp.email || '-'}</td>
+                    <td className="px-1 py-1 align-middle">
+                      {emp.email ? (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div className="truncate max-w-[180px] cursor-help" title={emp.email}>
+                              {emp.email}
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent side="top">
+                            {emp.email}
+                          </TooltipContent>
+                        </Tooltip>
+                      ) : (
+                        '-' 
+                      )}
+                    </td>
                     <td className="px-1 py-1 align-middle">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
@@ -403,15 +456,22 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
                             setLoadingDetails(true);
                             setEditMode(false);
                             setUpdateMessage(null);
-                            try {
-                              const details = await getEmployeeById(emp._id);
-                              setEmployeeDetails(details);
-                              setFormData(details);
-                            } catch (e) {
-                              setEmployeeDetails(null);
-                            } finally {
-                              setLoadingDetails(false);
+                          try {
+                            const details = await getEmployeeById(emp._id);
+                            setEmployeeDetails(details);
+                            setFormData(details);
+                            // Normalize reporting manager if API returns object
+                            if (details?.reportingManagerId && typeof details.reportingManagerId === 'object') {
+                              const rmObj: any = details.reportingManagerId;
+                              const rmName = `${rmObj?.firstName || ''} ${rmObj?.lastName || ''}`.trim();
+                              setEmployeeDetails((prev: any) => ({ ...prev, reportingManagerName: rmName, reportingManagerCode: rmObj?.employeeCode || '' }));
+                              setFormData((fd: any) => ({ ...fd, reportingManagerId: rmObj?._id, reportingManagerName: rmName, reportingManagerCode: rmObj?.employeeCode || '' }));
                             }
+                          } catch (e) {
+                            setEmployeeDetails(null);
+                          } finally {
+                            setLoadingDetails(false);
+                          }
                           }}
                         >
                           <Eye className="w-4 h-4" />
@@ -430,6 +490,17 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
                               const details = await getEmployeeById(emp._id);
                               setEmployeeDetails(details);
                               setFormData(details);
+                              // Normalize reporting manager if API returns object
+                              if (details?.reportingManagerId && typeof details.reportingManagerId === 'object') {
+                                const rmObj: any = details.reportingManagerId;
+                                const rmName = `${rmObj?.firstName || ''} ${rmObj?.lastName || ''}`.trim();
+                                setSelectedRM(rmObj);
+                                setEmployeeDetails((prev: any) => ({ ...prev, reportingManagerName: rmName, reportingManagerCode: rmObj?.employeeCode || '' }));
+                                setFormData((fd: any) => ({ ...fd, reportingManagerId: rmObj?._id, reportingManagerName: rmName, reportingManagerCode: rmObj?.employeeCode || '' }));
+                              } else if (details?.reportingManagerName) {
+                                // Keep existing name if provided by API
+                                setEmployeeDetails((prev: any) => ({ ...prev, reportingManagerName: details.reportingManagerName }));
+                              }
                             } catch (e) {
                               setEmployeeDetails(null);
                             } finally {
@@ -604,11 +675,161 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
                         })()
                       )}
                     </div>
+                    {/* Designation Field with searchable dropdown when cleared */}
+                    <div className="flex flex-col mb-2">
+                      <label className="font-semibold capitalize mb-1" style={{color: '#2C373B'}}>Designation</label>
+                      {editMode ? (
+                        <Popover open={designationOpen} onOpenChange={setDesignationOpen}>
+                          <PopoverTrigger asChild>
+                            <input
+                              className="border border-emerald-300 rounded px-2 py-1 bg-[rgb(209,250,229)] text-[#2C373B] focus:outline-none focus:ring-2 focus:ring-emerald-200 transition"
+                              type="text"
+                              value={formData.designation || ''}
+                              onChange={e => {
+                                const val = e.target.value || '';
+                                setFormData((fd: any) => ({ ...fd, designation: val }));
+                                if (val.trim() === '') {
+                                  setDesignationOpen(true);
+                                }
+                              }}
+                              placeholder="Type or clear to search"
+                            />
+                          </PopoverTrigger>
+                          <PopoverContent className="p-0 w-64" align="start">
+                            <Command>
+                              <CommandInput placeholder="Search designation..." />
+                              <CommandList className="max-h-64 overflow-auto">
+                                <CommandEmpty>No results found.</CommandEmpty>
+                                <CommandGroup heading="Designations">
+                                  {DESIGNATIONS.map((d) => (
+                                    <CommandItem
+                                      key={d}
+                                      value={d}
+                                      onSelect={() => {
+                                        setFormData((fd: any) => ({ ...fd, designation: d }));
+                                        setDesignationOpen(false);
+                                      }}
+                                    >
+                                      {d}
+                                    </CommandItem>
+                                  ))}
+                                </CommandGroup>
+                              </CommandList>
+                            </Command>
+                          </PopoverContent>
+                        </Popover>
+                      ) : (
+                        <span className="rounded px-2 py-1 border border-emerald-200 bg-[rgb(209,250,229)] text-[#2C373B]">{employeeDetails?.designation || '-'}</span>
+                      )}
+                    </div>
+                    {/* Employment Type dropdown in edit mode */}
+                    <div className="flex flex-col mb-2">
+                      <label className="font-semibold capitalize mb-1" style={{color: '#2C373B'}}>Employment Type</label>
+                      {editMode ? (
+                        <select
+                          className="border border-emerald-300 rounded px-2 py-1 bg-[rgb(209,250,229)] text-[#2C373B] focus:outline-none focus:ring-2 focus:ring-emerald-200 transition"
+                          value={formData.employmentType || ''}
+                          onChange={e => setFormData((fd: any) => ({ ...fd, employmentType: e.target.value }))}
+                        >
+                          <option value="">Select Employment Type</option>
+                          {employmentTypeOptions.map(opt => (
+                            <option key={opt.value} value={opt.value}>{opt.label}</option>
+                          ))}
+                        </select>
+                      ) : (
+                        <span className="rounded px-2 py-1 border border-emerald-200 bg-[rgb(209,250,229)] text-[#2C373B]">{employeeDetails?.employmentType || '-'}</span>
+                      )}
+                    </div>
+                    {/* Reporting Manager dropdown shows names, stores IDs */}
+                    <div className="flex flex-col mb-2">
+                      <label className="font-semibold capitalize mb-1" style={{color: '#2C373B'}}>Reporting Manager</label>
+                      {editMode ? (
+                        <Popover
+                          open={rmOpen}
+                          onOpenChange={async (open) => {
+                            setRmOpen(open);
+                            if (open && rmList.length === 0) {
+                              setRmLoading(true);
+                              try {
+                                const data = await getEmployees({ page: 1, limit: 50 });
+                                const items = Array.isArray(data.items) ? data.items : [];
+                                setRmList(items);
+                              } catch (e) {
+                                setRmList([]);
+                              } finally {
+                                setRmLoading(false);
+                              }
+                            }
+                          }}
+                        >
+                          <PopoverTrigger asChild>
+                            <button
+                              type="button"
+                              className="border border-emerald-300 rounded px-2 py-1 bg-[rgb(209,250,229)] text-[#2C373B] text-left hover:bg-emerald-100"
+                            >
+                              {selectedRM?.firstName ? `${selectedRM.firstName} ${selectedRM.lastName || ''}`.trim() : (employeeDetails?.reportingManagerName || 'Select manager')}
+                            </button>
+                          </PopoverTrigger>
+                          <PopoverContent className="p-0 w-64" align="start">
+                            <Command>
+                              <CommandInput placeholder="Search employees..." />
+                              <CommandList className="max-h-64 overflow-auto">
+                                <CommandEmpty>No employees found.</CommandEmpty>
+                                <CommandGroup heading="Employees">
+                                  {rmLoading ? (
+                                    <div className="p-2 text-sm text-gray-500">Loading...</div>
+                                  ) : (
+                                    rmList.map((u: any) => (
+                                      <CommandItem
+                                        key={u._id}
+                                        value={`${u.firstName || ''} ${u.lastName || ''}`.trim()}
+                                        onSelect={() => {
+                                          setSelectedRM(u);
+                                          setRmOpen(false);
+                                          setFormData((fd: any) => ({ ...fd, reportingManagerId: u._id, reportingManagerName: `${u.firstName || ''} ${u.lastName || ''}`.trim() }));
+                                        }}
+                                      >
+                                        {(u.firstName || '') + ' ' + (u.lastName || '')}
+                                      </CommandItem>
+                                    ))
+                                  )}
+                                </CommandGroup>
+                              </CommandList>
+                            </Command>
+                          </PopoverContent>
+                        </Popover>
+                      ) : (
+                        <span className="rounded px-2 py-1 border border-emerald-200 bg-[rgb(209,250,229)] text-[#2C373B]">{
+                          (() => {
+                            const rmName = employeeDetails?.reportingManagerName;
+                            const rmCode = employeeDetails?.reportingManagerCode;
+                            if (rmName && rmCode) return `${rmName} (${rmCode})`;
+                            if (rmName) return rmName;
+                            const rmId = employeeDetails?.reportingManagerId as any;
+                            if (rmId && typeof rmId === 'object') {
+                              const name = `${rmId?.firstName || ''} ${rmId?.lastName || ''}`.trim();
+                              return rmId?.employeeCode ? `${name} (${rmId.employeeCode})` : (name || '-');
+                            }
+                            return '-';
+                          })()
+                        }</span>
+                      )}
+                      {/* Selected manager tag */}
+                      {editMode && formData.reportingManagerName && (
+                        <div className="mt-1">
+                          <Badge className="text-[#2C373B] bg-[rgb(209,250,229)] border border-emerald-200 px-2 py-0.5">
+                            {formData.reportingManagerName}
+                          </Badge>
+                        </div>
+                      )}
+                    </div>
                     {[
-                      "firstName","lastName","phone","department","designation","grade","dateOfJoining","probationEndDate","employmentType","shiftId","status","reportingManagerId","dob","gender","bloodGroup","maritalStatus","nationality","addressLine1","addressLine2","country","state","city","zipCode","aadhaarNo","panNo","passportNo","salaryStructureId","benefits","skills","loginEnabled","isActive","camsEmployeeId"
+                      "firstName","lastName","phone","department","departmentCode","grade","dateOfJoining","probationEndDate","shiftId","status","dob","gender","bloodGroup","maritalStatus","nationality","addressLine1","addressLine2","country","state","city","zipCode","aadhaarNo","panNo","passportNo","salaryStructureId","benefits","skills","loginEnabled","isActive","camsEmployeeId"
                     ].map((key) => {
                       const value = employeeDetails[key];
                       if (typeof value === "object" && value !== null) return null;
+                      // Hide specific fields in view mode as requested
+                      if (!editMode && (key === 'grade' || key === 'shiftId' || key === 'camsEmployeeId')) return null;
                       let inputType = "text";
                       if (["dateOfJoining", "probationEndDate", "dob"].includes(key)) inputType = "date";
                       let inputValue = formData[key] || '';
@@ -680,7 +901,16 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
                       setUpdateLoading(true);
                       setUpdateMessage(null);
                       try {
-                        const submitData = { ...formData };
+                        const submitData: any = { ...formData };
+                        // Normalize reportingManagerId to a valid ObjectId string or null
+                        const candidateRm = (submitData as any)?.reportingManagerId;
+                        const isValidObjectId = (id: string) => typeof id === 'string' && /^[0-9a-fA-F]{24}$/.test(id);
+                        if (typeof candidateRm === 'string') {
+                          submitData.reportingManagerId = isValidObjectId(candidateRm) ? candidateRm : null;
+                        } else if (candidateRm && typeof candidateRm === 'object') {
+                          const id = candidateRm?._id;
+                          submitData.reportingManagerId = isValidObjectId(id) ? id : null;
+                        }
                         await API.put(`/auth/employees/${selectedEmployee?._id}`, submitData);
                         setUpdateMessage('Update success!');
                         setEditMode(false);

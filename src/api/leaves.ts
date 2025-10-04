@@ -28,6 +28,26 @@ export interface LeaveRequestsResponse {
   items: LeaveRequest[];
 }
 
+// Create leave request payload and API
+export interface CreateLeaveRequestPayload {
+  startDate: string;
+  endDate: string;
+  reason: string;
+  leavePolicyId: string;
+  leaveTypeId: string;
+  leaveType: string;
+  days: number;
+  employeeId: string;
+  documentUrl?: string;
+}
+
+export const createLeaveRequest = async (
+  payload: CreateLeaveRequestPayload
+): Promise<{ success: boolean; message?: string; data?: any }> => {
+  const res = await API.post('/leaves', payload);
+  return res.data;
+};
+
 export const getLeaveRequests = async (
   page: number = 1, 
   limit: number = 10, 
@@ -59,6 +79,12 @@ export const getLeaveRequestById = async (id: string): Promise<{ success: boolea
 
 export const updateLeaveRequestStatus = async (id: string, status: string, remarks?: string) => {
   const res = await API.post(`/leaves/status/update/${id}`, { status, remarks });
+  return res.data;
+};
+
+// Cancel leave request by ID
+export const cancelLeaveRequest = async (id: string): Promise<{ success: boolean; message?: string; data?: any }> => {
+  const res = await API.post(`/leaves/${id}/cancel`);
   return res.data;
 };
 

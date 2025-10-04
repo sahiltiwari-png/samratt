@@ -49,11 +49,28 @@ const AdminPanel = () => {
   ];
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="admin-panel-page p-6 space-y-6">
+      {/* Scoped styles for SuperAdmin dashboard UI */}
+      <style>{`
+        .admin-panel-page button {
+          background-color: #4CDC9C !important;
+          color: #2C373B !important;
+          border-color: transparent !important;
+        }
+        .admin-panel-page button:hover {
+          filter: brightness(0.95);
+        }
+        .admin-panel-page h1,
+        .admin-panel-page .text-muted-foreground,
+        .admin-panel-page .font-medium,
+        .admin-panel-page .card-title {
+          color: #2C373B !important;
+        }
+      `}</style>
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold gradient-text">Admin Panel</h1>
+          <h1 className="text-3xl font-bold" style={{ color: "#2C373B" }}>Admin Panel</h1>
           <p className="text-muted-foreground mt-1">
             System administration and management dashboard
           </p>
