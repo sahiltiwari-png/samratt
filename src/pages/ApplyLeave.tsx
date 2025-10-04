@@ -154,7 +154,7 @@ const ApplyLeave = () => {
           <div className="space-y-2">
             <Label>Leave Type</Label>
             <Select onOpenChange={(open) => open && handleOpenLeaveType()} value={leaveTypeId} onValueChange={handleLeaveTypeSelect}>
-              <SelectTrigger className="h-10">
+              <SelectTrigger className="h-8 bg-[rgb(209,250,229)] text-[#2C373B]">
                 <SelectValue placeholder="Select leave type" />
               </SelectTrigger>
               <SelectContent>
@@ -170,7 +170,7 @@ const ApplyLeave = () => {
               <Label>Start Date</Label>
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button variant="outline" className={cn('w-full justify-start text-left font-normal', !startDate && 'text-muted-foreground')}>
+                  <Button variant="outline" className={cn('w-full justify-start text-left font-normal bg-[rgb(209,250,229)] text-[#2C373B]', !startDate && 'text-muted-foreground')}>
                     <CalendarIcon className="mr-2 h-4 w-4" />
                     {startDate ? format(startDate, 'PPP') : 'Pick date'}
                   </Button>
@@ -184,7 +184,7 @@ const ApplyLeave = () => {
               <Label>End Date</Label>
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button variant="outline" className={cn('w-full justify-start text-left font-normal', !endDate && 'text-muted-foreground')}>
+                  <Button variant="outline" className={cn('w-full justify-start text-left font-normal bg-[rgb(209,250,229)] text-[#2C373B]', !endDate && 'text-muted-foreground')}>
                     <CalendarIcon className="mr-2 h-4 w-4" />
                     {endDate ? format(endDate, 'PPP') : 'Pick date'}
                   </Button>
@@ -196,17 +196,17 @@ const ApplyLeave = () => {
             </div>
             <div className="space-y-2">
               <Label>Total Leave days</Label>
-              <div className="h-10 border rounded-md flex items-center px-3 bg-muted/50">{days || '-'}</div>
+              <div className="h-10 border rounded-md flex items-center px-3 bg-[rgb(209,250,229)] text-[#2C373B]">{days || '-'}</div>
             </div>
           </div>
 
           <div className="space-y-2">
             <Label>Reason</Label>
-            <Textarea rows={4} value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Reason for leave" />
+            <Textarea rows={4} value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Reason for leave" className="bg-[rgb(209,250,229)] text-[#2C373B]" />
           </div>
 
           <div className="grid grid-cols-[100px_1fr] gap-4 items-center">
-            <div className="h-20 border rounded-lg bg-muted/30 flex items-center justify-center overflow-hidden">
+            <div className="h-20 border rounded-lg bg-[rgb(209,250,229)] flex items-center justify-center overflow-hidden">
               {documentPreview ? (
                 <img src={documentPreview} alt="uploaded" className="h-full w-full object-cover" />
               ) : (
@@ -222,7 +222,7 @@ const ApplyLeave = () => {
           </div>
 
           <div className="flex justify-end">
-            <Button type="submit" className="hrms-button-primary" disabled={submitting || uploading}>
+            <Button type="submit" className="bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3fd18e]" disabled={submitting || uploading}>
               <Send className="mr-2 h-4 w-4" />
               {submitting ? 'Submitting...' : 'Submit'}
             </Button>
@@ -260,11 +260,11 @@ const ApplyLeave = () => {
       )}
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-2xl font-bold">Track Leave request</h2>
-        <Button className="hrms-button-primary" onClick={() => setShowForm(true)}>Request Leave</Button>
+        <Button className="bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3fd18e]" onClick={() => setShowForm(true)}>Request Leave</Button>
       </div>
       <div className="flex gap-3 mb-3">
         <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-40"><SelectValue placeholder="Status" /></SelectTrigger>
+          <SelectTrigger className="w-40 h-8 bg-[rgb(209,250,229)] text-[#2C373B]"><SelectValue placeholder="Status" /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All</SelectItem>
             <SelectItem value="approved">Approved</SelectItem>
@@ -274,33 +274,36 @@ const ApplyLeave = () => {
           </SelectContent>
         </Select>
         <Select value={typeFilter} onValueChange={setTypeFilter}>
-          <SelectTrigger className="w-40"><SelectValue placeholder="Leave type" /></SelectTrigger>
+          <SelectTrigger className="w-40 h-8 bg-[rgb(209,250,229)] text-[#2C373B]"><SelectValue placeholder="Leave type" /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All</SelectItem>
-            {leaveTypeItems.map((i) => (
-              <SelectItem key={i.id} value={i.type}>{i.type}</SelectItem>
-            ))}
+            <SelectItem value="casual">casual</SelectItem>
+            <SelectItem value="medical">medical</SelectItem>
+            <SelectItem value="earned">earned</SelectItem>
+            <SelectItem value="maternity">maternity</SelectItem>
+            <SelectItem value="paternity">paternity</SelectItem>
+            <SelectItem value="other">other</SelectItem>
           </SelectContent>
         </Select>
-        <Button variant="ghost" onClick={() => { setStatusFilter(''); setTypeFilter(''); }}>Clear filters</Button>
+        <Button variant="ghost" className="bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3fd18e]" onClick={() => { setStatusFilter(''); setTypeFilter(''); }}>Clear filters</Button>
       </div>
       <div className="overflow-x-auto rounded-lg border">
         <table className="min-w-full text-sm">
           <thead className="bg-[#23292F] text-white">
             <tr>
-              <th className="p-3 text-left">Leave type</th>
-              <th className="p-3 text-left">Start date</th>
-              <th className="p-3 text-left">End date</th>
-              <th className="p-3 text-left">Reason</th>
-              <th className="p-3 text-left">Total days</th>
-              <th className="p-3 text-left">Status</th>
-              <th className="p-3 text-left">Add Remark</th>
-              <th className="p-3 text-left">Action</th>
+              <th className="p-3 text-left text-[12px] font-semibold">Leave type</th>
+              <th className="p-3 text-left text-[12px] font-semibold">Start date</th>
+              <th className="p-3 text-left text-[12px] font-semibold">End date</th>
+              <th className="p-3 text-left text-[12px] font-semibold">Reason</th>
+              <th className="p-3 text-left text-[12px] font-semibold">Total days</th>
+              <th className="p-3 text-left text-[12px] font-semibold">Status</th>
+              <th className="p-3 text-left text-[12px] font-semibold">Add Remark</th>
+              <th className="p-3 text-left text-[12px] font-semibold">Action</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="text-[14px] font-medium text-[#2C373B]">
             {requests?.items?.filter((itm) =>
-              ((typeFilter === '' || typeFilter === 'all') || itm.leaveType === typeFilter) &&
+              ((typeFilter === '' || typeFilter === 'all') || (itm.leaveType?.toLowerCase() === typeFilter)) &&
               ((statusFilter === '' || statusFilter === 'all') || itm.status === statusFilter)
             ).map((itm) => (
               <tr key={itm._id} className="odd:bg-white even:bg-muted/30">
@@ -320,7 +323,7 @@ const ApplyLeave = () => {
       <div className="flex items-center justify-between mt-3 text-sm">
         <div>Prev</div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm">1</Button>
+          <Button variant="outline" size="sm" className="bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3fd18e]">1</Button>
           <span>2</span><span>3</span><span>…</span><span>10</span>
         </div>
         <div>Next</div>
