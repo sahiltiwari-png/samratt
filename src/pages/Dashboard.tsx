@@ -432,7 +432,7 @@ const Dashboard = () => {
                 </div>
                 <button
                   className="w-full sm:w-auto bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3fd190] rounded-lg px-4 py-2 font-semibold transition"
-                  onClick={() => navigate('/reports')}
+                  onClick={() => navigate('/reports/employees')}
                 >
                   Manage Reports
                 </button>

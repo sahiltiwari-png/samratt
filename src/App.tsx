@@ -191,14 +191,6 @@ const App = () => (
                         }
                       />
                       <Route
-                        path="/reports"
-                        element={
-                          <RoleRoute allowedRoles={["companyAdmin","hr"]} redirectTo="/dashboard">
-                            <Reports />
-                          </RoleRoute>
-                        }
-                      />
-                      <Route
                         path="/reports/employees"
                         element={
                           <RoleRoute allowedRoles={["companyAdmin","hr"]} redirectTo="/dashboard">
