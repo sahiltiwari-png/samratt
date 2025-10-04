@@ -236,6 +236,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command, CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem } from "@/components/ui/command";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { getEmployees, getEmployeeById } from "@/api/employees";
 import { uploadFile } from "@/api/uploadFile";
 import { useRef } from "react";
@@ -416,7 +417,22 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
                     <td className="px-1 py-1 max-w-xs truncate align-middle">{emp.designation || '-'}</td>
                     <td className="px-1 py-1 max-w-xs truncate align-middle">{emp.dateOfJoining ? new Date(emp.dateOfJoining).toLocaleDateString() : (emp.createdAt ? new Date(emp.createdAt).toLocaleDateString() : '-')}</td>
                     <td className="px-1 py-1 max-w-xs truncate align-middle">{emp.probationEndDate ? new Date(emp.probationEndDate).toLocaleDateString() : '-'}</td>
-                    <td className="px-1 py-1 align-middle">{emp.email || '-'}</td>
+                    <td className="px-1 py-1 align-middle">
+                      {emp.email ? (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div className="truncate max-w-[180px] cursor-help" title={emp.email}>
+                              {emp.email}
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent side="top">
+                            {emp.email}
+                          </TooltipContent>
+                        </Tooltip>
+                      ) : (
+                        '-' 
+                      )}
+                    </td>
                     <td className="px-1 py-1 align-middle">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
