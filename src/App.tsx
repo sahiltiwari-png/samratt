@@ -56,7 +56,14 @@ const App = () => (
                     <Routes>
                       <Route path="/" element={<Navigate to="/dashboard" replace />} />
                       <Route path="/dashboard" element={<Dashboard />} />
-                      <Route path="/employees" element={<Employees />} />
+                      <Route
+                        path="/employees"
+                        element={
+                          <RoleRoute allowedRoles={["companyAdmin","hr"]} redirectTo="/dashboard">
+                            <Employees />
+                          </RoleRoute>
+                        }
+                      />
                       <Route path="/add-employee" element={<AddEmployeeStepper />} />
                       {/* SuperAdmin-only routes */}
                       <Route
@@ -83,7 +90,14 @@ const App = () => (
                           </RoleRoute>
                         }
                       />
-                      <Route path="/regularization" element={<Regularization />} />
+                      <Route
+                        path="/regularization"
+                        element={
+                          <RoleRoute allowedRoles={["companyAdmin","hr"]} redirectTo="/dashboard">
+                            <Regularization />
+                          </RoleRoute>
+                        }
+                      />
                       <Route path="/organizations/:id" element={<OrganizationDetails />} />
                       {/* CompanyAdmin-only routes */}
                       <Route
