@@ -20,8 +20,11 @@ import { User, ChevronDown, X, Search, ChevronLeft, ChevronRight, Plus, Calendar
 import { getEmployees, Employee as EmployeeType, EmployeesResponse } from "@/api/employees";
 import { getRegularizationRequests, updateRegularizationRequest, RegularizationRequest, RegularizationResponse, createRegularizationRequest, CreateRegularizationRequest } from "@/api/regularizations";
 import { toast } from "@/components/ui/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Regularization = () => {
+  const { user } = useAuth();
+  const role = user?.role || localStorage.getItem('role');
   const [status, setStatus] = useState<string>("all");
   const [requests, setRequests] = useState<RegularizationRequest[]>([]);
   const [loading, setLoading] = useState(true);
@@ -379,13 +382,15 @@ const Regularization = () => {
 
           <div className="flex items-center gap-3 flex-wrap">
             {/* Request Regularization Button */}
-            <Button 
-              onClick={() => setShowForm(true)}
-              className="bg-[#4CDC9C] hover:bg-[#43c58d] text-[#2C373B]"
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              Request Regularization
-            </Button>
+            {role !== 'companyAdmin' && (
+              <Button 
+                onClick={() => setShowForm(true)}
+                className="bg-[#4CDC9C] hover:bg-[#43c58d] text-[#2C373B]"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Request Regularization
+              </Button>
+            )}
             {/* Employee Search Filter */}
             <div className="relative employee-search-container">
               <div 
