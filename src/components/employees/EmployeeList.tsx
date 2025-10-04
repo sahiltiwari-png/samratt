@@ -160,7 +160,10 @@ const EmployeeFilterBar = ({
           onChange={e => setStatusFilter(e.target.value === "" ? null : e.target.value)}
         >
           <option value="">Status</option>
-          {statusOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+          {statusOptions.map(opt => {
+            const value = opt.toLowerCase();
+            return <option key={opt} value={value}>{opt}</option>;
+          })}
         </select>
         {/* Searchable Designation Dropdown */}
         <Popover open={designationOpen} onOpenChange={setDesignationOpen}>
@@ -320,7 +323,13 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
       setLoading(true);
       try {
         // Assume getEmployees accepts params for page, limit, status, designation, search
-        const data = await getEmployees({ page, limit: 10, status: statusFilter, designation: designationFilter, search: searchTerm });
+        const data = await getEmployees({
+          page,
+          limit: 10,
+          status: statusFilter ? statusFilter.toLowerCase() : statusFilter,
+          designation: designationFilter,
+          search: searchTerm
+        });
         setEmployees(Array.isArray(data.items) ? data.items : []);
         setTotal(data.total || 0);
         setTotalPages(data.totalPages || 1);
