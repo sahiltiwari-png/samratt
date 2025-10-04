@@ -205,7 +205,7 @@ export function AppSidebar() {
                   <SidebarMenuButton asChild className="w-full">
                     <NavLink
                       to="/apply-leave"
-                      className={`${getNavClassName('/apply-leave')} transition-all duration-200 flex items-center gap-3 px-3 py-2.5 rounded-md w-full text-sm`}
+                      className={`${getNavClassName('/apply-leave')} transition-all duration-200 flex items-center gap-3 px-3 py-2.5 rounded-md w-full text-sm !text-[#4CDC9C] hover:!text-[#4CDC9C]`}
                     >
                       <Clock className="h-4 w-4 flex-shrink-0" />
                       {state !== "collapsed" && <span>Apply leave</span>}
@@ -216,7 +216,7 @@ export function AppSidebar() {
                   <SidebarMenuButton asChild className="w-full">
                     <NavLink
                       to="/regularization/submit"
-                      className={`${getNavClassName('/regularization/submit')} transition-all duration-200 flex items-center gap-3 px-3 py-2.5 rounded-md w-full text-sm`}
+                      className={`${getNavClassName('/regularization/submit')} transition-all duration-200 flex items-center gap-3 px-3 py-2.5 rounded-md w-full text-sm !text-[#4CDC9C] hover:!text-[#4CDC9C]`}
                     >
                       <Clock className="h-4 w-4 flex-shrink-0" />
                       {state !== "collapsed" && <span>Attendance Regularization</span>}
