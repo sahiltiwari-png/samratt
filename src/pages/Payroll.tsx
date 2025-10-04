@@ -714,7 +714,10 @@ const Payroll = () => {
                     const num = typeof val === "number" ? val : Number(val);
                     if (!Number.isNaN(num)) payload[k] = num;
                   }
-                  const res = await updatePayrollById(editPayrollId, payload);
+                  // Ensure month/year are passed for backend validation
+                  payload.month = month + 1; // API expects 1-12
+                  payload.year = year;
+                  const res = await updatePayrollById(editPayrollId, payload, month + 1, year);
                   toast({ title: "Success", description: res?.message || "Payroll updated successfully" });
                   setEditOpen(false);
                   // Refresh list

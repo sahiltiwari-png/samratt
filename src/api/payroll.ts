@@ -104,8 +104,12 @@ export interface UpdatePayrollResponse {
   payroll: PayrollItem;
 }
 
-export const updatePayrollById = async (payrollId: string, payload: UpdatePayrollPayload) => {
-  const res = await API.put(`/payroll/updateById/${payrollId}`, payload);
+export const updatePayrollById = async (payrollId: string, payload: UpdatePayrollPayload, month?: number, year?: number) => {
+  const query: string[] = [];
+  if (month) query.push(`month=${month}`);
+  if (year) query.push(`year=${year}`);
+  const qs = query.length ? `?${query.join('&')}` : '';
+  const res = await API.put(`/payroll/updateById/${payrollId}${qs}`, payload);
   return res.data as UpdatePayrollResponse;
 };
 
