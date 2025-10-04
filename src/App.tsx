@@ -17,6 +17,7 @@ import LeavePolicy from "./pages/LeavePolicy";
 import LeaveRequests from "./pages/LeaveRequests";
 import LeaveAllotment from "./pages/LeaveAllotment";
 import LeaveAllotmentHistory from "./pages/LeaveAllotmentHistory";
+import ApplyLeave from "./pages/ApplyLeave";
 import Employees from "./pages/Employees";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
@@ -138,6 +139,14 @@ const App = () => (
                         element={
                           <RoleRoute allowedRoles={["companyAdmin","hr"]} redirectTo="/dashboard">
                             <EmployeeAttendanceDetail />
+                          </RoleRoute>
+                        }
+                      />
+                      <Route
+                        path="/apply-leave"
+                        element={
+                          <RoleRoute allowedRoles={["companyAdmin"]} redirectTo="/dashboard">
+                            <ApplyLeave />
                           </RoleRoute>
                         }
                       />

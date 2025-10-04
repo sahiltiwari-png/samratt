@@ -204,8 +204,8 @@ export function AppSidebar() {
                 <SidebarMenuItem>
                   <SidebarMenuButton asChild className="w-full">
                     <NavLink
-                      to="/leaves"
-                      className={`${getNavClassName('/leaves')} transition-all duration-200 flex items-center gap-3 px-3 py-2.5 rounded-md w-full text-sm`}
+                      to="/apply-leave"
+                      className={`${getNavClassName('/apply-leave')} transition-all duration-200 flex items-center gap-3 px-3 py-2.5 rounded-md w-full text-sm`}
                     >
                       <Clock className="h-4 w-4 flex-shrink-0" />
                       {state !== "collapsed" && <span>Apply leave</span>}
