@@ -25,6 +25,7 @@ import NotFound from "./pages/NotFound";
 import AddEmployeeStepper from "./pages/AddEmployeeStepper";
 import HR from "./pages/HR";
 import Regularization from "./pages/Regularization";
+import SubmitRegularization from "./pages/SubmitRegularization";
 import Payroll from "./pages/Payroll";
 import SalarySlips from "./pages/SalarySlips";  
 import Reports from "./pages/Reports";
@@ -95,6 +96,14 @@ const App = () => (
                         element={
                           <RoleRoute allowedRoles={["companyAdmin","hr"]} redirectTo="/dashboard">
                             <Regularization />
+                          </RoleRoute>
+                        }
+                      />
+                      <Route
+                        path="/regularization/submit"
+                        element={
+                          <RoleRoute allowedRoles={["companyAdmin","hr"]} redirectTo="/dashboard">
+                            <SubmitRegularization />
                           </RoleRoute>
                         }
                       />
