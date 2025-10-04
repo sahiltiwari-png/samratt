@@ -20,6 +20,7 @@ import LeaveAllotmentHistory from "./pages/LeaveAllotmentHistory";
 import ApplyLeave from "./pages/ApplyLeave";
 import Employees from "./pages/Employees";
 import Profile from "./pages/Profile";
+import OrganizationSettings from "./pages/OrganizationSettings";
 import Settings from "./pages/Settings";
 import AdminPanel from "./pages/AdminPanel";
 import NotFound from "./pages/NotFound";
@@ -215,6 +216,7 @@ const App = () => (
                         }
                       />
                       <Route path="/settings" element={<Settings />} />
+                      <Route path="/organization-settings" element={<OrganizationSettings />} />
                       <Route path="/profile" element={<Profile />} />
                       <Route
                         path="/create-organization"
