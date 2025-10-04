@@ -19,6 +19,7 @@ const Settings = () => {
     phone: '',
     password: '',
     profileImage: '',
+    reportingManagerId: '',
   });
   useEffect(() => {
     const fetchUser = async () => {
@@ -26,6 +27,14 @@ const Settings = () => {
         const id = user?._id || user?.id;
         if (!id) return;
         const data = await getEmployeeById(id);
+        // Normalize reportingManagerId: accept valid ObjectId string or object with _id; else clear
+        const rawRm: any = (data as any)?.reportingManagerId;
+        let normalizedRmId: string = '';
+        if (typeof rawRm === 'string') {
+          normalizedRmId = /^[0-9a-fA-F]{24}$/.test(rawRm) ? rawRm : '';
+        } else if (rawRm && typeof rawRm === 'object') {
+          normalizedRmId = rawRm?._id || '';
+        }
         setForm({
           firstName: data.firstName || '',
           lastName: data.lastName || '',
@@ -34,6 +43,7 @@ const Settings = () => {
           phone: data.phone || '',
           password: '',
           profileImage: data.profilePhotoUrl || '',
+          reportingManagerId: normalizedRmId,
         });
       } catch (err) {
         setError('Failed to fetch user details');
@@ -67,6 +77,11 @@ const Settings = () => {
     setSuccess('');
     try {
       // Assume /auth/employees/:id for all roles (superadmin, admin, etc.)
+      // Sanitize reportingManagerId: send valid ObjectId or null to clear invalid value
+      const isValidObjectId = (id: string) => /^[0-9a-fA-F]{24}$/.test(id);
+      const safeReportingManagerId = form.reportingManagerId && isValidObjectId(form.reportingManagerId)
+        ? form.reportingManagerId
+        : null;
       const res = await API.put(`/auth/employees/${user._id || user.id}`, {
         firstName: form.firstName,
         lastName: form.lastName,
@@ -74,6 +89,7 @@ const Settings = () => {
         email: form.email,
         phone: form.phone,
         profilePhotoUrl: form.profileImage,
+        reportingManagerId: safeReportingManagerId,
         ...(form.password ? { password: form.password } : {}),
       });
       setSuccess('Profile updated successfully!');

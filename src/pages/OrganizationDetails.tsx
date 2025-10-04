@@ -122,12 +122,18 @@ const OrganizationDetails = () => {
         toast({ title: "Error", description: "No admin ID found.", variant: "destructive" });
         return;
       }
-      const payload = {
+      const payload: any = {
         firstName: formData.admin.firstName,
         lastName: formData.admin.lastName,
         phone: formData.admin.phone,
         password: formData.admin.password || undefined // Only send if filled
       };
+      // Defensive: if reportingManagerId exists in admin form, normalize to valid ObjectId or null
+      if (formData?.admin?.reportingManagerId !== undefined) {
+        const rm = (formData as any).admin.reportingManagerId;
+        const isValidObjectId = (id: string) => typeof id === 'string' && /^[0-9a-fA-F]{24}$/.test(id);
+        payload.reportingManagerId = typeof rm === 'object' ? (isValidObjectId(rm?._id) ? rm._id : null) : (isValidObjectId(rm) ? rm : null);
+      }
   await API.put(`/auth/employees/${adminId}`, payload);
       toast({ title: "Success", description: "Admin details updated successfully" });
       setFormData((prev) => ({ ...prev, admin: { ...prev.admin, password: "" } })); // Clear password field

@@ -901,7 +901,16 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
                       setUpdateLoading(true);
                       setUpdateMessage(null);
                       try {
-                        const submitData = { ...formData };
+                        const submitData: any = { ...formData };
+                        // Normalize reportingManagerId to a valid ObjectId string or null
+                        const candidateRm = (submitData as any)?.reportingManagerId;
+                        const isValidObjectId = (id: string) => typeof id === 'string' && /^[0-9a-fA-F]{24}$/.test(id);
+                        if (typeof candidateRm === 'string') {
+                          submitData.reportingManagerId = isValidObjectId(candidateRm) ? candidateRm : null;
+                        } else if (candidateRm && typeof candidateRm === 'object') {
+                          const id = candidateRm?._id;
+                          submitData.reportingManagerId = isValidObjectId(id) ? id : null;
+                        }
                         await API.put(`/auth/employees/${selectedEmployee?._id}`, submitData);
                         setUpdateMessage('Update success!');
                         setEditMode(false);
