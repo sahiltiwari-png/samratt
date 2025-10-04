@@ -439,8 +439,8 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
                             if (details?.reportingManagerId && typeof details.reportingManagerId === 'object') {
                               const rmObj: any = details.reportingManagerId;
                               const rmName = `${rmObj?.firstName || ''} ${rmObj?.lastName || ''}`.trim();
-                              setEmployeeDetails((prev: any) => ({ ...prev, reportingManagerName: rmName }));
-                              setFormData((fd: any) => ({ ...fd, reportingManagerId: rmObj?._id, reportingManagerName: rmName }));
+                              setEmployeeDetails((prev: any) => ({ ...prev, reportingManagerName: rmName, reportingManagerCode: rmObj?.employeeCode || '' }));
+                              setFormData((fd: any) => ({ ...fd, reportingManagerId: rmObj?._id, reportingManagerName: rmName, reportingManagerCode: rmObj?.employeeCode || '' }));
                             }
                           } catch (e) {
                             setEmployeeDetails(null);
@@ -470,8 +470,8 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
                                 const rmObj: any = details.reportingManagerId;
                                 const rmName = `${rmObj?.firstName || ''} ${rmObj?.lastName || ''}`.trim();
                                 setSelectedRM(rmObj);
-                                setEmployeeDetails((prev: any) => ({ ...prev, reportingManagerName: rmName }));
-                                setFormData((fd: any) => ({ ...fd, reportingManagerId: rmObj?._id, reportingManagerName: rmName }));
+                                setEmployeeDetails((prev: any) => ({ ...prev, reportingManagerName: rmName, reportingManagerCode: rmObj?.employeeCode || '' }));
+                                setFormData((fd: any) => ({ ...fd, reportingManagerId: rmObj?._id, reportingManagerName: rmName, reportingManagerCode: rmObj?.employeeCode || '' }));
                               } else if (details?.reportingManagerName) {
                                 // Keep existing name if provided by API
                                 setEmployeeDetails((prev: any) => ({ ...prev, reportingManagerName: details.reportingManagerName }));
@@ -774,7 +774,20 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
                           </PopoverContent>
                         </Popover>
                       ) : (
-                        <span className="rounded px-2 py-1 border border-emerald-200 bg-[rgb(209,250,229)] text-[#2C373B]">{employeeDetails?.reportingManagerName || '-'}</span>
+                        <span className="rounded px-2 py-1 border border-emerald-200 bg-[rgb(209,250,229)] text-[#2C373B]">{
+                          (() => {
+                            const rmName = employeeDetails?.reportingManagerName;
+                            const rmCode = employeeDetails?.reportingManagerCode;
+                            if (rmName && rmCode) return `${rmName} (${rmCode})`;
+                            if (rmName) return rmName;
+                            const rmId = employeeDetails?.reportingManagerId as any;
+                            if (rmId && typeof rmId === 'object') {
+                              const name = `${rmId?.firstName || ''} ${rmId?.lastName || ''}`.trim();
+                              return rmId?.employeeCode ? `${name} (${rmId.employeeCode})` : (name || '-');
+                            }
+                            return '-';
+                          })()
+                        }</span>
                       )}
                       {/* Selected manager tag */}
                       {editMode && formData.reportingManagerName && (
