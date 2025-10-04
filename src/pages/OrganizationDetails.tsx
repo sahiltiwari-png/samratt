@@ -516,16 +516,41 @@ const OrganizationDetails = () => {
   };
 
   return (
-    <div className="container mx-auto py-8 px-4">
+    <div className="org-details-page container mx-auto py-8 px-4">
+      {/* Scoped styles matching Create Organization UI request */}
+      <style>{`
+        .org-details-page button {
+          background-color: #4CDC9C !important;
+          color: #2C373B !important;
+          border-color: transparent !important;
+        }
+        .org-details-page button:hover {
+          filter: brightness(0.95);
+        }
+        .org-details-page input,
+        .org-details-page select,
+        .org-details-page textarea {
+          background-color: rgb(209 250 229) !important;
+          color: #2C373B !important;
+        }
+        .org-details-page h1,
+        .org-details-page h2,
+        .org-details-page h3,
+        .org-details-page .text-muted-foreground,
+        .org-details-page .font-medium {
+          color: #2C373B !important;
+        }
+      `}</style>
       <Button
-        className="mb-4 bg-green-600 hover:bg-green-700 text-white"
+        className="mb-4"
         onClick={() => navigate('/dashboard')}
+        style={{ backgroundColor: '#4CDC9C', color: '#2C373B' }}
       >
         <ChevronLeft className="mr-2 h-4 w-4" /> Back to Dashboard
       </Button>
       <Card className="max-w-4xl mx-auto">
         <CardHeader>
-          <CardTitle>Edit Organization</CardTitle>
+          <CardTitle style={{ color: '#2C373B' }}>Edit Organization</CardTitle>
           <Progress value={(currentStep / 5) * 100} className="h-2" />
         </CardHeader>
         <CardContent>
