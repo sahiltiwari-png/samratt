@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { Calendar as CalendarIcon, Upload, Send } from 'lucide-react';
+import { Navigate } from 'react-router-dom';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { uploadFile } from '@/api/uploadFile';
@@ -17,6 +18,9 @@ import { Badge } from '@/components/ui/badge';
 
 const ApplyLeave = () => {
   const { user } = useAuth();
+  if (user?.role === 'superAdmin') {
+    return <Navigate to="/dashboard" replace />;
+  }
   const [showForm, setShowForm] = useState(false);
   const [leavePolicies, setLeavePolicies] = useState<LeavePolicy[]>([]);
   const [leaveTypeId, setLeaveTypeId] = useState<string>('');

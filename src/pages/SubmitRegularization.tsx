@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -23,6 +23,10 @@ import { toast } from "@/components/ui/use-toast";
 
 const SubmitRegularization = () => {
   const navigate = useNavigate();
+  const storedRole = localStorage.getItem('role');
+  if (storedRole === 'superAdmin') {
+    return <Navigate to="/dashboard" replace />;
+  }
 
   // Form state
   const [submitting, setSubmitting] = useState(false);
