@@ -82,6 +82,12 @@ export const updateLeaveRequestStatus = async (id: string, status: string, remar
   return res.data;
 };
 
+// Cancel leave request by ID
+export const cancelLeaveRequest = async (id: string): Promise<{ success: boolean; message?: string; data?: any }> => {
+  const res = await API.post(`/leaves/${id}/cancel`);
+  return res.data;
+};
+
 export interface LeaveBalance {
   leaveType: string;
   allocated: number;

@@ -12,7 +12,7 @@ import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { uploadFile } from '@/api/uploadFile';
 import { getLeavePolicies, LeavePolicy } from '@/api/leavePolicy';
-import { createLeaveRequest, getLeaveRequests, LeaveRequestsResponse } from '@/api/leaves';
+import { createLeaveRequest, getLeaveRequests, LeaveRequestsResponse, cancelLeaveRequest } from '@/api/leaves';
 import { Badge } from '@/components/ui/badge';
 
 const ApplyLeave = () => {
@@ -264,7 +264,7 @@ const ApplyLeave = () => {
       </div>
       <div className="flex gap-3 mb-3">
         <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-40 h-8 bg-[rgb(209,250,229)] text-[#2C373B]"><SelectValue placeholder="Status" /></SelectTrigger>
+          <SelectTrigger className="w-40 h-8 bg-[rgb(209,250,229)] text-[#2C373B] border border-[#9AE6B4]"><SelectValue placeholder="Status" /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All</SelectItem>
             <SelectItem value="approved">Approved</SelectItem>
@@ -274,7 +274,7 @@ const ApplyLeave = () => {
           </SelectContent>
         </Select>
         <Select value={typeFilter} onValueChange={setTypeFilter}>
-          <SelectTrigger className="w-40 h-8 bg-[rgb(209,250,229)] text-[#2C373B]"><SelectValue placeholder="Leave type" /></SelectTrigger>
+          <SelectTrigger className="w-40 h-8 bg-[rgb(209,250,229)] text-[#2C373B] border border-[#9AE6B4]"><SelectValue placeholder="Leave type" /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All</SelectItem>
             <SelectItem value="casual">casual</SelectItem>
@@ -314,7 +314,27 @@ const ApplyLeave = () => {
                 <td className="p-3">{itm.days} days</td>
                 <td className="p-3">{statusToBadge(itm.status)}</td>
                 <td className="p-3 text-muted-foreground">-</td>
-                <td className="p-3 text-blue-600">{itm.status === 'pending' ? 'Cancel request' : '-'}</td>
+                <td className="p-3">
+                  {['pending', 'applied'].includes((itm.status || '').toLowerCase()) ? (
+                    <Button
+                      size="sm"
+                      className="bg-red-500 hover:bg-red-600 text-white"
+                      onClick={async () => {
+                        try {
+                          await cancelLeaveRequest(itm._id);
+                          await fetchRequests();
+                        } catch (err: any) {
+                          console.error('Cancel failed', err);
+                          alert(err?.response?.data?.message || 'Cancel failed');
+                        }
+                      }}
+                    >
+                      Cancel
+                    </Button>
+                  ) : (
+                    <span className="text-muted-foreground">-</span>
+                  )}
+                </td>
               </tr>
             ))}
           </tbody>
