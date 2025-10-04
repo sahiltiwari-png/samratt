@@ -206,7 +206,14 @@ const App = () => (
                       />
                       <Route path="/settings" element={<Settings />} />
                       <Route path="/profile" element={<Profile />} />
-                      <Route path="/create-organization" element={<CreateOrganization />} />
+                      <Route
+                        path="/create-organization"
+                        element={
+                          <RoleRoute allowedRoles={["superAdmin"]} redirectTo="/dashboard">
+                            <CreateOrganization />
+                          </RoleRoute>
+                        }
+                      />
                       <Route path="*" element={<NotFound />} />
                     </Routes>
                   </MainLayout>
