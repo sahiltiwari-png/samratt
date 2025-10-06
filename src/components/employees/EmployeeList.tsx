@@ -824,7 +824,7 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
                       )}
                     </div>
                     {[
-                      "firstName","lastName","phone","department","departmentCode","grade","dateOfJoining","probationEndDate","shiftId","status","dob","gender","bloodGroup","maritalStatus","nationality","addressLine1","addressLine2","country","state","city","zipCode","aadhaarNo","panNo","passportNo","salaryStructureId","benefits","skills","loginEnabled","isActive","camsEmployeeId"
+                      "firstName","lastName","phone","department","departmentCode","employeeCode","dateOfJoining","probationEndDate","status","dob","gender","bloodGroup","maritalStatus","nationality","addressLine1","addressLine2","country","state","city","zipCode","aadhaarNo","panNo","passportNo","loginEnabled","isActive",
                     ].map((key) => {
                       const value = employeeDetails[key];
                       if (typeof value === "object" && value !== null) return null;
