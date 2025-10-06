@@ -1,11 +1,26 @@
 
 import { useState, useEffect } from "react";
 import { Calendar, Check, ChevronRight } from "lucide-react";
+import Select from "react-select";
+import ReactSelect from "react-select";
 
 
 
 import { uploadFile } from "../api/uploadFile";
 import API from "../api/auth";
+
+const DESIGNATIONS = [
+  "Intern","Trainee","Associate","Junior Executive","Executive","Coordinator",
+  "Senior Executive","Specialist","Analyst","Consultant","Assistant Manager","Team Lead","Supervisor",
+  "Manager","Senior Manager","Project Manager","Program Manager","Product Manager","Operations Manager","Delivery Manager",
+  "General Manager","Associate Director","Director","Vice President","Senior Vice President","CEO","CTO","CIO","COO","CFO","CMO","CHRO","CSO",
+  "Software Engineer","Senior Software Engineer","Full Stack Developer","Backend Developer","Frontend Developer","Mobile App Developer","DevOps Engineer","Cloud Engineer","QA Engineer","Test Analyst","Automation Tester","UI/UX Designer","System Administrator","Database Administrator","Network Engineer","Security Analyst","Technical Lead","Solution Architect","Technical Project Manager","Engineering Manager","VP Engineering",
+  "Sales Executive","Business Development Executive","Business Development Manager","Inside Sales Executive","Sales Consultant","Relationship Manager","Key Account Manager","Territory Sales Manager","Regional Sales Manager","National Sales Manager","Head of Sales","Vice President Sales","Chief Sales Officer",
+  "Marketing Executive","Digital Marketing Executive","SEO Specialist","PPC Specialist","Content Writer","Copywriter","Social Media Executive","Brand Executive","Marketing Analyst","Marketing Manager","Product Marketing Manager","Campaign Manager","Growth Manager","Regional Marketing Manager","Head of Marketing","Vice President Marketing","Chief Marketing Officer",
+  "HR Executive","HR Generalist","Recruiter","Talent Acquisition Specialist","HR Manager","HR Business Partner","Training & Development Manager","Payroll Specialist","Admin Executive","Office Manager",
+  "Accounts Executive","Junior Accountant","Senior Accountant","Finance Analyst","Accounts Manager","Finance Manager","Internal Auditor","Financial Controller",
+  "Operations Executive","Operations Manager","Process Specialist","Customer Support Executive","Client Service Manager","Technical Support Engineer","Service Delivery Manager"
+];
 
 const getRoles = async () => {
   try {
@@ -107,7 +122,7 @@ const AddEmployeeStepper = () => {
     { title: "Employee Details", subtitle: "Fill in Employee details" },
     { title: "Personal Information", subtitle: "Personal details" },
     { title: "Finance & Emergency", subtitle: "Financial information" },
-    { title: "Admin Details", subtitle: "Upload documents" },
+    { title: "Documents", subtitle: "Upload documents" },
   ];
 
   const employmentTypeOptions = [
@@ -117,6 +132,9 @@ const AddEmployeeStepper = () => {
     { value: "intern", label: "Intern" },
     { value: "consultant", label: "Consultant" }
   ];
+ 
+const designationOptions = DESIGNATIONS.map(d => ({ value: d, label: d }));
+
 
   const genderOptions = [
     { value: "male", label: "Male" },
@@ -245,11 +263,21 @@ const AddEmployeeStepper = () => {
                   value={form.password} 
                   onChange={(e:any)=>setForm({...form, password:e.target.value})}
                 />
-                <Input 
-                  label="Designation" 
-                  value={form.designation} 
-                  onChange={(e:any)=>setForm({...form, designation:e.target.value})}
-                />
+               <div className="flex flex-col">
+  <label className="mb-2 text-sm font-medium text-gray-700">Designation</label>
+  <ReactSelect
+    options={designationOptions}
+    value={designationOptions.find(opt => opt.value === form.designation)}
+    onChange={(selectedOption: any) =>
+      setForm({ ...form, designation: selectedOption.value })
+    }
+    placeholder="Select Designation"
+    isSearchable={true}  // Search bar enable
+  />
+</div>
+
+
+
                 <Input 
                   label="Department Code" 
                   value={form.departmentCode} 
