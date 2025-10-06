@@ -363,10 +363,11 @@ const OrganizationSettings: React.FC = () => {
                   <Input id="dayEndTime" name="dayEndTime" value={formData.dayEndTime} onChange={handleChange} />
                 </div>
               </div>
-              <div className="mt-4 flex items-center gap-2">
-                <Switch checked={formData.active} onCheckedChange={(checked) => setFormData((p) => ({ ...p, active: checked }))} />
-                <span className="text-sm">Active Organization</span>
-              </div>
+           <div className="mt-4 flex items-center gap-2 cursor-default opacity-80">
+  <Switch checked={formData.active} disabled />
+  <span className="text-sm">Active Organization</span>
+</div>
+
             </div>
           </CardContent>
         </Card>
