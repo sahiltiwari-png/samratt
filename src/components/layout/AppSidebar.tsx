@@ -130,14 +130,14 @@ export function AppSidebar() {
                       </NavLink>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
-                  <SidebarMenuItem>
+                  {/* <SidebarMenuItem>
                     <SidebarMenuButton asChild className="w-full">
                       <NavLink to="/organization-settings" className={getNavClassName("/organization-settings") + " flex items-center gap-3 px-3 py-2.5 rounded-md w-full text-sm"}>
                         <Settings className="h-4 w-4 flex-shrink-0" />
                         {state !== "collapsed" && <span>Organization Settings</span>}
                       </NavLink>
                     </SidebarMenuButton>
-                  </SidebarMenuItem>
+                  </SidebarMenuItem> */}
                 </>
               ) : (
                 navigation.map((item) => (
@@ -235,6 +235,7 @@ export function AppSidebar() {
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
+          
         )}
       </SidebarContent>
 
