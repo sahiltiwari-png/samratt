@@ -1,7 +1,6 @@
 
 import { useState, useEffect } from "react";
 import { Calendar, Check, ChevronRight } from "lucide-react";
-import Select from "react-select";
 import ReactSelect from "react-select";
 
 
