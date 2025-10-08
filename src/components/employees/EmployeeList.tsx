@@ -290,6 +290,15 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
   const [rolesOpen, setRolesOpen] = useState(false);
   const [rolesLoading, setRolesLoading] = useState(false);
   const [selectedRole, setSelectedRole] = useState<any>(null);
+  // Supported employee document types
+  const DOCUMENT_TYPES = [
+    'aadhaar',
+    'pan',
+    'passport',
+    'driving-license',
+    'voter-id',
+    'other',
+  ];
   // Designation dropdown state in edit modal
   const [designationOpen, setDesignationOpen] = useState(false);
   // Reporting manager dropdown state in edit modal
@@ -937,6 +946,77 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
                         )}
                       </div>
                     ))}
+                    {/* Documents */}
+                    <div className="mt-3">
+                      <div className="font-semibold mb-2" style={{color:'#2C373B'}}>Documents</div>
+                      {editMode ? (
+                        DOCUMENT_TYPES.map((type) => {
+                          const existing = (
+                            Array.isArray(formData.documents)
+                              ? formData.documents
+                              : (Array.isArray(employeeDetails?.documents) ? employeeDetails.documents : [])
+                          ).find((d: any) => d?.type === type);
+                          return (
+                            <div key={type} className="flex items-center justify-between mb-2">
+                              <div className="flex flex-col">
+                                <span className="capitalize text-[#2C373B]">{type.replace('-', ' ')}</span>
+                                {existing?.url ? (
+                                  <a href={existing.url} target="_blank" rel="noopener noreferrer" className="text-emerald-600 text-sm underline">View</a>
+                                ) : (
+                                  <span className="text-gray-500 text-sm">No document</span>
+                                )}
+                              </div>
+                              <div>
+                                <input
+                                  id={`doc-upload-${type}`}
+                                  type="file"
+                                  accept="image/*,application/pdf"
+                                  className="hidden"
+                                  onChange={async (e) => {
+                                    const file = e.target.files?.[0];
+                                    if (!file) return;
+                                    try {
+                                      const url = await uploadFile(file);
+                                      setFormData((fd: any) => {
+                                        const docs = Array.isArray(fd.documents)
+                                          ? [...fd.documents]
+                                          : (Array.isArray(employeeDetails?.documents) ? [...employeeDetails.documents] : []);
+                                        const idx = docs.findIndex((d: any) => d?.type === type);
+                                        const newDoc = { type, url, uploadedAt: new Date().toISOString() };
+                                        if (idx >= 0) docs[idx] = newDoc; else docs.push(newDoc);
+                                        return { ...fd, documents: docs };
+                                      });
+                                    } catch (err) {
+                                      setUpdateMessage('File upload failed');
+                                    } finally {
+                                      e.target.value = '';
+                                    }
+                                  }}
+                                />
+                                <label htmlFor={`doc-upload-${type}`} className="cursor-pointer bg-[#4CDC9C] text-[#2C373B] px-3 py-1 rounded hover:bg-[#3fd190]">Upload</label>
+                              </div>
+                            </div>
+                          );
+                        })
+                      ) : (
+                        <>
+                          {Array.isArray(employeeDetails?.documents) && employeeDetails.documents.length > 0 ? (
+                            employeeDetails.documents.map((doc: any) => (
+                              <div key={doc.type} className="flex items-center justify-between mb-2">
+                                <span className="capitalize text-[#2C373B]">{(doc.type || '').replace('-', ' ')}</span>
+                                {doc.url ? (
+                                  <a href={doc.url} target="_blank" rel="noopener noreferrer" className="text-emerald-600 text-sm underline">View</a>
+                                ) : (
+                                  <span className="text-gray-500 text-sm">No document</span>
+                                )}
+                              </div>
+                            ))
+                          ) : (
+                            <div className="text-gray-500 text-sm">No document</div>
+                          )}
+                        </>
+                      )}
+                    </div>
                   </form>
                 ) : (
                   <div>No details found.</div>
@@ -963,6 +1043,10 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
                           const id = candidateRm?._id;
                           submitData.reportingManagerId = isValidObjectId(id) ? id : null;
                         }
+                        // Ensure documents array is included in update payload
+                        submitData.documents = Array.isArray(submitData.documents)
+                          ? submitData.documents
+                          : (Array.isArray(employeeDetails?.documents) ? employeeDetails.documents : []);
                         await API.put(`/auth/employees/${selectedEmployee?._id}`, submitData);
                         setUpdateMessage('Update success!');
                         setEditMode(false);
