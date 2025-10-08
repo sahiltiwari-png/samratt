@@ -340,7 +340,7 @@ const Dashboard = () => {
                   </div>
                 </div>
                 <button
-                  className="w-full sm:w-auto bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3fd190] rounded-lg px-4 py-2 font-semibold transition"
+                  className="w-full sm:w-auto bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3fd190] rounded-lg px-4 py-2 text-sm font-medium transition"
                   onClick={() => navigate('/employees')}
                 >
                   Manage Employees
@@ -371,7 +371,7 @@ const Dashboard = () => {
                   </div>
                 </div>
                 <button
-                  className="w-full sm:w-auto bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3fd190] rounded-lg px-4 py-2 font-semibold transition"
+                  className="w-full sm:w-auto bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3fd190] rounded-lg px-4 py-2 text-sm font-medium transition"
                   onClick={() => navigate('/leaves/requests')}
                 >
                   Manage leaves requests
@@ -399,7 +399,7 @@ const Dashboard = () => {
                 <span className="text-gray-400">Earned <span className="text-yellow-500 font-bold">{dashboardStats?.leavePolicies?.leaveTypesSummary?.earned?.intervalValue ?? '-'}</span></span>
               </div>
               <button 
-                className="w-[85%] mx-auto bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3fd190] rounded-lg py-2 font-semibold transition text-base shadow-none"
+                className="w-[85%] mx-auto bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3fd190] rounded-lg py-2 text-sm font-medium transition shadow-none"
                 onClick={() => navigate('/leaves/policy')}
               >
                 Manage Leave Policy
@@ -431,7 +431,7 @@ const Dashboard = () => {
                   <span className="text-[#9E9E9E] font-medium">Pending employees <span className="text-red-500 font-medium">{dashboardStats?.payroll?.pending ?? '-'}</span></span>
                 </div>
                 <button 
-                  className="w-[85%] mx-auto bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3fd190] rounded-lg py-2 font-semibold transition"
+                  className="w-[85%] mx-auto bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3fd190] rounded-lg py-2 text-sm font-medium transition"
                   onClick={() => navigate('/payroll')}
                 >
                   Manage Payroll
@@ -448,7 +448,7 @@ const Dashboard = () => {
                   <div className="text-gray-700 text-base font-semibold">Reports</div>
                 </div>
                 <button
-                  className="w-full sm:w-auto bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3fd190] rounded-lg px-4 py-2 font-semibold transition"
+                  className="w-full sm:w-auto bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3fd190] rounded-lg px-4 py-2 text-sm font-medium transition"
                   onClick={() => navigate('/reports/employees')}
                 >
                   Manage Reports
