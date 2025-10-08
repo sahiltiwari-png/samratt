@@ -434,15 +434,13 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
                       )}
                     </td>
                     <td className="px-1 py-1 align-middle">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button size="sm" className="min-w-[90px] px-3 py-1 bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3fd190] border-none">{emp.status === 'active' ? 'Active' : 'Inactive'}</Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent>
-                          <DropdownMenuItem onClick={() => handleStatusChange(emp._id, 'active')} className="text-[#2C373B]">Active</DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => handleStatusChange(emp._id, 'inactive')} className="text-[#2C373B]">Inactive</DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                      <span
+                        className={emp.status === 'active'
+                          ? 'inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-700 border border-green-200'
+                          : 'inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-700 border border-red-200'}
+                      >
+                        {emp.status === 'active' ? 'Active' : 'Inactive'}
+                      </span>
                     </td>
                     <td className="px-4 py-3 align-middle">
                       <div className="flex gap-2">
