@@ -379,7 +379,7 @@ const Dashboard = () => {
               </div>
             </div>
             {/* Leave Policy */}
-            <div className="bg-white rounded-2xl border-[1.5px] border-[#2C373B]/30 shadow-none p-3 sm:p-4 flex flex-col justify-between">
+            <div className="bg-white rounded-2xl border-[1.5px] border-[#2C373B]/30 shadow-none p-3 sm:p-4 flex flex-col justify-between min-h-[220px]">
               <div className="flex items-center gap-3 mb-2">
                 <div className="relative w-12 h-12">
                   <div className="absolute inset-0 rounded-full bg-[#4CDC9C26]"></div>
@@ -399,14 +399,14 @@ const Dashboard = () => {
                 <span className="text-gray-400">Earned <span className="text-yellow-500 font-bold">{dashboardStats?.leavePolicies?.leaveTypesSummary?.earned?.intervalValue ?? '-'}</span></span>
               </div>
               <button 
-                className="w-[85%] mx-auto bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3fd190] rounded-lg py-2 text-sm font-medium transition shadow-none"
+                className="w-full mt-auto bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3fd190] rounded-lg py-2 text-sm font-medium transition shadow-none"
                 onClick={() => navigate('/leaves/policy')}
               >
                 Manage Leave Policy
               </button>
             </div>
             {/* Payroll Processed */}
-            <div className="bg-white rounded-2xl border-[1.5px] border-[#2C373B]/30 shadow-none p-3 sm:p-4">
+            <div className="bg-white rounded-2xl border-[1.5px] border-[#2C373B]/30 shadow-none p-3 sm:p-4 flex flex-col justify-between min-h-[220px]">
               <div className="flex flex-col gap-3">
                 <div className="flex items-center gap-3">
                   <div className="relative w-12 h-12">
@@ -431,7 +431,7 @@ const Dashboard = () => {
                   <span className="text-[#9E9E9E] font-medium">Pending employees <span className="text-red-500 font-medium">{dashboardStats?.payroll?.pending ?? '-'}</span></span>
                 </div>
                 <button 
-                  className="w-[85%] mx-auto bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3fd190] rounded-lg py-2 text-sm font-medium transition"
+                  className="w-full mt-auto bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3fd190] rounded-lg py-2 text-sm font-medium transition"
                   onClick={() => navigate('/payroll')}
                 >
                   Manage Payroll
