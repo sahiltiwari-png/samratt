@@ -279,7 +279,7 @@ const Dashboard = () => {
           <div className="md:w-1/3 h-full">
             <div className="bg-white rounded-2xl shadow p-6 flex flex-col h-full">
               <div className="text-gray-500 text-sm mb-4 font-semibold">Today</div>
-              <div className="w-full flex-1 flex flex-col items-center md:min-h-[580px]">
+              <div className="w-full flex-1 flex flex-col items-center">
                 {calendarLoading ? (
                   <div className="w-full flex justify-center items-center h-full"><span className="text-gray-400">Loading...</span></div>
                 ) : calendarData?.calendarFile ? (
@@ -287,7 +287,7 @@ const Dashboard = () => {
                     <img 
                       src={calendarData.calendarFile} 
                       alt="Holiday Calendar" 
-                      className="w-full h-full object-cover rounded mb-2 border cursor-pointer" 
+                      className="w-full h-full object-cover rounded border cursor-pointer" 
                       onClick={() => setShowImageModal(true)}
                     />
                   </>
@@ -438,28 +438,7 @@ const Dashboard = () => {
                 Manage Payroll
               </button>
             </div>
-            {/* Reports */}
-            <div className="bg-white rounded-2xl border-[1.5px] border-[#2C373B]/30 shadow-none p-3 sm:p-4 sm:col-span-2">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                <div className="flex items-center gap-3">
-                  <div className="relative w-10 h-10">
-                    <div className="absolute inset-0 rounded-full bg-[#4CDC9C26]"></div>
-                    <div className="absolute inset-1 rounded-full bg-[#2C373B]"></div>
-                    <div className="absolute inset-2 rounded-full bg-[#2C373B] flex items-center justify-center shadow-sm">
-                      <FileText className="h-6 w-6 text-[#FFBB31]" />
-                    </div>
-                  </div>
-                  <div className="text-gray-700 text-base font-semibold">Reports</div>
-                </div>
-                <button
-                  className="w-full sm:w-auto bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3fd190] rounded-lg px-4 py-2 text-sm font-medium transition"
-                  onClick={() => navigate('/reports/employees')}
-                >
-                  Manage Reports
-                </button>
-              </div>
-              <div className="mt-3 text-3xl font-bold leading-none text-[#4CDC9C]">{dashboardStats?.reports?.total ?? '-'}</div>
-            </div>
+            {/* Reports card removed */}
           </div>
         </div>
       </div>
