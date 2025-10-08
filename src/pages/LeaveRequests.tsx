@@ -13,7 +13,9 @@ import {
   AvatarImage,
 } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
-import { User, ChevronDown, X, Search, ChevronLeft, ChevronRight } from "lucide-react";
+import { User, ChevronDown, X, Search, ChevronLeft, ChevronRight, FileText } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { getLeaveRequests, LeaveRequest, Employee, updateLeaveRequestStatus } from "@/api/leaves";
 import { getEmployees, Employee as EmployeeType, EmployeesResponse } from "@/api/employees";
 import { toast } from "@/components/ui/use-toast";
@@ -39,6 +41,19 @@ const LeaveRequests = () => {
   const [editingRows, setEditingRows] = useState<Set<string>>(new Set());
   const [editValues, setEditValues] = useState<{[key: string]: {status: string, remarks: string}}>({});
   const [updating, setUpdating] = useState<Set<string>>(new Set());
+  // Document viewer state
+  const [docModalOpen, setDocModalOpen] = useState(false);
+  const [currentDocs, setCurrentDocs] = useState<string[]>([]);
+
+  // Helper to detect image URLs
+  const isImageUrl = (url: string) => /\.(png|jpe?g|gif|webp|bmp|svg)(\?.*)?$/i.test(url);
+
+  // Helper to truncate text by words
+  const truncateWords = (text: string = "", count = 6) => {
+    const words = text?.trim().split(/\s+/) || [];
+    if (words.length <= count) return text || "";
+    return words.slice(0, count).join(" ") + " ...";
+  };
 
   useEffect(() => {
     fetchLeaveRequests();
@@ -387,8 +402,8 @@ const LeaveRequests = () => {
 
         {/* Table */}
         <div className="bg-white rounded-xl shadow-md border overflow-hidden">
-          <div className="overflow-x-auto no-scrollbar">
-            <table className="min-w-[950px] w-full text-sm">
+          <div className="overflow-x-auto no-scrollbar touch-pan-x cursor-grab active:cursor-grabbing">
+            <table className="w-max min-w-[1400px] text-sm">
               <thead className="bg-gray-50 border-b">
                 <tr>
                   <th className="px-4 py-3 text-left" style={{fontSize: '12px', fontWeight: 600, color: '#2C373B'}}>
@@ -463,7 +478,18 @@ const LeaveRequests = () => {
                     <td className="px-4 py-3 capitalize" style={{ fontFamily: 'Montserrat', fontWeight: 500, fontSize: '14px', color: '#2C373B' }}>{req.leaveType}</td>
                       <td className="px-4 py-3" style={{ fontFamily: 'Montserrat', fontWeight: 500, fontSize: '14px', color: '#2C373B' }}>{formatDate(req.startDate)}</td>
                       <td className="px-4 py-3" style={{ fontFamily: 'Montserrat', fontWeight: 500, fontSize: '14px', color: '#2C373B' }}>{formatDate(req.endDate)}</td>
-                      <td className="px-4 py-3" style={{ fontFamily: 'Montserrat', fontWeight: 500, fontSize: '14px', color: '#2C373B' }}>{req.reason}</td>
+                      <td className="px-4 py-3" style={{ fontFamily: 'Montserrat', fontWeight: 500, fontSize: '14px', color: '#2C373B' }}>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span className="inline-block max-w-[220px] align-middle">
+                              {truncateWords(req.reason || '', 6)}
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <div className="max-w-xs break-words">{req.reason || ''}</div>
+                          </TooltipContent>
+                        </Tooltip>
+                      </td>
                       <td className="px-4 py-3" style={{ fontFamily: 'Montserrat', fontWeight: 500, fontSize: '14px', color: '#2C373B' }}>{req.days}</td>
 
                     {/* Status badge */}
@@ -503,15 +529,24 @@ const LeaveRequests = () => {
                              style={{backgroundColor: 'rgb(209 250 229)', color: '#2C373B'}}
                            />
                          ) : (
-                           req.remarks || "Empty remarks"
+                           <Tooltip>
+                             <TooltipTrigger asChild>
+                               <span className="inline-block max-w-[220px] align-middle">
+                                 {truncateWords(req.remarks || 'Empty remarks', 6)}
+                               </span>
+                             </TooltipTrigger>
+                             <TooltipContent>
+                               <div className="max-w-xs break-words">{req.remarks || 'Empty remarks'}</div>
+                             </TooltipContent>
+                           </Tooltip>
                          )}
                        </td>
 
-                     {/* Actions */}
-                     <td className="px-4 py-3">
-                       {editingRows.has(req._id) ? (
-                         <div className="flex gap-2">
-                           <Button
+                    {/* Actions */}
+                    <td className="px-4 py-3">
+                      {editingRows.has(req._id) ? (
+                        <div className="flex gap-2">
+                          <Button
                              size="sm"
                              onClick={() => handleUpdate(req._id)}
                              disabled={updating.has(req._id)}
@@ -527,18 +562,38 @@ const LeaveRequests = () => {
                              style={{backgroundColor: '#4CDC9C', color: '#2C373B'}}
                            >
                              Cancel
-                           </Button>
-                         </div>
-                       ) : (
-                         <Button
-                           size="sm"
-                           onClick={() => handleEdit(req)}
-                           style={{backgroundColor: '#4CDC9C', color: '#2C373B'}}
-                         >
-                           Edit
-                         </Button>
-                       )}
-                     </td>
+                          </Button>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          <Button
+                            size="sm"
+                            onClick={() => handleEdit(req)}
+                            style={{backgroundColor: '#4CDC9C', color: '#2C373B'}}
+                          >
+                            Edit
+                          </Button>
+                          {(Array.isArray(req.documentUrls) && req.documentUrls.length > 0) || (req as any).documentUrl ? (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => {
+                                const urls: string[] = Array.isArray(req.documentUrls) && req.documentUrls.length > 0
+                                  ? req.documentUrls
+                                  : ((req as any).documentUrl ? [ (req as any).documentUrl ] : []);
+                                setCurrentDocs(urls);
+                                setDocModalOpen(true);
+                              }}
+                              className="flex items-center gap-1"
+                              style={{backgroundColor: '#4CDC9C', color: '#2C373B'}}
+                            >
+                              <FileText className="h-4 w-4" />
+                              View Document
+                            </Button>
+                          ) : null}
+                        </div>
+                      )}
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -626,6 +681,31 @@ const LeaveRequests = () => {
           }
         `}</style>
       </div>
+      {/* Documents Modal */}
+      <Dialog open={docModalOpen} onOpenChange={setDocModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Attached Documents</DialogTitle>
+          </DialogHeader>
+          {currentDocs && currentDocs.filter(isImageUrl).length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {currentDocs.filter(isImageUrl).map((url, idx) => (
+                <img
+                  key={idx}
+                  src={url}
+                  alt={`Document ${idx + 1}`}
+                  className="w-full h-auto rounded border"
+                  onError={(e) => {
+                    (e.currentTarget as HTMLImageElement).style.display = 'none';
+                  }}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="text-sm text-muted-foreground">No images attached.</div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

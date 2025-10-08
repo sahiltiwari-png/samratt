@@ -18,6 +18,9 @@ export interface LeaveRequest {
   days: number;
   status: string;
   remarks?: string;
+  // Optional attached documents
+  documentUrls?: string[];
+  documentUrl?: string;
 }
 
 export interface LeaveRequestsResponse {
