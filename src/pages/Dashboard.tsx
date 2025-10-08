@@ -379,7 +379,7 @@ const Dashboard = () => {
               </div>
             </div>
             {/* Leave Policy */}
-            <div className="bg-white rounded-2xl border-[1.5px] border-[#2C373B]/30 shadow-none px-3 sm:px-4 pt-1 pb-1 flex flex-col h-[195px]">
+            <div className="bg-white rounded-2xl border-[1.5px] border-[#2C373B]/30 shadow-none px-1 sm:px-2 pt-1 pb-1 flex flex-col h-[195px]">
               <div className="flex items-center gap-3 mb-1">
                 <div className="relative w-12 h-12">
                   <div className="absolute inset-0 rounded-full bg-[#4CDC9C26]"></div>
@@ -406,7 +406,7 @@ const Dashboard = () => {
               </button>
             </div>
             {/* Payroll Processed */}
-            <div className="bg-white rounded-2xl border-[1.5px] border-[#2C373B]/30 shadow-none px-3 sm:px-4 pt-1 pb-1 flex flex-col h-[195px]">
+            <div className="bg-white rounded-2xl border-[1.5px] border-[#2C373B]/30 shadow-none px-1 sm:px-2 pt-1 pb-1 flex flex-col h-[195px]">
               <div className="flex-1 flex flex-col gap-2">
                 <div className="flex items-center gap-3">
                   <div className="relative w-12 h-12">
