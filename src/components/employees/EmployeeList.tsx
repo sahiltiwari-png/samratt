@@ -226,6 +226,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Mail, Phone, MapPin, MoreVertical, ChevronDown } from "lucide-react";
 import { Eye, Pencil } from "lucide-react";
 import {
@@ -828,6 +829,32 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
                       if (typeof value === "object" && value !== null) return null;
                       // Hide specific fields in view mode as requested
                       if (!editMode && (key === 'grade' || key === 'shiftId' || key === 'camsEmployeeId')) return null;
+                      // Render checkboxes for boolean fields
+                      const isBooleanField = key === 'loginEnabled' || key === 'isActive';
+                      if (isBooleanField) {
+                        const checkedView = !!value;
+                        const checkedEdit = !!formData[key];
+                        return (
+                          <div key={key} className="flex items-center justify-between mb-2">
+                            <label className="font-semibold capitalize" style={{color: '#2C373B'}}>{key.replace(/([A-Z])/g, ' $1')}</label>
+                            {editMode ? (
+                              <Checkbox
+                                checked={checkedEdit}
+                                onCheckedChange={(checked) => setFormData((fd: any) => ({ ...fd, [key]: !!checked }))}
+                                className="h-5 w-5 data-[state=checked]:bg-[#4CDC9C] data-[state=checked]:text-[#2C373B] border-emerald-300"
+                                aria-label={key}
+                              />
+                            ) : (
+                              <Checkbox
+                                checked={checkedView}
+                                disabled
+                                className="h-5 w-5 data-[state=checked]:bg-[#4CDC9C] data-[state=checked]:text-[#2C373B] border-emerald-300"
+                                aria-label={key}
+                              />
+                            )}
+                          </div>
+                        );
+                      }
                       let inputType = "text";
                       if (["dateOfJoining", "probationEndDate", "dob"].includes(key)) inputType = "date";
                       let inputValue = formData[key] || '';
