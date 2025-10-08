@@ -120,7 +120,8 @@ export interface LeaveBalanceResponse {
 export const getLeaveBalance = async (
   page: number = 1,
   limit: number = 10,
-  leaveType?: string
+  leaveType?: string,
+  employeeId?: string
 ): Promise<LeaveBalanceResponse> => {
   // Get organization ID from localStorage
   const userStr = localStorage.getItem('user');
@@ -142,6 +143,10 @@ export const getLeaveBalance = async (
   
   if (leaveType) {
     params.append('leaveType', leaveType);
+  }
+  
+  if (employeeId) {
+    params.append('employeeId', employeeId);
   }
   
   const res = await API.get(`/leave-balance?${params.toString()}`);

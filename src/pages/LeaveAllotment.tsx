@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { User, ChevronDown, X, ChevronLeft, ChevronRight } from "lucide-react";
+import { User, ChevronDown, X, ChevronLeft, ChevronRight, Search } from "lucide-react";
 import { toast } from "@/components/ui/use-toast";
 import { 
   getLeaveBalance, 
@@ -64,6 +64,7 @@ const LeaveAllotment = () => {
   
   // Filter states
   const [selectedLeaveType, setSelectedLeaveType] = useState("all");
+  const [selectedFilterEmployee, setSelectedFilterEmployee] = useState<EmployeeListItem | null>(null);
   
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
@@ -126,12 +127,12 @@ const LeaveAllotment = () => {
   };
 
   // Fetch leave balance data
-  const fetchLeaveBalance = async (page: number = 1, leaveType?: string) => {
+  const fetchLeaveBalance = async (page: number = 1, leaveType?: string, employeeId?: string) => {
     try {
       setLoading(true);
       setError(null);
       
-      const response = await getLeaveBalance(page, itemsPerPage, leaveType);
+      const response = await getLeaveBalance(page, itemsPerPage, leaveType, employeeId);
       
       if (response.success) {
         const transformedData = transformLeaveBalanceData(response.data);
@@ -266,14 +267,15 @@ const LeaveAllotment = () => {
     fetchLeaveBalance(1);
   }, []);
 
-  // Refetch data when leave type filter changes
+  // Refetch data when leave type or employee filter changes
   useEffect(() => {
+    const employeeId = selectedFilterEmployee?._id;
     if (selectedLeaveType && selectedLeaveType !== "all") {
-      fetchLeaveBalance(1, selectedLeaveType);
+      fetchLeaveBalance(1, selectedLeaveType, employeeId);
     } else if (selectedLeaveType === "all") {
-      fetchLeaveBalance(1);
+      fetchLeaveBalance(1, undefined, employeeId);
     }
-  }, [selectedLeaveType]);
+  }, [selectedLeaveType, selectedFilterEmployee]);
 
   // Load initial employees when form is shown
   useEffect(() => {
@@ -286,7 +288,7 @@ const LeaveAllotment = () => {
   const handlePageChange = (page: number) => {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page);
-      fetchLeaveBalance(page, selectedLeaveType === "all" ? undefined : selectedLeaveType);
+      fetchLeaveBalance(page, selectedLeaveType === "all" ? undefined : selectedLeaveType, selectedFilterEmployee?._id);
     }
   };
 
@@ -294,12 +296,13 @@ const LeaveAllotment = () => {
   const handleLeaveTypeChange = (leaveType: string) => {
     setSelectedLeaveType(leaveType);
     setCurrentPage(1); // Reset to first page when filter changes
-    fetchLeaveBalance(1, leaveType === "all" ? undefined : leaveType);
+    fetchLeaveBalance(1, leaveType === "all" ? undefined : leaveType, selectedFilterEmployee?._id);
   };
 
   // Clear filters
   const clearFilters = () => {
     setSelectedLeaveType("all");
+    setSelectedFilterEmployee(null);
     setCurrentPage(1);
     fetchLeaveBalance(1);
   };
@@ -362,7 +365,7 @@ const LeaveAllotment = () => {
                       placeholder="Search and select employee..."
                       value={employeeSearch}
                       onChange={(e) => handleEmployeeSearch(e.target.value)}
-                      onFocus={() => setShowEmployeeDropdown(true)}
+                      onFocus={() => { setShowEmployeeDropdown(true); fetchEmployees(); }}
                       className="pr-10"
                       style={{backgroundColor: 'rgb(209 250 229)', color: '#2C373B'}}
                     />
@@ -522,6 +525,100 @@ const LeaveAllotment = () => {
 
         {/* Right side filters */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 w-full sm:w-auto">
+          {/* Employee Filter */}
+          <div className="relative w-full sm:w-64">
+            <div className="flex items-center gap-2">
+              <div className="flex-1">
+                {selectedFilterEmployee ? (
+                  <div className="flex items-center gap-2 border border-green-300 rounded-lg px-3 py-1.5 bg-white">
+                    <Avatar className="h-6 w-6">
+                      {selectedFilterEmployee.profilePhotoUrl ? (
+                        <AvatarImage 
+                          src={selectedFilterEmployee.profilePhotoUrl} 
+                          alt={`${selectedFilterEmployee.firstName} ${selectedFilterEmployee.lastName}`} 
+                        />
+                      ) : (
+                        <AvatarFallback className="bg-emerald-200 text-emerald-700 text-xs">
+                          {selectedFilterEmployee.firstName[0]}{selectedFilterEmployee.lastName[0]}
+                        </AvatarFallback>
+                      )}
+                    </Avatar>
+                    <span className="flex-1 text-sm" style={{color: '#2C373B'}}>
+                      {selectedFilterEmployee.firstName} {selectedFilterEmployee.lastName} ({selectedFilterEmployee.employeeCode})
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedFilterEmployee(null);
+                        setEmployeeSearch("");
+                        fetchLeaveBalance(1, selectedLeaveType === "all" ? undefined : selectedLeaveType);
+                      }}
+                      className="text-gray-400 hover:text-gray-600"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+                ) : (
+                  <div className="relative">
+                    <Input
+                      placeholder="Filter by employee..."
+                      value={employeeSearch}
+                      onChange={(e) => handleEmployeeSearch(e.target.value)}
+                      onFocus={() => { setShowEmployeeDropdown(true); fetchEmployees(); }}
+                      className="pr-8 h-8 border-green-300 focus:border-green-500 focus:ring-green-200"
+                      style={{backgroundColor: 'rgb(209 250 229)', color: '#2C373B'}}
+                    />
+                    <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Employee Dropdown */}
+            {showEmployeeDropdown && !selectedFilterEmployee && (
+              <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-48 overflow-y-auto">
+                {loadingEmployees ? (
+                  <div className="p-3 text-center text-gray-500 text-sm">Loading employees...</div>
+                ) : employeeList.length > 0 ? (
+                  employeeList.map((employee) => (
+                    <div
+                      key={employee._id}
+                      className="p-3 hover:bg-gray-50 cursor-pointer flex items-center gap-3 border-b border-gray-100 last:border-b-0"
+                      onClick={() => {
+                        setSelectedFilterEmployee(employee);
+                        setEmployeeSearch("");
+                        setShowEmployeeDropdown(false);
+                        fetchLeaveBalance(1, selectedLeaveType === "all" ? undefined : selectedLeaveType, employee._id);
+                      }}
+                    >
+                      <Avatar className="h-6 w-6">
+                        {employee.profilePhotoUrl ? (
+                          <AvatarImage 
+                            src={employee.profilePhotoUrl} 
+                            alt={`${employee.firstName} ${employee.lastName}`} 
+                          />
+                        ) : (
+                          <AvatarFallback className="bg-emerald-200 text-emerald-700 text-xs">
+                            {employee.firstName[0]}{employee.lastName[0]}
+                          </AvatarFallback>
+                        )}
+                      </Avatar>
+                      <div className="flex-1">
+                        <div className="font-medium text-sm">
+                          {employee.firstName} {employee.lastName}
+                        </div>
+                        <div className="text-xs text-gray-500">
+                          {employee.employeeCode} • {employee.designation}
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="p-3 text-center text-gray-500 text-sm">No employees found</div>
+                )}
+              </div>
+            )}
+          </div>
           {/* Leave Type Filter */}
           <div className="flex items-center gap-2">
             <Select value={selectedLeaveType} onValueChange={handleLeaveTypeChange}>
@@ -540,11 +637,11 @@ const LeaveAllotment = () => {
           </div>
 
           {/* Clear Filters */}
-          {selectedLeaveType && selectedLeaveType !== "all" && (
+          {(selectedLeaveType && selectedLeaveType !== "all") || selectedFilterEmployee ? (
             <Button variant="outline" onClick={clearFilters} size="sm" className="border-green-300 hover:bg-green-100 h-8" style={{backgroundColor: '#4CDC9C', color: '#2C373B'}}>
               Clear filters
             </Button>
-          )}
+          ) : null}
         </div>
       </div>
 
