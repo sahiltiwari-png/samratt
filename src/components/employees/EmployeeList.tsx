@@ -565,6 +565,11 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
                 <div>
                   <DialogTitle className="text-2xl font-bold text-black tracking-tight mb-1">{employeeDetails?.firstName} {employeeDetails?.lastName}</DialogTitle>
                   <div className="text-gray-500 text-xs">{employeeDetails?.designation || ''} {employeeDetails?.department ? `| ${employeeDetails.department}` : ''}</div>
+                  {employeeDetails?.employeeCode && (
+                    <div className="text-gray-600 text-xs mt-1">
+                      <span className="font-medium">Employee Code:</span> {employeeDetails.employeeCode}
+                    </div>
+                  )}
                   <div className="text-gray-400 text-xs mt-1">{employeeDetails?.email}</div>
                   {(() => {
                     const primaryRoleName = (
@@ -829,6 +834,28 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
                       if (typeof value === "object" && value !== null) return null;
                       // Hide specific fields in view mode as requested
                       if (!editMode && (key === 'grade' || key === 'shiftId' || key === 'camsEmployeeId')) return null;
+                      // Hide specific fields in edit mode as requested
+                      if (editMode && (key === 'camsEmployeeId' || key === 'benefits' || key === 'salaryStructureId' || key === 'shiftId' || key === 'grade')) return null;
+                      // Show employeeCode in both modes; read-only in edit mode
+                      if (key === 'employeeCode') {
+                        return (
+                          <div key={key} className="flex flex-col mb-2">
+                            <label className="font-semibold capitalize mb-1" style={{color: '#2C373B'}}>Employee Code</label>
+                            {editMode ? (
+                              <input
+                                className="border border-emerald-300 rounded px-2 py-1 bg-[rgb(209,250,229)] text-[#2C373B] focus:outline-none focus:ring-2 focus:ring-emerald-200 transition"
+                                type="text"
+                                value={formData.employeeCode || ''}
+                                disabled
+                              />
+                            ) : (
+                              <span className="rounded px-2 py-1 border border-emerald-200 bg-[rgb(209,250,229)] text-[#2C373B]">
+                                {employeeDetails?.employeeCode || '-'}
+                              </span>
+                            )}
+                          </div>
+                        );
+                      }
                       // Render checkboxes for boolean fields
                       const isBooleanField = key === 'loginEnabled' || key === 'isActive';
                       if (isBooleanField) {
