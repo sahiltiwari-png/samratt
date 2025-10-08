@@ -526,47 +526,7 @@ const CreateOrganization = () => {
                     required 
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="holidayCalendar">Holiday Calendar</Label>
-                  <Input 
-                    id="holidayCalendar" 
-                    name="holidayCalendar" 
-                    type="file"
-                    accept=".csv,.xlsx"
-                    onChange={async (e) => {
-                      const file = e.target.files?.[0];
-                      if (file) {
-                        setLoading(true);
-                        try {
-                          // First upload the file to get the URL
-                          const fileUrl = await uploadFile(file);
-                          // Use the global organizationId from AuthContext
-                          const currentOrgId = organizationId || formData.id || "ORG123";
-                          
-                          // Then save the holiday calendar with the organization ID
-                          await saveHolidayCalendar(currentOrgId, file.name);
-                          // Update the form data with the new filename
-                          setFormData(prev => ({
-                            ...prev,
-                            holidayCalendarFileName: file.name
-                          }));
-                          toast({ title: "Success", description: "Holiday calendar uploaded successfully." });
-                        } catch (err) {
-                          toast({ title: "Upload failed", description: "Could not upload holiday calendar.", variant: "destructive" });
-                        } finally {
-                          setLoading(false);
-                        }
-                      }
-                    }}
-                  />
-                  {formData.holidayCalendarFileName && (
-                    <div className="mt-2 text-sm flex items-center">
-                      <CheckCircle className="h-4 w-4 text-green-500 mr-1" />
-                      <span>Current calendar: {formData.holidayCalendarFileName}</span>
-                    </div>
-                  )}
-                  <p className="text-xs text-muted-foreground mt-1">Upload CSV or Excel file with holiday dates</p>
-                </div>
+                
               </div>
             </div>
           </div>
