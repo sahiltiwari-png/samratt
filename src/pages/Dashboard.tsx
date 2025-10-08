@@ -379,8 +379,8 @@ const Dashboard = () => {
               </div>
             </div>
             {/* Leave Policy */}
-            <div className="bg-white rounded-2xl border-[1.5px] border-[#2C373B]/30 shadow-none px-3 sm:px-4 pt-2 pb-2 flex flex-col h-[230px]">
-              <div className="flex items-center gap-3 mb-2">
+            <div className="bg-white rounded-2xl border-[1.5px] border-[#2C373B]/30 shadow-none px-3 sm:px-4 pt-1 pb-1 flex flex-col h-[195px]">
+              <div className="flex items-center gap-3 mb-1">
                 <div className="relative w-12 h-12">
                   <div className="absolute inset-0 rounded-full bg-[#4CDC9C26]"></div>
                   <div className="absolute inset-1 rounded-full bg-[#2C373B]"></div>
@@ -390,24 +390,24 @@ const Dashboard = () => {
                 </div>
                 <span className="text-gray-700 font-semibold text-base">Leave Policy</span>
               </div>
-              <div className="flex items-end gap-2 mb-1">
+              <div className="flex items-end gap-2 mb-0">
                 <span className="text-3xl font-bold leading-none text-[#4CDC9C]">{dashboardStats?.leavePolicies?.activePolicies ?? '-'}</span>
                 <span className="text-base text-gray-700 font-medium mb-1">active policy</span>
               </div>
-              <div className="flex gap-4 text-xs font-medium mb-1">
+              <div className="flex gap-4 text-xs font-medium mb-0">
                 <span className="text-gray-400">Maternity <span className="text-green-500 font-bold">{dashboardStats?.leavePolicies?.leaveTypesSummary?.maternity?.intervalValue ?? '-'}</span></span>
                 <span className="text-gray-400">Earned <span className="text-yellow-500 font-bold">{dashboardStats?.leavePolicies?.leaveTypesSummary?.earned?.intervalValue ?? '-'}</span></span>
               </div>
               <button 
-                className="w-full mt-auto bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3fd190] rounded-lg py-2 text-sm font-medium transition shadow-none"
+                className="w-full mt-auto mb-2 bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3fd190] rounded-lg py-2 text-sm font-medium transition shadow-none"
                 onClick={() => navigate('/leaves/policy')}
               >
                 Manage Leave Policy
               </button>
             </div>
             {/* Payroll Processed */}
-            <div className="bg-white rounded-2xl border-[1.5px] border-[#2C373B]/30 shadow-none px-3 sm:px-4 pt-2 pb-2 flex flex-col h-[230px]">
-              <div className="flex-1 flex flex-col gap-3">
+            <div className="bg-white rounded-2xl border-[1.5px] border-[#2C373B]/30 shadow-none px-3 sm:px-4 pt-1 pb-1 flex flex-col h-[195px]">
+              <div className="flex-1 flex flex-col gap-2">
                 <div className="flex items-center gap-3">
                   <div className="relative w-12 h-12">
                     <div className="absolute inset-0 rounded-full bg-[#4CDC9C26]"></div>
@@ -427,12 +427,12 @@ const Dashboard = () => {
                   </span>
                   <span className="text-sm text-gray-700 font-medium ml-2">employees</span>
                 </div>
-                <div className="text-xs mb-1">
+                <div className="text-xs mb-0">
                   <span className="text-[#9E9E9E] font-medium">Pending employees <span className="text-red-500 font-medium">{dashboardStats?.payroll?.pending ?? '-'}</span></span>
                 </div>
               </div>
               <button 
-                className="w-full mt-auto bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3fd190] rounded-lg py-2 text-sm font-medium transition"
+                className="w-full mt-auto mb-2 bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3fd190] rounded-lg py-2 text-sm font-medium transition"
                 onClick={() => navigate('/payroll')}
               >
                 Manage Payroll
