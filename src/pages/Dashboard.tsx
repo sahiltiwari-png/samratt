@@ -33,6 +33,7 @@ const Dashboard = () => {
   const [employee, setEmployee] = useState<any | null>(null);
   const [attendanceToday, setAttendanceToday] = useState<any | null>(null);
   const [clocking, setClocking] = useState<{in:boolean; out:boolean}>({in:false, out:false});
+  const [calendarUrl, setCalendarUrl] = useState<string | null>(null);
 
   useEffect(() => {
     // Show access denied message when redirected from restricted routes
@@ -320,8 +321,12 @@ const Dashboard = () => {
             <div className="bg-white rounded-2xl border-[1.5px] border-[#2C373B]/30 shadow-none p-3 sm:p-4 sm:col-span-2">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
-                    <Users className="h-5 w-5 text-green-600" />
+                  <div className="relative w-12 h-12">
+                    <div className="absolute inset-0 rounded-full bg-[#4CDC9C26]"></div>
+                    <div className="absolute inset-1 rounded-full bg-[#2C373B]"></div>
+                    <div className="absolute inset-2 rounded-full bg-[#2C373B] flex items-center justify-center shadow-sm">
+                      <Users className="h-6 w-6 text-[#FFBB31]" />
+                    </div>
                   </div>
                   <div>
                     <div className="text-gray-700 text-base font-semibold flex items-center gap-2">
@@ -346,8 +351,12 @@ const Dashboard = () => {
             <div className="bg-white rounded-2xl border-[1.5px] border-[#2C373B]/30 shadow-none p-3 sm:p-4 sm:col-span-2">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
-                    <ClipboardList className="h-5 w-5 text-green-600" />
+                  <div className="relative w-12 h-12">
+                    <div className="absolute inset-0 rounded-full bg-[#4CDC9C26]"></div>
+                    <div className="absolute inset-1 rounded-full bg-[#2C373B]"></div>
+                    <div className="absolute inset-2 rounded-full bg-[#2C373B] flex items-center justify-center shadow-sm">
+                      <ClipboardList className="h-6 w-6 text-[#FFBB31]" />
+                    </div>
                   </div>
                   <div>
                     <div className="text-gray-700 text-base font-semibold flex items-center gap-2">
@@ -369,11 +378,15 @@ const Dashboard = () => {
                 </button>
               </div>
             </div>
-            {/* Leave Policy - Redesigned to match screenshot */}
+            {/* Leave Policy */}
             <div className="bg-white rounded-2xl border-[1.5px] border-[#2C373B]/30 shadow-none p-3 sm:p-4 flex flex-col justify-between">
               <div className="flex items-center gap-3 mb-2">
-                <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
-                  <svg width="20" height="20" fill="none" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4" fill="#3CC78F" fillOpacity="0.15"/><path d="M8.5 10.5h7M8.5 13.5h4M12 7.5v9" stroke="#3CC78F" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                <div className="relative w-12 h-12">
+                  <div className="absolute inset-0 rounded-full bg-[#4CDC9C26]"></div>
+                  <div className="absolute inset-1 rounded-full bg-[#2C373B]"></div>
+                  <div className="absolute inset-2 rounded-full bg-[#2C373B] flex items-center justify-center shadow-sm">
+                    <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4" fill="none"/><path d="M8.5 10.5h7M8.5 13.5h4M12 7.5v9" stroke="#FFBB31" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                  </div>
                 </div>
                 <span className="text-gray-700 font-semibold text-base">Leave Policy</span>
               </div>
@@ -396,8 +409,12 @@ const Dashboard = () => {
             <div className="bg-white rounded-2xl border-[1.5px] border-[#2C373B]/30 shadow-none p-3 sm:p-4">
               <div className="flex flex-col gap-3">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
-                    <Calculator className="h-5 w-5 text-green-600" />
+                  <div className="relative w-12 h-12">
+                    <div className="absolute inset-0 rounded-full bg-[#4CDC9C26]"></div>
+                    <div className="absolute inset-1 rounded-full bg-[#2C373B]"></div>
+                    <div className="absolute inset-2 rounded-full bg-[#2C373B] flex items-center justify-center shadow-sm">
+                      <Calculator className="h-6 w-6 text-[#FFBB31]" />
+                    </div>
                   </div>
                   <div>
                     <div className="text-gray-700 text-base font-semibold">Payroll Processed</div>
