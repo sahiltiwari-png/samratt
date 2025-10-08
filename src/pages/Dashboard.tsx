@@ -442,8 +442,8 @@ const Dashboard = () => {
             <div className="bg-white rounded-2xl border-[1.5px] border-[#2C373B]/30 shadow-none p-3 sm:p-4 sm:col-span-2">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
-                  <div className="relative w-14 h-14">
-                    <div className="absolute inset-0 rounded-full border-[3px] border-[#4CDC9C]"></div>
+                  <div className="relative w-10 h-10">
+                    <div className="absolute inset-0 rounded-full bg-[#4CDC9C26]"></div>
                     <div className="absolute inset-1 rounded-full bg-[#2C373B]"></div>
                     <div className="absolute inset-2 rounded-full bg-[#2C373B] flex items-center justify-center shadow-sm">
                       <FileText className="h-6 w-6 text-[#FFBB31]" />
