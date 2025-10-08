@@ -379,7 +379,7 @@ const Dashboard = () => {
               </div>
             </div>
             {/* Leave Policy */}
-            <div className="bg-white rounded-2xl border-[1.5px] border-[#2C373B]/30 shadow-none p-3 sm:p-4 flex flex-col justify-between min-h-[220px]">
+            <div className="bg-white rounded-2xl border-[1.5px] border-[#2C373B]/30 shadow-none px-3 sm:px-4 pt-2 pb-2 flex flex-col h-[230px]">
               <div className="flex items-center gap-3 mb-2">
                 <div className="relative w-12 h-12">
                   <div className="absolute inset-0 rounded-full bg-[#4CDC9C26]"></div>
@@ -394,7 +394,7 @@ const Dashboard = () => {
                 <span className="text-3xl font-bold leading-none text-[#4CDC9C]">{dashboardStats?.leavePolicies?.activePolicies ?? '-'}</span>
                 <span className="text-base text-gray-700 font-medium mb-1">active policy</span>
               </div>
-              <div className="flex gap-4 text-xs font-medium mb-3">
+              <div className="flex gap-4 text-xs font-medium mb-1">
                 <span className="text-gray-400">Maternity <span className="text-green-500 font-bold">{dashboardStats?.leavePolicies?.leaveTypesSummary?.maternity?.intervalValue ?? '-'}</span></span>
                 <span className="text-gray-400">Earned <span className="text-yellow-500 font-bold">{dashboardStats?.leavePolicies?.leaveTypesSummary?.earned?.intervalValue ?? '-'}</span></span>
               </div>
@@ -406,8 +406,8 @@ const Dashboard = () => {
               </button>
             </div>
             {/* Payroll Processed */}
-            <div className="bg-white rounded-2xl border-[1.5px] border-[#2C373B]/30 shadow-none p-3 sm:p-4 flex flex-col justify-between min-h-[220px]">
-              <div className="flex flex-col gap-3">
+            <div className="bg-white rounded-2xl border-[1.5px] border-[#2C373B]/30 shadow-none px-3 sm:px-4 pt-2 pb-2 flex flex-col h-[230px]">
+              <div className="flex-1 flex flex-col gap-3">
                 <div className="flex items-center gap-3">
                   <div className="relative w-12 h-12">
                     <div className="absolute inset-0 rounded-full bg-[#4CDC9C26]"></div>
@@ -427,16 +427,16 @@ const Dashboard = () => {
                   </span>
                   <span className="text-sm text-gray-700 font-medium ml-2">employees</span>
                 </div>
-                <div className="text-xs">
+                <div className="text-xs mb-1">
                   <span className="text-[#9E9E9E] font-medium">Pending employees <span className="text-red-500 font-medium">{dashboardStats?.payroll?.pending ?? '-'}</span></span>
                 </div>
-                <button 
-                  className="w-full mt-auto bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3fd190] rounded-lg py-2 text-sm font-medium transition"
-                  onClick={() => navigate('/payroll')}
-                >
-                  Manage Payroll
-                </button>
               </div>
+              <button 
+                className="w-full mt-auto bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3fd190] rounded-lg py-2 text-sm font-medium transition"
+                onClick={() => navigate('/payroll')}
+              >
+                Manage Payroll
+              </button>
             </div>
             {/* Reports */}
             <div className="bg-white rounded-2xl border-[1.5px] border-[#2C373B]/30 shadow-none p-3 sm:p-4 sm:col-span-2">
