@@ -107,7 +107,7 @@ const AddEmployeeStepper = () => {
     { title: "Employee Details", subtitle: "Fill in Employee details" },
     { title: "Personal Information", subtitle: "Personal details" },
     { title: "Finance & Emergency", subtitle: "Financial information" },
-    { title: "Admin Details", subtitle: "Upload documents" },
+    { title: "Document Details", subtitle: "Upload documents" },
   ];
 
   const employmentTypeOptions = [
