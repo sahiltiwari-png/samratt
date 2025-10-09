@@ -49,6 +49,18 @@ const LeaveRequests = () => {
 
   // Helper to detect image URLs
   const isImageUrl = (url: string) => /\.(png|jpe?g|gif|webp|bmp|svg)(\?.*)?$/i.test(url);
+  // Helper to extract a readable file name from a URL
+  const getFileNameFromUrl = (url: string) => {
+    try {
+      const u = new URL(url);
+      const name = u.pathname.split('/').pop() || url;
+      return decodeURIComponent(name);
+    } catch {
+      const sanitized = url.split('?')[0].split('#')[0];
+      const parts = sanitized.split('/');
+      return decodeURIComponent(parts.pop() || url);
+    }
+  };
 
   // Helper to truncate text by characters with ellipsis
   const truncateChars = (text: string = "", max = 12) => {
@@ -684,34 +696,67 @@ const LeaveRequests = () => {
           <DialogHeader>
             <DialogTitle>Attached Documents</DialogTitle>
           </DialogHeader>
-          {currentDocs && currentDocs.filter(isImageUrl).length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {currentDocs.filter(isImageUrl).map((url, idx) => (
-                <div key={idx} className="space-y-2">
-                  <img
-                    src={url}
-                    alt={`Document ${idx + 1}`}
-                    className="w-full h-auto rounded border"
-                    onError={(e) => {
-                      (e.currentTarget as HTMLImageElement).style.display = 'none';
-                    }}
-                  />
-                  <Button
-                    size="sm"
-                    onClick={() => {
-                      setFullImageUrl(url);
-                      setFullImageOpen(true);
-                    }}
-                    className="w-full"
-                    style={{backgroundColor: '#4CDC9C', color: '#2C373B'}}
-                  >
-                    View
-                  </Button>
+          {currentDocs && currentDocs.length > 0 ? (
+            <div className="space-y-6">
+              {/* Image attachments */}
+              {currentDocs.filter(isImageUrl).length > 0 && (
+                <div>
+                  <div className="text-sm font-medium mb-2" style={{color: '#2C373B'}}>Images</div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {currentDocs.filter(isImageUrl).map((url, idx) => (
+                      <div key={`img-${idx}`} className="space-y-2">
+                        <img
+                          src={url}
+                          alt={`Document ${idx + 1}`}
+                          className="w-full h-auto rounded border"
+                          onError={(e) => {
+                            (e.currentTarget as HTMLImageElement).style.display = 'none';
+                          }}
+                        />
+                        <Button
+                          size="sm"
+                          onClick={() => {
+                            setFullImageUrl(url);
+                            setFullImageOpen(true);
+                          }}
+                          className="w-full"
+                          style={{backgroundColor: '#4CDC9C', color: '#2C373B'}}
+                        >
+                          View
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              ))}
+              )}
+
+              {/* Non-image attachments */}
+              {currentDocs.filter((url) => !isImageUrl(url)).length > 0 && (
+                <div>
+                  <div className="text-sm font-medium mb-2" style={{color: '#2C373B'}}>Documents</div>
+                  <div className="space-y-2">
+                    {currentDocs.filter((url) => !isImageUrl(url)).map((url, idx) => (
+                      <div key={`doc-${idx}`} className="flex items-center justify-between gap-3 rounded border px-3 py-2">
+                        <div className="text-sm truncate" title={url} style={{color: '#2C373B'}}>
+                          {getFileNameFromUrl(url)}
+                        </div>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="shrink-0"
+                          style={{backgroundColor: '#4CDC9C', color: '#2C373B'}}
+                          asChild
+                        >
+                          <a href={url} target="_blank" rel="noopener noreferrer">Open</a>
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           ) : (
-            <div className="text-sm text-muted-foreground">No images attached.</div>
+            <div className="text-sm text-muted-foreground">No documents attached.</div>
           )}
         </DialogContent>
       </Dialog>
