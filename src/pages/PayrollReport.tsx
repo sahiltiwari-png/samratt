@@ -594,11 +594,11 @@ const PayrollReport = () => {
                             <div className="grid grid-cols-2 gap-3 text-sm">
                               <div className="flex justify-between">
                                 <span className="text-emerald-600 font-medium" style={{fontSize: '12px'}}>Basic:</span>
-                                <span className="font-semibold text-emerald-800" style={{fontSize: '12px', fontWeight: '600'}}>₹{item.grossEarnings?.toLocaleString()}</span>
+                                <span className="font-semibold text-emerald-800" style={{fontSize: '12px', fontWeight: '600'}}>₹{(item.basic ?? 0).toLocaleString()}</span>
                               </div>
                               <div className="flex justify-between">
                                 <span className="text-emerald-600 font-medium" style={{fontSize: '12px'}}>HRA:</span>
-                                <span className="font-semibold text-emerald-800" style={{fontSize: '12px', fontWeight: '600'}}>₹0</span>
+                                <span className="font-semibold text-emerald-800" style={{fontSize: '12px', fontWeight: '600'}}>₹{(item.hra ?? 0).toLocaleString()}</span>
                               </div>
                               <div className="flex justify-between">
                                 <span className="text-emerald-600 font-medium" style={{fontSize: '12px'}}>Gross:</span>
@@ -691,10 +691,10 @@ const PayrollReport = () => {
                               {item.employeeCode}
                             </td>
                             <td className="px-3 py-3 text-right text-sm text-emerald-700" style={{fontSize: '14px', fontWeight: '500'}}>
-                              ₹{item.grossEarnings?.toLocaleString()}
+                              ₹{(item.basic ?? 0).toLocaleString()}
                             </td>
                             <td className="px-3 py-3 text-right text-sm text-emerald-700" style={{fontSize: '14px', fontWeight: '500'}}>
-                              ₹0
+                              ₹{(item.hra ?? 0).toLocaleString()}
                             </td>
                             <td className="px-3 py-3 text-right text-sm font-medium text-emerald-800" style={{fontSize: '14px', fontWeight: '500'}}>
                               ₹{item.grossEarnings?.toLocaleString()}

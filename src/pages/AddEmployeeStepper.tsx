@@ -1,7 +1,8 @@
 
 import { useState, useEffect } from "react";
-import { Calendar, Check, ChevronRight } from "lucide-react";
-import ReactSelect from "react-select";
+import { Calendar, Check, ChevronRight, ChevronDown } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Command, CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem } from "@/components/ui/command";
 
 
 
@@ -114,6 +115,139 @@ const AddEmployeeStepper = () => {
   const [rmOpen, setRmOpen] = useState(false);
   const [rmLoading, setRmLoading] = useState(false);
   const [rmList, setRmList] = useState<any[]>([]);
+  // Designation dropdown state
+  const [designationOpen, setDesignationOpen] = useState(false);
+  // Provided designations list
+  const DESIGNATIONS = [
+    // Entry Level
+    "Intern",
+    "Trainee",
+    "Associate",
+    "Junior Executive",
+    "Executive",
+    "Coordinator",
+
+    // Mid Level
+    "Senior Executive",
+    "Specialist",
+    "Analyst",
+    "Consultant",
+    "Assistant Manager",
+    "Team Lead",
+    "Supervisor",
+
+    // Managerial
+    "Manager",
+    "Senior Manager",
+    "Project Manager",
+    "Program Manager",
+    "Product Manager",
+    "Operations Manager",
+    "Delivery Manager",
+
+    // Leadership
+    "General Manager",
+    "Associate Director",
+    "Director",
+    "Vice President",
+    "Senior Vice President",
+    "CEO",
+    "CTO",
+    "CIO",
+    "COO",
+    "CFO",
+    "CMO",
+    "CHRO",
+    "CSO",
+
+    // IT / Technical
+    "Software Engineer",
+    "Senior Software Engineer",
+    "Full Stack Developer",
+    "Backend Developer",
+    "Frontend Developer",
+    "Mobile App Developer",
+    "DevOps Engineer",
+    "Cloud Engineer",
+    "QA Engineer",
+    "Test Analyst",
+    "Automation Tester",
+    "UI/UX Designer",
+    "System Administrator",
+    "Database Administrator",
+    "Network Engineer",
+    "Security Analyst",
+    "Technical Lead",
+    "Solution Architect",
+    "Technical Project Manager",
+    "Engineering Manager",
+    "VP Engineering",
+
+    // Sales
+    "Sales Executive",
+    "Business Development Executive",
+    "Business Development Manager",
+    "Inside Sales Executive",
+    "Sales Consultant",
+    "Relationship Manager",
+    "Key Account Manager",
+    "Territory Sales Manager",
+    "Regional Sales Manager",
+    "National Sales Manager",
+    "Head of Sales",
+    "Vice President Sales",
+    "Chief Sales Officer",
+
+    // Marketing
+    "Marketing Executive",
+    "Digital Marketing Executive",
+    "SEO Specialist",
+    "PPC Specialist",
+    "Content Writer",
+    "Copywriter",
+    "Social Media Executive",
+    "Brand Executive",
+    "Marketing Analyst",
+    "Marketing Manager",
+    "Product Marketing Manager",
+    "Campaign Manager",
+    "Growth Manager",
+    "Regional Marketing Manager",
+    "Head of Marketing",
+    "Vice President Marketing",
+    "Chief Marketing Officer",
+
+    // HR & Admin
+    "HR Executive",
+    "HR Generalist",
+    "Recruiter",
+    "Talent Acquisition Specialist",
+    "HR Manager",
+    "HR Business Partner",
+    "Training & Development Manager",
+    "Payroll Specialist",
+    "Admin Executive",
+    "Office Manager",
+
+    // Finance & Accounts
+    "Accounts Executive",
+    "Junior Accountant",
+    "Senior Accountant",
+    "Finance Analyst",
+    "Accounts Manager",
+    "Finance Manager",
+    "Internal Auditor",
+    "Financial Controller",
+
+    // Operations / Support
+    "Operations Executive",
+    "Operations Manager",
+    "Process Specialist",
+    "Customer Support Executive",
+    "Client Service Manager",
+    "Technical Support Engineer",
+    "Service Delivery Manager",
+  ];
 
   // Fetch roles lazily on focus of the Role field
 
@@ -121,7 +255,7 @@ const AddEmployeeStepper = () => {
     { title: "Employee Details", subtitle: "Fill in Employee details" },
     { title: "Personal Information", subtitle: "Personal details" },
     { title: "Finance & Emergency", subtitle: "Financial information" },
-    { title: "Documents", subtitle: "Upload documents" },
+    { title: "Document Details", subtitle: "Upload documents" },
   ];
 
   const employmentTypeOptions = [
@@ -262,21 +396,44 @@ const designationOptions = DESIGNATIONS.map(d => ({ value: d, label: d }));
                   value={form.password} 
                   onChange={(e:any)=>setForm({...form, password:e.target.value})}
                 />
-               <div className="flex flex-col">
-  <label className="mb-2 text-sm font-medium text-gray-700">Designation</label>
-  <ReactSelect
-    options={designationOptions}
-    value={designationOptions.find(opt => opt.value === form.designation)}
-    onChange={(selectedOption: any) =>
-      setForm({ ...form, designation: selectedOption.value })
-    }
-    placeholder="Select Designation"
-    isSearchable={true}  // Search bar enable
-  />
-</div>
-
-
-
+                {/* Designation searchable dropdown */}
+                <div className="flex flex-col">
+                  <label className="mb-2 text-sm font-medium text-gray-700">Designation</label>
+                  <Popover open={designationOpen} onOpenChange={setDesignationOpen}>
+                    <PopoverTrigger asChild>
+                      <button
+                        type="button"
+                        className="w-full rounded-md border border-gray-300 px-3 py-2.5 text-sm bg-white focus:border-green-500 focus:ring-2 focus:ring-green-100 text-left inline-flex items-center justify-between"
+                        onClick={() => setDesignationOpen(true)}
+                      >
+                        <span className="truncate">{form.designation || 'Select Designation'}</span>
+                        <ChevronDown className="ml-2 h-4 w-4 opacity-60" />
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent className="p-0 w-64" align="start">
+                      <Command>
+                        <CommandInput placeholder="Search designation..." />
+                        <CommandList className="max-h-64 overflow-auto">
+                          <CommandEmpty>No results found.</CommandEmpty>
+                          <CommandGroup heading="Designations">
+                            {DESIGNATIONS.map((d) => (
+                              <CommandItem
+                                key={d}
+                                value={d}
+                                onSelect={() => {
+                                  setForm((f:any) => ({...f, designation: d}));
+                                  setDesignationOpen(false);
+                                }}
+                              >
+                                {d}
+                              </CommandItem>
+                            ))}
+                          </CommandGroup>
+                        </CommandList>
+                      </Command>
+                    </PopoverContent>
+                  </Popover>
+                </div>
                 <Input 
                   label="Department Code" 
                   value={form.departmentCode} 

@@ -33,6 +33,7 @@ const Dashboard = () => {
   const [employee, setEmployee] = useState<any | null>(null);
   const [attendanceToday, setAttendanceToday] = useState<any | null>(null);
   const [clocking, setClocking] = useState<{in:boolean; out:boolean}>({in:false, out:false});
+  const [calendarUrl, setCalendarUrl] = useState<string | null>(null);
 
   useEffect(() => {
     // Show access denied message when redirected from restricted routes
@@ -243,7 +244,7 @@ const Dashboard = () => {
             </div>
             {/* Right: Clock icons + Metrics */}
             <div className="flex flex-col md:items-start w-full md:w-auto">
-              <div className="flex gap-2 mb-2 self-start">
+              <div className="flex gap-3 md:gap-4 mb-2 self-start">
                 <button
                   type="button"
                   onClick={handleClockIn}
@@ -263,11 +264,11 @@ const Dashboard = () => {
                   {attendanceToday?.clockOut ? 'Clocked out' : 'Clock Out'}
                 </button>
               </div>
-              <div className="bg-white rounded-lg px-4 py-2 w-full md:w-auto self-start flex flex-col md:flex-row gap-4 items-start md:items-center shadow">
-                <div className="text-xs text-gray-500 text-left md:text-right">Date<br /><span className="text-base text-gray-800 font-semibold">{format(new Date(), 'dd/MM/yyyy')}</span></div>
-                <div className="text-xs text-gray-500 text-left md:text-right">Clockin<br /><span className="text-base text-gray-800 font-semibold">{attendanceToday?.clockIn ? format(new Date(attendanceToday.clockIn), 'HH:mm:ss') : '-'}</span></div>
-                <div className="text-xs text-gray-500 text-left md:text-right">Clockout<br /><span className="text-base text-gray-800 font-semibold">{attendanceToday?.clockOut ? format(new Date(attendanceToday.clockOut), 'HH:mm:ss') : '-'}</span></div>
-                <div className="text-xs text-gray-500 text-left md:text-right">Working hours<br /><span className="text-base text-gray-800 font-semibold">{attendanceToday?.totalWorkingHours != null ? `${attendanceToday.totalWorkingHours}` : '-'}</span></div>
+              <div className="bg-white rounded-lg px-3 sm:px-4 py-2 w-full md:w-auto self-start flex flex-col md:flex-row gap-4 items-start md:items-center shadow">
+                <div className="text-xs text-gray-500 text-left"><span className="font-semibold text-[#1C1C1E]">Date</span><br /><span className="text-base text-gray-800 font-normal">{format(new Date(), 'dd/MM/yyyy')}</span></div>
+                <div className="text-xs text-gray-500 text-left md:text-right"><span className="font-semibold text-[#1C1C1E]">Clockin</span><br /><span className="text-base text-gray-800 font-normal">{attendanceToday?.clockIn ? format(new Date(attendanceToday.clockIn), 'HH:mm:ss') : '-'}</span></div>
+                <div className="text-xs text-gray-500 text-left md:text-right"><span className="font-semibold text-[#1C1C1E]">Clockout</span><br /><span className="text-base text-gray-800 font-normal">{attendanceToday?.clockOut ? format(new Date(attendanceToday.clockOut), 'HH:mm:ss') : '-'}</span></div>
+                <div className="text-xs text-gray-500 text-left md:text-right"><span className="font-semibold text-[#1C1C1E]">Working hours</span><br /><span className="text-base text-gray-800 font-normal">{attendanceToday?.totalWorkingHours != null ? `${attendanceToday.totalWorkingHours}` : '-'}</span></div>
               </div>
             </div>
           </div>
@@ -278,7 +279,7 @@ const Dashboard = () => {
           <div className="md:w-1/3 h-full">
             <div className="bg-white rounded-2xl shadow p-6 flex flex-col h-full">
               <div className="text-gray-500 text-sm mb-4 font-semibold">Today</div>
-              <div className="w-full flex-1 flex flex-col items-center md:min-h-[580px]">
+              <div className="w-full flex-1 flex flex-col items-center">
                 {calendarLoading ? (
                   <div className="w-full flex justify-center items-center h-full"><span className="text-gray-400">Loading...</span></div>
                 ) : calendarData?.calendarFile ? (
@@ -286,7 +287,7 @@ const Dashboard = () => {
                     <img 
                       src={calendarData.calendarFile} 
                       alt="Holiday Calendar" 
-                      className="w-full h-full object-cover rounded mb-2 border cursor-pointer" 
+                      className="w-full h-full object-cover rounded border cursor-pointer" 
                       onClick={() => setShowImageModal(true)}
                     />
                   </>
@@ -320,8 +321,12 @@ const Dashboard = () => {
             <div className="bg-white rounded-2xl border-[1.5px] border-[#2C373B]/30 shadow-none p-3 sm:p-4 sm:col-span-2">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
-                    <Users className="h-5 w-5 text-green-600" />
+                  <div className="relative w-12 h-12">
+                    <div className="absolute inset-0 rounded-full bg-[#4CDC9C26]"></div>
+                    <div className="absolute inset-1 rounded-full bg-[#2C373B]"></div>
+                    <div className="absolute inset-2 rounded-full bg-[#2C373B] flex items-center justify-center shadow-sm">
+                      <Users className="h-6 w-6 text-[#FFBB31]" />
+                    </div>
                   </div>
                   <div>
                     <div className="text-gray-700 text-base font-semibold flex items-center gap-2">
@@ -335,7 +340,7 @@ const Dashboard = () => {
                   </div>
                 </div>
                 <button
-                  className="w-full sm:w-auto bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3fd190] rounded-lg px-4 py-2 font-semibold transition"
+                  className="w-full sm:w-auto bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3fd190] rounded-lg px-4 py-2 text-sm font-medium transition"
                   onClick={() => navigate('/employees')}
                 >
                   Manage Employees
@@ -346,8 +351,12 @@ const Dashboard = () => {
             <div className="bg-white rounded-2xl border-[1.5px] border-[#2C373B]/30 shadow-none p-3 sm:p-4 sm:col-span-2">
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
-                    <ClipboardList className="h-5 w-5 text-green-600" />
+                  <div className="relative w-12 h-12">
+                    <div className="absolute inset-0 rounded-full bg-[#4CDC9C26]"></div>
+                    <div className="absolute inset-1 rounded-full bg-[#2C373B]"></div>
+                    <div className="absolute inset-2 rounded-full bg-[#2C373B] flex items-center justify-center shadow-sm">
+                      <ClipboardList className="h-6 w-6 text-[#FFBB31]" />
+                    </div>
                   </div>
                   <div>
                     <div className="text-gray-700 text-base font-semibold flex items-center gap-2">
@@ -362,42 +371,50 @@ const Dashboard = () => {
                   </div>
                 </div>
                 <button
-                  className="w-full sm:w-auto bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3fd190] rounded-lg px-4 py-2 font-semibold transition"
+                  className="w-full sm:w-auto bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3fd190] rounded-lg px-4 py-2 text-sm font-medium transition"
                   onClick={() => navigate('/leaves/requests')}
                 >
                   Manage leaves requests
                 </button>
               </div>
             </div>
-            {/* Leave Policy - Redesigned to match screenshot */}
-            <div className="bg-white rounded-2xl border-[1.5px] border-[#2C373B]/30 shadow-none p-3 sm:p-4 flex flex-col justify-between">
-              <div className="flex items-center gap-3 mb-2">
-                <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
-                  <svg width="20" height="20" fill="none" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4" fill="#3CC78F" fillOpacity="0.15"/><path d="M8.5 10.5h7M8.5 13.5h4M12 7.5v9" stroke="#3CC78F" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            {/* Leave Policy */}
+            <div className="bg-white rounded-2xl border-[1.5px] border-[#2C373B]/30 shadow-none px-1 sm:px-2 pt-1 pb-1 flex flex-col h-[195px]">
+              <div className="flex items-center gap-3 mb-1">
+                <div className="relative w-12 h-12">
+                  <div className="absolute inset-0 rounded-full bg-[#4CDC9C26]"></div>
+                  <div className="absolute inset-1 rounded-full bg-[#2C373B]"></div>
+                  <div className="absolute inset-2 rounded-full bg-[#2C373B] flex items-center justify-center shadow-sm">
+                    <svg width="22" height="22" fill="none" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4" fill="none"/><path d="M8.5 10.5h7M8.5 13.5h4M12 7.5v9" stroke="#FFBB31" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                  </div>
                 </div>
                 <span className="text-gray-700 font-semibold text-base">Leave Policy</span>
               </div>
-              <div className="flex items-end gap-2 mb-1">
+              <div className="flex items-end gap-2 mb-0">
                 <span className="text-3xl font-bold leading-none text-[#4CDC9C]">{dashboardStats?.leavePolicies?.activePolicies ?? '-'}</span>
                 <span className="text-base text-gray-700 font-medium mb-1">active policy</span>
               </div>
-              <div className="flex gap-4 text-xs font-medium mb-3">
+              <div className="flex gap-4 text-xs font-medium mb-0">
                 <span className="text-gray-400">Maternity <span className="text-green-500 font-bold">{dashboardStats?.leavePolicies?.leaveTypesSummary?.maternity?.intervalValue ?? '-'}</span></span>
                 <span className="text-gray-400">Earned <span className="text-yellow-500 font-bold">{dashboardStats?.leavePolicies?.leaveTypesSummary?.earned?.intervalValue ?? '-'}</span></span>
               </div>
               <button 
-                className="w-[85%] mx-auto bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3fd190] rounded-lg py-2 font-semibold transition text-base shadow-none"
+                className="w-full mt-auto mb-2 bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3fd190] rounded-lg py-2 text-sm font-medium transition shadow-none"
                 onClick={() => navigate('/leaves/policy')}
               >
                 Manage Leave Policy
               </button>
             </div>
             {/* Payroll Processed */}
-            <div className="bg-white rounded-2xl border-[1.5px] border-[#2C373B]/30 shadow-none p-3 sm:p-4">
-              <div className="flex flex-col gap-3">
+            <div className="bg-white rounded-2xl border-[1.5px] border-[#2C373B]/30 shadow-none px-1 sm:px-2 pt-1 pb-1 flex flex-col h-[195px]">
+              <div className="flex-1 flex flex-col gap-2">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
-                    <Calculator className="h-5 w-5 text-green-600" />
+                  <div className="relative w-12 h-12">
+                    <div className="absolute inset-0 rounded-full bg-[#4CDC9C26]"></div>
+                    <div className="absolute inset-1 rounded-full bg-[#2C373B]"></div>
+                    <div className="absolute inset-2 rounded-full bg-[#2C373B] flex items-center justify-center shadow-sm">
+                      <Calculator className="h-6 w-6 text-[#FFBB31]" />
+                    </div>
                   </div>
                   <div>
                     <div className="text-gray-700 text-base font-semibold">Payroll Processed</div>
@@ -410,35 +427,18 @@ const Dashboard = () => {
                   </span>
                   <span className="text-sm text-gray-700 font-medium ml-2">employees</span>
                 </div>
-                <div className="text-xs">
+                <div className="text-xs mb-0">
                   <span className="text-[#9E9E9E] font-medium">Pending employees <span className="text-red-500 font-medium">{dashboardStats?.payroll?.pending ?? '-'}</span></span>
                 </div>
-                <button 
-                  className="w-[85%] mx-auto bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3fd190] rounded-lg py-2 font-semibold transition"
-                  onClick={() => navigate('/payroll')}
-                >
-                  Manage Payroll
-                </button>
               </div>
+              <button 
+                className="w-full mt-auto mb-2 bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3fd190] rounded-lg py-2 text-sm font-medium transition"
+                onClick={() => navigate('/payroll')}
+              >
+                Manage Payroll
+              </button>
             </div>
-            {/* Reports */}
-            <div className="bg-white rounded-2xl border-[1.5px] border-[#2C373B]/30 shadow-none p-3 sm:p-4 sm:col-span-2">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
-                    <FileText className="h-5 w-5 text-green-600" />
-                  </div>
-                  <div className="text-gray-700 text-base font-semibold">Reports</div>
-                </div>
-                <button
-                  className="w-full sm:w-auto bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3fd190] rounded-lg px-4 py-2 font-semibold transition"
-                  onClick={() => navigate('/reports/employees')}
-                >
-                  Manage Reports
-                </button>
-              </div>
-              <div className="mt-3 text-3xl font-bold leading-none text-[#4CDC9C]">{dashboardStats?.reports?.total ?? '-'}</div>
-            </div>
+            {/* Reports card removed */}
           </div>
         </div>
       </div>

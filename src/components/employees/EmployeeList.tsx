@@ -226,6 +226,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Mail, Phone, MapPin, MoreVertical, ChevronDown } from "lucide-react";
 import { Eye, Pencil } from "lucide-react";
 import {
@@ -289,6 +290,15 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
   const [rolesOpen, setRolesOpen] = useState(false);
   const [rolesLoading, setRolesLoading] = useState(false);
   const [selectedRole, setSelectedRole] = useState<any>(null);
+  // Supported employee document types
+  const DOCUMENT_TYPES = [
+    'aadhaar',
+    'pan',
+    'passport',
+    'driving-license',
+    'voter-id',
+    'other',
+  ];
   // Designation dropdown state in edit modal
   const [designationOpen, setDesignationOpen] = useState(false);
   // Reporting manager dropdown state in edit modal
@@ -434,15 +444,13 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
                       )}
                     </td>
                     <td className="px-1 py-1 align-middle">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button size="sm" className="min-w-[90px] px-3 py-1 bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3fd190] border-none">{emp.status === 'active' ? 'Active' : 'Inactive'}</Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent>
-                          <DropdownMenuItem onClick={() => handleStatusChange(emp._id, 'active')} className="text-[#2C373B]">Active</DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => handleStatusChange(emp._id, 'inactive')} className="text-[#2C373B]">Inactive</DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                      <span
+                        className={emp.status === 'active'
+                          ? 'inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-green-100 text-green-700 border border-green-200'
+                          : 'inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-700 border border-red-200'}
+                      >
+                        {emp.status === 'active' ? 'Active' : 'Inactive'}
+                      </span>
                     </td>
                     <td className="px-4 py-3 align-middle">
                       <div className="flex gap-2">
@@ -566,6 +574,11 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
                 <div>
                   <DialogTitle className="text-2xl font-bold text-black tracking-tight mb-1">{employeeDetails?.firstName} {employeeDetails?.lastName}</DialogTitle>
                   <div className="text-gray-500 text-xs">{employeeDetails?.designation || ''} {employeeDetails?.department ? `| ${employeeDetails.department}` : ''}</div>
+                  {employeeDetails?.employeeCode && (
+                    <div className="text-gray-600 text-xs mt-1">
+                      <span className="font-medium">Employee Code:</span> {employeeDetails.employeeCode}
+                    </div>
+                  )}
                   <div className="text-gray-400 text-xs mt-1">{employeeDetails?.email}</div>
                   {(() => {
                     const primaryRoleName = (
@@ -830,6 +843,54 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
                       if (typeof value === "object" && value !== null) return null;
                       // Hide specific fields in view mode as requested
                       if (!editMode && (key === 'grade' || key === 'shiftId' || key === 'camsEmployeeId')) return null;
+                      // Hide specific fields in edit mode as requested
+                      if (editMode && (key === 'camsEmployeeId' || key === 'benefits' || key === 'salaryStructureId' || key === 'shiftId' || key === 'grade')) return null;
+                      // Show employeeCode in both modes; read-only in edit mode
+                      if (key === 'employeeCode') {
+                        return (
+                          <div key={key} className="flex flex-col mb-2">
+                            <label className="font-semibold capitalize mb-1" style={{color: '#2C373B'}}>Employee Code</label>
+                            {editMode ? (
+                              <input
+                                className="border border-emerald-300 rounded px-2 py-1 bg-[rgb(209,250,229)] text-[#2C373B] focus:outline-none focus:ring-2 focus:ring-emerald-200 transition"
+                                type="text"
+                                value={formData.employeeCode || ''}
+                                disabled
+                              />
+                            ) : (
+                              <span className="rounded px-2 py-1 border border-emerald-200 bg-[rgb(209,250,229)] text-[#2C373B]">
+                                {employeeDetails?.employeeCode || '-'}
+                              </span>
+                            )}
+                          </div>
+                        );
+                      }
+                      // Render checkboxes for boolean fields
+                      const isBooleanField = key === 'loginEnabled' || key === 'isActive';
+                      if (isBooleanField) {
+                        const checkedView = !!value;
+                        const checkedEdit = !!formData[key];
+                        return (
+                          <div key={key} className="flex items-center justify-between mb-2">
+                            <label className="font-semibold capitalize" style={{color: '#2C373B'}}>{key.replace(/([A-Z])/g, ' $1')}</label>
+                            {editMode ? (
+                              <Checkbox
+                                checked={checkedEdit}
+                                onCheckedChange={(checked) => setFormData((fd: any) => ({ ...fd, [key]: !!checked }))}
+                                className="h-5 w-5 data-[state=checked]:bg-[#4CDC9C] data-[state=checked]:text-[#2C373B] border-emerald-300"
+                                aria-label={key}
+                              />
+                            ) : (
+                              <Checkbox
+                                checked={checkedView}
+                                disabled
+                                className="h-5 w-5 data-[state=checked]:bg-[#4CDC9C] data-[state=checked]:text-[#2C373B] border-emerald-300"
+                                aria-label={key}
+                              />
+                            )}
+                          </div>
+                        );
+                      }
                       let inputType = "text";
                       if (["dateOfJoining", "probationEndDate", "dob"].includes(key)) inputType = "date";
                       let inputValue = formData[key] || '';
@@ -885,6 +946,77 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
                         )}
                       </div>
                     ))}
+                    {/* Documents */}
+                    <div className="mt-3">
+                      <div className="font-semibold mb-2" style={{color:'#2C373B'}}>Documents</div>
+                      {editMode ? (
+                        DOCUMENT_TYPES.map((type) => {
+                          const existing = (
+                            Array.isArray(formData.documents)
+                              ? formData.documents
+                              : (Array.isArray(employeeDetails?.documents) ? employeeDetails.documents : [])
+                          ).find((d: any) => d?.type === type);
+                          return (
+                            <div key={type} className="flex items-center justify-between mb-2">
+                              <div className="flex flex-col">
+                                <span className="capitalize text-[#2C373B]">{type.replace('-', ' ')}</span>
+                                {existing?.url ? (
+                                  <a href={existing.url} target="_blank" rel="noopener noreferrer" className="text-emerald-600 text-sm underline">View</a>
+                                ) : (
+                                  <span className="text-gray-500 text-sm">No document</span>
+                                )}
+                              </div>
+                              <div>
+                                <input
+                                  id={`doc-upload-${type}`}
+                                  type="file"
+                                  accept="image/*,application/pdf"
+                                  className="hidden"
+                                  onChange={async (e) => {
+                                    const file = e.target.files?.[0];
+                                    if (!file) return;
+                                    try {
+                                      const url = await uploadFile(file);
+                                      setFormData((fd: any) => {
+                                        const docs = Array.isArray(fd.documents)
+                                          ? [...fd.documents]
+                                          : (Array.isArray(employeeDetails?.documents) ? [...employeeDetails.documents] : []);
+                                        const idx = docs.findIndex((d: any) => d?.type === type);
+                                        const newDoc = { type, url, uploadedAt: new Date().toISOString() };
+                                        if (idx >= 0) docs[idx] = newDoc; else docs.push(newDoc);
+                                        return { ...fd, documents: docs };
+                                      });
+                                    } catch (err) {
+                                      setUpdateMessage('File upload failed');
+                                    } finally {
+                                      e.target.value = '';
+                                    }
+                                  }}
+                                />
+                                <label htmlFor={`doc-upload-${type}`} className="cursor-pointer bg-[#4CDC9C] text-[#2C373B] px-3 py-1 rounded hover:bg-[#3fd190]">Upload</label>
+                              </div>
+                            </div>
+                          );
+                        })
+                      ) : (
+                        <>
+                          {Array.isArray(employeeDetails?.documents) && employeeDetails.documents.length > 0 ? (
+                            employeeDetails.documents.map((doc: any) => (
+                              <div key={doc.type} className="flex items-center justify-between mb-2">
+                                <span className="capitalize text-[#2C373B]">{(doc.type || '').replace('-', ' ')}</span>
+                                {doc.url ? (
+                                  <a href={doc.url} target="_blank" rel="noopener noreferrer" className="text-emerald-600 text-sm underline">View</a>
+                                ) : (
+                                  <span className="text-gray-500 text-sm">No document</span>
+                                )}
+                              </div>
+                            ))
+                          ) : (
+                            <div className="text-gray-500 text-sm">No document</div>
+                          )}
+                        </>
+                      )}
+                    </div>
                   </form>
                 ) : (
                   <div>No details found.</div>
@@ -911,6 +1043,10 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
                           const id = candidateRm?._id;
                           submitData.reportingManagerId = isValidObjectId(id) ? id : null;
                         }
+                        // Ensure documents array is included in update payload
+                        submitData.documents = Array.isArray(submitData.documents)
+                          ? submitData.documents
+                          : (Array.isArray(employeeDetails?.documents) ? employeeDetails.documents : []);
                         await API.put(`/auth/employees/${selectedEmployee?._id}`, submitData);
                         setUpdateMessage('Update success!');
                         setEditMode(false);

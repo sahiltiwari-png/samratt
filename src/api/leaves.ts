@@ -18,6 +18,9 @@ export interface LeaveRequest {
   days: number;
   status: string;
   remarks?: string;
+  // Optional attached documents
+  documentUrls?: string[];
+  documentUrl?: string;
 }
 
 export interface LeaveRequestsResponse {
@@ -39,6 +42,7 @@ export interface CreateLeaveRequestPayload {
   days: number;
   employeeId: string;
   documentUrl?: string;
+  documentUrls?: string[];
 }
 
 export const createLeaveRequest = async (
@@ -120,7 +124,8 @@ export interface LeaveBalanceResponse {
 export const getLeaveBalance = async (
   page: number = 1,
   limit: number = 10,
-  leaveType?: string
+  leaveType?: string,
+  employeeId?: string
 ): Promise<LeaveBalanceResponse> => {
   // Get organization ID from localStorage
   const userStr = localStorage.getItem('user');
@@ -142,6 +147,10 @@ export const getLeaveBalance = async (
   
   if (leaveType) {
     params.append('leaveType', leaveType);
+  }
+  
+  if (employeeId) {
+    params.append('employeeId', employeeId);
   }
   
   const res = await API.get(`/leave-balance?${params.toString()}`);
