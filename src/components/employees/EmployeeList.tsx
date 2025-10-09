@@ -490,7 +490,7 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
               <col style={{ width: '12%' }} />
             </colgroup>
             <thead className="text-[#2C373B]">
-              <tr className="border-b bg-white">
+              <tr className="bg-[#F2F2F2]" style={{ borderBottom: '0.76px solid #F2F2F2' }}>
                 <th className="px-1 py-1 text-left rounded-tl-lg" style={{fontSize: '12px', fontWeight: 600}}>Name</th>
                 <th className="px-1 py-1 text-left" style={{fontSize: '12px', fontWeight: 600}}>Code</th>
                 <th className="px-1 py-1 text-left" style={{fontSize: '12px', fontWeight: 600}}>Designation</th>
