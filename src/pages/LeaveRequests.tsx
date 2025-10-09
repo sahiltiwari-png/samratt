@@ -607,11 +607,8 @@ const LeaveRequests = () => {
         {/* Pagination */}
         {totalPages > 1 && (
           <div className="flex items-center justify-between mt-6">
-            {/* Left block: Showing text + Previous button */}
+            {/* Left block: Previous button */}
             <div className="flex items-center gap-2">
-              <div className="text-sm" style={{color: '#2C373B'}}>
-                Showing {startIndex + 1} to {Math.min(endIndex, filteredRequests.length)} of {filteredRequests.length} entries
-              </div>
               <Button
                 variant="outline"
                 size="sm"
@@ -626,7 +623,7 @@ const LeaveRequests = () => {
             </div>
 
             {/* Right block: Page numbers + Next button */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 pr-2 sm:pr-4">
               <div className="flex items-center gap-1">
                 {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
                   const showPage =
@@ -660,7 +657,7 @@ const LeaveRequests = () => {
                 size="sm"
                 onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                 disabled={currentPage === totalPages}
-                className="flex items-center gap-1"
+                className="flex items-center gap-1 mr-2"
                 style={{backgroundColor: '#4CDC9C', color: '#2C373B'}}
               >
                 Next
