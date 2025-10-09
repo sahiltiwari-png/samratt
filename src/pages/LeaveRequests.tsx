@@ -712,9 +712,9 @@ const LeaveRequests = () => {
       </div>
       {/* Documents Modal */}
       <Dialog open={docModalOpen} onOpenChange={setDocModalOpen}>
-        <DialogContent className="sm:max-w-[720px] w-[95vw] max-h-[80vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Attached Documents</DialogTitle>
+        <DialogContent className="w-[90vw] sm:max-w-[720px] max-h-[85vh] overflow-y-auto overflow-x-hidden p-4 sm:p-6 rounded-lg">
+          <DialogHeader className="text-center">
+            <DialogTitle className="text-base sm:text-lg font-semibold">Attached Documents</DialogTitle>
           </DialogHeader>
           {currentDocs && currentDocs.length > 0 ? (
             <div className="space-y-6">
@@ -722,13 +722,13 @@ const LeaveRequests = () => {
               {currentDocs.filter(isImageUrl).length > 0 && (
                 <div>
                   <div className="text-sm font-medium mb-2" style={{color: '#2C373B'}}>Images</div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                     {currentDocs.filter(isImageUrl).map((url, idx) => (
                       <div key={`img-${idx}`} className="space-y-2">
                         <img
                           src={url}
                           alt={`Document ${idx + 1}`}
-                          className="w-full h-40 object-cover rounded border"
+                          className="w-full h-32 sm:h-40 object-cover rounded-md border"
                           onError={(e) => {
                             (e.currentTarget as HTMLImageElement).style.display = 'none';
                           }}
@@ -756,8 +756,8 @@ const LeaveRequests = () => {
                   <div className="text-sm font-medium mb-2" style={{color: '#2C373B'}}>Documents</div>
                   <div className="space-y-2">
                     {currentDocs.filter((url) => !isImageUrl(url)).map((url, idx) => (
-                      <div key={`doc-${idx}`} className="flex items-center justify-between gap-3 rounded border px-3 py-2">
-                        <div className="text-sm truncate" title={url} style={{color: '#2C373B'}}>
+                      <div key={`doc-${idx}`} className="flex items-center gap-3 rounded border px-3 py-2 w-full">
+                        <div className="text-sm truncate max-w-[65%] sm:max-w-[75%]" title={url} style={{color: '#2C373B'}}>
                           {getFileNameFromUrl(url)}
                         </div>
                         <Button
