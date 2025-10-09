@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { User, ChevronDown, X, Search, ChevronLeft, ChevronRight, FileText } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogClose } from "@/components/ui/dialog";
 import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { getLeaveRequests, LeaveRequest, Employee, updateLeaveRequestStatus } from "@/api/leaves";
 import { getEmployees, Employee as EmployeeType, EmployeesResponse } from "@/api/employees";
@@ -724,6 +724,15 @@ const LeaveRequests = () => {
       {/* Full-screen Image Viewer */}
       <Dialog open={fullImageOpen} onOpenChange={(open) => { setFullImageOpen(open); if (!open) setFullImageUrl(null); }}>
         <DialogContent className="!left-0 !top-0 !translate-x-0 !translate-y-0 !max-w-none w-screen h-screen p-0 bg-black/90 flex items-center justify-center">
+          <DialogClose asChild>
+            <Button
+              size="sm"
+              className="absolute top-4 right-4 z-50"
+              style={{backgroundColor: '#4CDC9C', color: '#2C373B'}}
+            >
+              Close
+            </Button>
+          </DialogClose>
           {fullImageUrl ? (
             <img
               src={fullImageUrl}
