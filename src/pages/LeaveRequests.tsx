@@ -712,7 +712,7 @@ const LeaveRequests = () => {
       </div>
       {/* Documents Modal */}
       <Dialog open={docModalOpen} onOpenChange={setDocModalOpen}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-[720px] w-[95vw] max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Attached Documents</DialogTitle>
           </DialogHeader>
@@ -728,7 +728,7 @@ const LeaveRequests = () => {
                         <img
                           src={url}
                           alt={`Document ${idx + 1}`}
-                          className="w-full h-auto rounded border"
+                          className="w-full h-40 object-cover rounded border"
                           onError={(e) => {
                             (e.currentTarget as HTMLImageElement).style.display = 'none';
                           }}
