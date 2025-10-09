@@ -283,7 +283,7 @@ const EmployeeFilterBar = ({
       </div>
       <div className="flex-shrink-0">
         <button
-          className="bg-[#4CDC9C] hover:bg-[#3fd190] text-[#2C373B] font-semibold px-3 h-8 rounded-lg transition inline-flex items-center gap-2"
+          className="bg-[#4CDC9C] hover:bg-[#3fd190] text-[#2C373B] font-semibold text-sm px-3 h-8 rounded-lg transition inline-flex items-center gap-2"
           onClick={onAddEmployee}
         >
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M12 5v14M5 12h14"/></svg>
