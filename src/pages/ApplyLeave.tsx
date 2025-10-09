@@ -32,6 +32,9 @@ const ApplyLeave = () => {
   const [reason, setReason] = useState('');
   const [documentUrl, setDocumentUrl] = useState<string | undefined>();
   const [documentPreview, setDocumentPreview] = useState<string | undefined>();
+  // Multi-upload state
+  const [documentUrls, setDocumentUrls] = useState<string[]>([]);
+  const [documentPreviews, setDocumentPreviews] = useState<string[]>([]);
   const [uploading, setUploading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [requests, setRequests] = useState<LeaveRequestsResponse | null>(null);
@@ -79,24 +82,31 @@ const ApplyLeave = () => {
   };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const files = e.target.files ? Array.from(e.target.files) : [];
+    if (files.length === 0) return;
     setUploading(true);
     try {
-      const url = await uploadFile(file);
-      setDocumentUrl(url);
-      // Show preview for images only
-      if (file.type.startsWith('image/')) {
-        setDocumentPreview(url);
-      } else {
-        setDocumentPreview(undefined);
+      // Enforce max 5
+      const remaining = Math.max(0, 5 - documentUrls.length);
+      const toUpload = files.slice(0, remaining);
+      const uploaded = await Promise.all(toUpload.map(async (file) => {
+        const url = await uploadFile(file);
+        return { url, isImage: file.type.startsWith('image/') };
+      }));
+      const newUrls = [...documentUrls, ...uploaded.map(u => u.url)];
+      setDocumentUrls(newUrls);
+      const newPreviews = [...documentPreviews, ...uploaded.filter(u => u.isImage).map(u => u.url)];
+      setDocumentPreviews(newPreviews);
+      // Also set single url/preview for backward UI indicator
+      if (uploaded[0]) {
+        setDocumentUrl(uploaded[0].url);
+        setDocumentPreview(uploaded[0].isImage ? uploaded[0].url : undefined);
       }
     } catch (err) {
       console.error('File upload failed', err);
       alert('File upload failed');
     } finally {
       setUploading(false);
-      // reset file input value
       e.currentTarget.value = '';
     }
   };
@@ -119,6 +129,7 @@ const ApplyLeave = () => {
       days,
       employeeId,
       documentUrl,
+      documentUrls: documentUrls.length ? documentUrls : undefined,
     };
     setSubmitting(true);
     try {
@@ -209,18 +220,25 @@ const ApplyLeave = () => {
             <Textarea rows={4} value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Reason for leave" className="bg-[rgb(209,250,229)] text-[#2C373B]" />
           </div>
 
-          <div className="grid grid-cols-[100px_1fr] gap-4 items-center">
-            <div className="h-20 border rounded-lg bg-[rgb(209,250,229)] flex items-center justify-center overflow-hidden">
-              {documentPreview ? (
-                <img src={documentPreview} alt="uploaded" className="h-full w-full object-cover" />
-              ) : (
+          <div className="space-y-3">
+            <Label>Attachments (up to 5)</Label>
+            {documentPreviews.length === 0 ? (
+              <div className="h-20 w-24 border rounded-lg bg-[rgb(209,250,229)] flex items-center justify-center overflow-hidden">
                 <Upload className="h-6 w-6 text-muted-foreground" />
-              )}
-            </div>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                {documentPreviews.map((preview, idx) => (
+                  <div key={idx} className="h-20 border rounded-lg bg-[rgb(209,250,229)] flex items-center justify-center overflow-hidden">
+                    <img src={preview} alt={`uploaded-${idx}`} className="h-full w-full object-cover" />
+                  </div>
+                ))}
+              </div>
+            )}
             <div className="flex items-center gap-3">
-              <input type="file" accept="image/*,.pdf,.doc,.docx" onChange={handleFileChange} />
-              {documentUrl && !documentPreview && (
-                <span className="text-sm text-muted-foreground">File attached</span>
+              <input type="file" multiple accept="image/*,.pdf,.doc,.docx" onChange={handleFileChange} />
+              {documentUrls.length > 0 && (
+                <span className="text-sm text-muted-foreground">{documentUrls.length} file(s) attached</span>
               )}
             </div>
           </div>

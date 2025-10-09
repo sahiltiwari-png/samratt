@@ -42,6 +42,7 @@ export interface CreateLeaveRequestPayload {
   days: number;
   employeeId: string;
   documentUrl?: string;
+  documentUrls?: string[];
 }
 
 export const createLeaveRequest = async (
