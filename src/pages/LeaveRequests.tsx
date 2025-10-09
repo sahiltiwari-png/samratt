@@ -405,7 +405,7 @@ const LeaveRequests = () => {
         {/* Table */}
         <div className="bg-white rounded-xl shadow-md border overflow-hidden">
           <div className="overflow-x-auto touch-pan-x cursor-grab active:cursor-grabbing">
-            <table className="w-max min-w-[1200px] text-sm">
+            <table className="w-max min-w-[1000px] text-sm">
               <thead className="bg-gray-50 border-b">
                 <tr>
                   <th className="px-2 py-2 text-left" style={{fontSize: '12px', fontWeight: 600, color: '#2C373B'}}>
@@ -432,7 +432,7 @@ const LeaveRequests = () => {
                    <th className="px-2 py-2 text-left" style={{fontSize: '12px', fontWeight: 600, color: '#2C373B'}}>
                      Remarks
                    </th>
-                   <th className="px-2 py-2 text-left" style={{fontSize: '12px', fontWeight: 600, color: '#2C373B'}}>
+                   <th className="px-2 py-2 text-left w-[220px]" style={{fontSize: '12px', fontWeight: 600, color: '#2C373B'}}>
                      Actions
                    </th>
                 </tr>
@@ -457,7 +457,7 @@ const LeaveRequests = () => {
                     className="border-b last:border-0 hover:bg-emerald-50 transition-colors"
                   >
                     {/* Name with avatar */}
-                    <td className="px-2 py-2">
+                    <td className="px-2 py-2 min-w-[160px]">
                       <div className="flex items-center gap-3">
                         <Avatar className="h-8 w-8">
                           {req.employeeId.profilePhotoUrl ? (
@@ -545,7 +545,7 @@ const LeaveRequests = () => {
                       </td>
 
                     {/* Actions */}
-                    <td className="px-2 py-2">
+                    <td className="px-2 py-2 min-w-[220px]">
                       {editingRows.has(req._id) ? (
                         <div className="flex gap-2">
                           <Button
@@ -567,10 +567,11 @@ const LeaveRequests = () => {
                           </Button>
                         </div>
                       ) : (
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 flex-nowrap">
                           <Button
                             size="sm"
                             onClick={() => handleEdit(req)}
+                            className="h-8 px-2 text-xs"
                             style={{backgroundColor: '#4CDC9C', color: '#2C373B'}}
                           >
                             Edit
@@ -586,7 +587,7 @@ const LeaveRequests = () => {
                                 setCurrentDocs(urls);
                                 setDocModalOpen(true);
                               }}
-                              className="flex items-center gap-1"
+                              className="flex items-center gap-1 h-8 px-2 text-xs whitespace-nowrap"
                               style={{backgroundColor: '#4CDC9C', color: '#2C373B'}}
                             >
                               <FileText className="h-4 w-4" />
@@ -606,12 +607,11 @@ const LeaveRequests = () => {
         {/* Pagination */}
         {totalPages > 1 && (
           <div className="flex items-center justify-between mt-6">
-            <div className="text-sm" style={{color: '#2C373B'}}>
-              Showing {startIndex + 1} to {Math.min(endIndex, filteredRequests.length)} of {filteredRequests.length} entries
-            </div>
-            
+            {/* Left block: Showing text + Previous button */}
             <div className="flex items-center gap-2">
-              {/* Previous Button */}
+              <div className="text-sm" style={{color: '#2C373B'}}>
+                Showing {startIndex + 1} to {Math.min(endIndex, filteredRequests.length)} of {filteredRequests.length} entries
+              </div>
               <Button
                 variant="outline"
                 size="sm"
@@ -623,18 +623,18 @@ const LeaveRequests = () => {
                 <ChevronLeft className="h-4 w-4" />
                 Previous
               </Button>
+            </div>
 
-              {/* Page Numbers */}
+            {/* Right block: Page numbers + Next button */}
+            <div className="flex items-center gap-2">
               <div className="flex items-center gap-1">
                 {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
-                  // Show first page, last page, current page, and pages around current page
-                  const showPage = 
-                    page === 1 || 
-                    page === totalPages || 
+                  const showPage =
+                    page === 1 ||
+                    page === totalPages ||
                     (page >= currentPage - 1 && page <= currentPage + 1);
-                  
+
                   if (!showPage) {
-                    // Show ellipsis for gaps
                     if (page === currentPage - 2 || page === currentPage + 2) {
                       return <span key={page} className="px-2" style={{color: '#2C373B'}}>...</span>;
                     }
@@ -655,8 +655,6 @@ const LeaveRequests = () => {
                   );
                 })}
               </div>
-
-              {/* Next Button */}
               <Button
                 variant="outline"
                 size="sm"
