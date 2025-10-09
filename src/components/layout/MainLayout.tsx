@@ -76,7 +76,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
             <div className="flex items-center gap-4">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                  <Button variant="ghost" className="relative h-8 w-8 rounded-full mr-4">
                     <Avatar className="h-8 w-8">
                       {(avatarSrc || placeholderSrc) && (
                         <AvatarImage src={avatarSrc || placeholderSrc} alt="Avatar" />
