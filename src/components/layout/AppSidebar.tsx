@@ -44,10 +44,10 @@ import { useAuth } from '@/contexts/AuthContext';
 const navigation: NavigationItem[] = [
   { title: "Dashboard", url: "/dashboard", icon: Home },
   { title: "Employees", url: "/employees", icon: Users },
-  { title: "Regularization", url: "/regularization", icon: CheckCircle },
-  { title: "Payroll", url: "/payroll", icon: FileText },
-  { title: "Salary Structure", url: "/salary-slips", icon: FileText },
   { title: "Attendance", url: "/attendance", icon: Clock },
+  { title: "Regularization", url: "/regularization", icon: CheckCircle },
+  { title: "Salary Structure", url: "/salary-slips", icon: FileText },
+  { title: "Payroll", url: "/payroll", icon: FileText },
   { title: "Leaves", url: "/leaves", icon: Calendar, hasSubmenu: true, submenu: [
     { title: "Leave Policy", url: "/leaves/policy" },
     { title: "Leave Allotment", url: "/leaves/allotment" },
