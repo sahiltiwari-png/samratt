@@ -4,6 +4,8 @@ const EmployeeFilterBar = ({
   setStatusFilter,
   designationFilter,
   setDesignationFilter,
+  employeeFilter,
+  setEmployeeFilter,
   onClear,
   onAddEmployee,
   total
@@ -12,6 +14,8 @@ const EmployeeFilterBar = ({
   setStatusFilter: (v: string | null) => void,
   designationFilter: string | null,
   setDesignationFilter: (v: string | null) => void,
+  employeeFilter: { id: string | null; name: string } | null,
+  setEmployeeFilter: (v: { id: string | null; name: string } | null) => void,
   onClear: () => void,
   onAddEmployee: () => void,
   total: number
@@ -150,6 +154,22 @@ const EmployeeFilterBar = ({
     "Service Delivery Manager"
   ];
   const [designationOpen, setDesignationOpen] = useState(false);
+  const [employeeOpen, setEmployeeOpen] = useState(false);
+  const [employeeQuery, setEmployeeQuery] = useState("");
+  const [employeeLoading, setEmployeeLoading] = useState(false);
+  const [employeeResults, setEmployeeResults] = useState<any[]>([]);
+  const searchEmployees = async (query: string) => {
+    try {
+      setEmployeeLoading(true);
+      const res = await getEmployees({ page: 1, limit: 10, search: query });
+      setEmployeeResults(res.items || res.data || []);
+      setEmployeeOpen(true);
+    } catch (e) {
+      setEmployeeResults([]);
+    } finally {
+      setEmployeeLoading(false);
+    }
+  };
   return (
     <div className="flex flex-col md:flex-row md:flex-nowrap md:items-center md:justify-between gap-3 mb-4 w-full pb-2 rounded-lg p-3 bg-white">
       <div className="flex items-center gap-2 flex-wrap md:flex-nowrap">
@@ -200,8 +220,61 @@ const EmployeeFilterBar = ({
             </Command>
           </PopoverContent>
         </Popover>
+        {/* Employee Dropdown Filter */}
+        <Popover open={employeeOpen} onOpenChange={(open) => { 
+          setEmployeeOpen(open); 
+          if (open) { 
+            // Fetch initial employees list when opening dropdown
+            searchEmployees(employeeQuery || ""); 
+          }
+        }}>
+          <PopoverTrigger asChild>
+            <button
+              type="button"
+              aria-expanded={employeeOpen}
+              className="rounded border border-emerald-300 h-8 px-3 bg-[rgb(209,250,229)] text-[#2C373B] focus:outline-none focus:ring-2 focus:ring-emerald-200 min-w-[220px] inline-flex items-center justify-between"
+            >
+              <span className="truncate">{employeeFilter?.name || "Employee"}</span>
+              <ChevronDown className="ml-2 h-4 w-4 opacity-60" />
+            </button>
+          </PopoverTrigger>
+          <PopoverContent className="p-0 w-[280px]" align="start">
+            <Command>
+              <CommandInput
+                placeholder="Search employee by name/code..."
+                value={employeeQuery}
+                onValueChange={(val: string) => {
+                  setEmployeeQuery(val);
+                  if (val && val.length > 0) {
+                    searchEmployees(val);
+                  }
+                }}
+              />
+              <CommandList className="max-h-64 overflow-auto">
+                <CommandEmpty>{employeeLoading ? "Loading..." : "No employees found."}</CommandEmpty>
+                <CommandGroup heading="Employees">
+                  {employeeResults.map((emp) => (
+                    <CommandItem
+                      key={emp._id}
+                      value={`${emp.firstName || ''} ${emp.lastName || ''}`.trim()}
+                      onSelect={() => {
+                        setEmployeeFilter({ id: emp._id, name: `${emp.firstName || ''} ${emp.lastName || ''} (${emp.employeeCode || ''})`.trim() });
+                        setEmployeeOpen(false);
+                      }}
+                    >
+                      <div className="flex items-center justify-between w-full">
+                        <span className="truncate">{`${emp.firstName || ''} ${emp.lastName || ''}`.trim()}</span>
+                        <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-700">{emp.employeeCode || '-'}</span>
+                      </div>
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </CommandList>
+            </Command>
+          </PopoverContent>
+        </Popover>
         <button
-          className="inline-flex items-center gap-1 h-8 px-3 rounded border border-[#4CDC9C] bg-[#4CDC9C] text-[#2C373B] text-sm transition shadow-sm hover:bg-[#3fd190]"
+          className="inline-flex items-center gap-1 h-8 px-3 rounded border border-transparent bg-transparent text-[#2C373B] text-sm transition shadow-none hover:bg-transparent"
           onClick={onClear}
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
@@ -275,6 +348,7 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
   const [totalPages, setTotalPages] = useState(1);
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
   const [designationFilter, setDesignationFilter] = useState<string | null>(null);
+  const [employeeFilter, setEmployeeFilter] = useState<{ id: string | null; name: string } | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
   const [employeeDetails, setEmployeeDetails] = useState<any>(null);
@@ -339,7 +413,8 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
           limit: 10,
           status: statusFilter ? statusFilter.toLowerCase() : statusFilter,
           designation: designationFilter,
-          search: searchTerm
+          search: searchTerm,
+          employeeId: employeeFilter?.id || undefined
         });
         setEmployees(Array.isArray(data.items) ? data.items : []);
         setTotal(data.total || 0);
@@ -353,7 +428,7 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
       }
     };
     fetchEmployees();
-  }, [page, statusFilter, designationFilter, searchTerm]);
+  }, [page, statusFilter, designationFilter, employeeFilter?.id, searchTerm]);
 
   const handleStatusChange = (id: string, newStatus: string) => {
     setEmployees((prev) => prev.map(emp => emp._id === id ? { ...emp, status: newStatus } : emp));
@@ -363,6 +438,7 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
   const clearFilters = () => {
     setStatusFilter(null);
     setDesignationFilter(null);
+    setEmployeeFilter(null);
   };
 
   return (
@@ -373,6 +449,8 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
           setStatusFilter={setStatusFilter}
           designationFilter={designationFilter}
           setDesignationFilter={setDesignationFilter}
+          employeeFilter={employeeFilter}
+          setEmployeeFilter={setEmployeeFilter}
           onClear={clearFilters}
           onAddEmployee={() => navigate('/add-employee')}
           total={total}
@@ -408,7 +486,33 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
                 <tr><td colSpan={8} className="text-center py-8 text-muted-foreground">No employees found.</td></tr>
               ) : (
                 employees.map((emp) => (
-                  <tr key={emp._id} className="border-b last:border-b-0 bg-white hover:bg-gray-50 transition-colors">
+                  <tr
+                    key={emp._id}
+                    className="border-b last:border-b-0 bg-white hover:bg-gray-50 transition-colors cursor-pointer"
+                    onClick={async () => {
+                      setSelectedEmployee(emp);
+                      setModalOpen(true);
+                      setLoadingDetails(true);
+                      setEditMode(false);
+                      setUpdateMessage(null);
+                      try {
+                        const details = await getEmployeeById(emp._id);
+                        setEmployeeDetails(details);
+                        setFormData(details);
+                        // Normalize reporting manager if API returns object
+                        if (details?.reportingManagerId && typeof details.reportingManagerId === 'object') {
+                          const rmObj: any = details.reportingManagerId;
+                          const rmName = `${rmObj?.firstName || ''} ${rmObj?.lastName || ''}`.trim();
+                          setEmployeeDetails((prev: any) => ({ ...prev, reportingManagerName: rmName, reportingManagerCode: rmObj?.employeeCode || '' }));
+                          setFormData((fd: any) => ({ ...fd, reportingManagerId: rmObj?._id, reportingManagerName: rmName, reportingManagerCode: rmObj?.employeeCode || '' }));
+                        }
+                      } catch (e) {
+                        setEmployeeDetails(null);
+                      } finally {
+                        setLoadingDetails(false);
+                      }
+                    }}
+                  >
                     <td className="px-1 py-1 max-w-xs truncate align-middle">
                       <div className="flex flex-row items-center gap-1 w-full">
                         <Avatar className="h-8 w-8">
@@ -456,7 +560,7 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
                       <div className="flex gap-2">
                         <Button
                           size="icon"
-                          className="bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3fd190]"
+                          className="bg-[#E2E9F0] text-[#2C373B] hover:bg-[#d6dde6]"
                           title="View details"
                           onClick={async () => {
                             setSelectedEmployee(emp);
@@ -486,7 +590,7 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
                         </Button>
                         <Button
                           size="icon"
-                          className="bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3fd190]"
+                          className="bg-[#E2E9F0] text-[#2C373B] hover:bg-[#d6dde6]"
                           title="Edit details"
                           onClick={async () => {
                             setSelectedEmployee(emp);

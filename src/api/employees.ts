@@ -54,6 +54,7 @@ export const getEmployees = async (params?: {
   status?: string | null;
   designation?: string | null;
   search?: string;
+  employeeId?: string;
 }) => {
   const query = [];
   if (params) {
@@ -62,6 +63,7 @@ export const getEmployees = async (params?: {
     if (params.status) query.push(`status=${params.status}`);
     if (params.designation) query.push(`designation=${params.designation}`);
     if (params.search) query.push(`search=${encodeURIComponent(params.search)}`);
+    if (params.employeeId) query.push(`employeeId=${params.employeeId}`);
   }
   const queryString = query.length ? `?${query.join('&')}` : '';
   const response = await API.get(`/employees${queryString}`);
