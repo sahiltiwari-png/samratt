@@ -173,9 +173,9 @@ const EmployeeFilterBar = ({
   return (
     <div className="flex flex-col md:flex-row md:flex-nowrap md:items-center md:justify-between gap-3 mb-4 w-full pb-2 rounded-lg p-3 bg-white">
       <div className="flex items-center gap-2 flex-wrap md:flex-nowrap">
-        <span className="font-medium text-base text-[#2C373B]">Total Employees - {total}</span>
+        <span className="font-semibold text-[#2C373B]">Total Employees - {total}</span>
         <select
-          className="rounded border border-emerald-300 h-8 px-3 bg-[rgb(209,250,229)] text-[#2C373B] focus:outline-none focus:ring-2 focus:ring-emerald-200 min-w-[120px]"
+          className="rounded-lg border border-gray-300 h-8 px-2 bg-[#E1F9EF] text-[#2C373B] focus:outline-none focus:ring-2 focus:ring-gray-300 min-w-[100px]"
           value={statusFilter || ""}
           onChange={e => setStatusFilter(e.target.value === "" ? null : e.target.value)}
         >
@@ -191,13 +191,13 @@ const EmployeeFilterBar = ({
             <button
               type="button"
               aria-expanded={designationOpen}
-              className="rounded border border-emerald-300 h-8 px-3 bg-[rgb(209,250,229)] text-[#2C373B] focus:outline-none focus:ring-2 focus:ring-emerald-200 min-w-[180px] inline-flex items-center justify-between"
-            >
+            className="rounded-lg border border-gray-300 h-8 px-2 bg-[#E1F9EF] text-[#2C373B] focus:outline-none focus:ring-2 focus:ring-gray-300 min-w-[150px] inline-flex items-center justify-between"
+          >
               <span className="truncate">{designationFilter || "Designation"}</span>
               <ChevronDown className="ml-2 h-4 w-4 opacity-60" />
             </button>
           </PopoverTrigger>
-          <PopoverContent className="p-0 w-[240px]">
+          <PopoverContent className="p-0 w-[220px]">
             <Command>
               <CommandInput placeholder="Search designation..." />
               <CommandList>
@@ -232,13 +232,13 @@ const EmployeeFilterBar = ({
             <button
               type="button"
               aria-expanded={employeeOpen}
-              className="rounded border border-emerald-300 h-8 px-3 bg-[rgb(209,250,229)] text-[#2C373B] focus:outline-none focus:ring-2 focus:ring-emerald-200 min-w-[220px] inline-flex items-center justify-between"
+              className="rounded-lg border border-gray-300 h-8 px-2 bg-[#E1F9EF] text-[#2C373B] focus:outline-none focus:ring-2 focus:ring-gray-300 min-w-[160px] inline-flex items-center justify-between"
             >
               <span className="truncate">{employeeFilter?.name || "Employee"}</span>
               <ChevronDown className="ml-2 h-4 w-4 opacity-60" />
             </button>
           </PopoverTrigger>
-          <PopoverContent className="p-0 w-[280px]" align="start">
+          <PopoverContent className="p-0 w-[240px]" align="start">
             <Command>
               <CommandInput
                 placeholder="Search employee by name/code..."
@@ -274,7 +274,7 @@ const EmployeeFilterBar = ({
           </PopoverContent>
         </Popover>
         <button
-          className="inline-flex items-center gap-1 h-8 px-3 rounded border border-transparent bg-transparent text-[#2C373B] text-sm transition shadow-none hover:bg-transparent"
+          className="inline-flex items-center gap-1 h-8 px-3 rounded-lg border border-transparent bg-transparent text-[#2C373B] text-sm transition shadow-none hover:bg-transparent"
           onClick={onClear}
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
@@ -283,9 +283,10 @@ const EmployeeFilterBar = ({
       </div>
       <div className="flex-shrink-0">
         <button
-          className="bg-[#4CDC9C] hover:bg-[#3fd190] text-[#2C373B] font-semibold px-4 h-8 rounded transition"
+          className="bg-[#4CDC9C] hover:bg-[#3fd190] text-[#2C373B] font-semibold px-3 h-8 rounded-lg transition inline-flex items-center gap-2"
           onClick={onAddEmployee}
         >
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M12 5v14M5 12h14"/></svg>
           Add Employee
         </button>
       </div>
@@ -1175,15 +1176,55 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
             </DialogFooter>
           </DialogContent>
         </Dialog>
-        {/* Pagination */}
+        {/* Pagination - Prev left, pages center, Next right */}
         <div className="flex items-center justify-between mt-4">
-          <div>
-            <Button size="sm" className="bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3fd190]" disabled={page === 1} onClick={() => setPage(page - 1)}>Prev</Button>
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-              <Button key={p} size="sm" className={`mx-1 ${p === page ? 'bg-[#3fd190]' : 'bg-[#4CDC9C]'} text-[#2C373B] hover:bg-[#3fd190]`} onClick={() => setPage(p)}>{p}</Button>
-            ))}
-            <Button size="sm" className="bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3fd190]" disabled={page === totalPages} onClick={() => setPage(page + 1)}>Next</Button>
+          {/* Prev left */}
+          <button
+            className="text-sm px-2 py-1 rounded-lg hover:underline disabled:opacity-50"
+            disabled={page === 1}
+            onClick={() => setPage(page - 1)}
+          >
+            Prev
+          </button>
+          {/* Pages center with ellipsis */}
+          <div className="flex items-center gap-2 text-[#2C373B]">
+            {(() => {
+              const items: (number | string)[] = [];
+              const max = totalPages;
+              if (max <= 6) {
+                for (let i = 1; i <= max; i++) items.push(i);
+              } else {
+                items.push(1);
+                if (page > 3) items.push('…');
+                const start = Math.max(2, page - 1);
+                const end = Math.min(max - 1, page + 1);
+                for (let i = start; i <= end; i++) items.push(i);
+                if (page < max - 2) items.push('…');
+                items.push(max);
+              }
+              return items.map((it, idx) => (
+                typeof it === 'string' ? (
+                  <span key={`e-${idx}`} className="text-sm">{it}</span>
+                ) : (
+                  <button
+                    key={it}
+                    className={`text-sm px-2 py-1 rounded-lg ${page === it ? 'bg-[#4CDC9C] text-[#2C373B]' : 'hover:bg-[#E6F9F1]'}`}
+                    onClick={() => setPage(it)}
+                  >
+                    {it}
+                  </button>
+                )
+              ));
+            })()}
           </div>
+          {/* Next right */}
+          <button
+            className="text-sm px-2 py-1 rounded-lg hover:underline disabled:opacity-50"
+            disabled={page === totalPages}
+            onClick={() => setPage(page + 1)}
+          >
+            Next
+          </button>
         </div>
       </CardContent>
     </Card>
