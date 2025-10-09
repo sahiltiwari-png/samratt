@@ -417,9 +417,26 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
           search: searchTerm,
           employeeId: employeeFilter?.id || undefined
         });
-        setEmployees(Array.isArray(data.items) ? data.items : []);
-        setTotal(data.total || 0);
-        setTotalPages(data.totalPages || 1);
+        const items = Array.isArray((data as any)?.items)
+          ? (data as any).items
+          : Array.isArray((data as any)?.data)
+          ? (data as any).data
+          : Array.isArray(data as any)
+          ? (data as any)
+          : (data as any)?._id
+          ? [data as any]
+          : [];
+        setEmployees(items);
+        const computedTotal = typeof (data as any)?.total === 'number'
+          ? (data as any).total
+          : typeof (data as any)?.count === 'number'
+          ? (data as any).count
+          : items.length;
+        setTotal(computedTotal);
+        const computedTotalPages = typeof (data as any)?.totalPages === 'number'
+          ? (data as any).totalPages
+          : Math.max(1, Math.ceil(computedTotal / 10));
+        setTotalPages(computedTotalPages);
       } catch (err) {
         setEmployees([]);
         setTotal(0);
@@ -430,6 +447,10 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
     };
     fetchEmployees();
   }, [page, statusFilter, designationFilter, employeeFilter?.id, searchTerm]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [statusFilter, designationFilter, employeeFilter?.id]);
 
   const handleStatusChange = (id: string, newStatus: string) => {
     setEmployees((prev) => prev.map(emp => emp._id === id ? { ...emp, status: newStatus } : emp));
