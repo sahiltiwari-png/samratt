@@ -44,15 +44,17 @@ const LeaveRequests = () => {
   // Document viewer state
   const [docModalOpen, setDocModalOpen] = useState(false);
   const [currentDocs, setCurrentDocs] = useState<string[]>([]);
+  const [fullImageOpen, setFullImageOpen] = useState(false);
+  const [fullImageUrl, setFullImageUrl] = useState<string | null>(null);
 
   // Helper to detect image URLs
   const isImageUrl = (url: string) => /\.(png|jpe?g|gif|webp|bmp|svg)(\?.*)?$/i.test(url);
 
-  // Helper to truncate text by words
-  const truncateWords = (text: string = "", count = 6) => {
-    const words = text?.trim().split(/\s+/) || [];
-    if (words.length <= count) return text || "";
-    return words.slice(0, count).join(" ") + " ...";
+  // Helper to truncate text by characters with ellipsis
+  const truncateChars = (text: string = "", max = 12) => {
+    const safe = text || "";
+    if (safe.length <= max) return safe;
+    return safe.slice(0, max) + "…";
   };
 
   useEffect(() => {
@@ -481,8 +483,8 @@ const LeaveRequests = () => {
                       <td className="px-4 py-3" style={{ fontFamily: 'Montserrat', fontWeight: 500, fontSize: '14px', color: '#2C373B' }}>
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <span className="inline-block max-w-[220px] align-middle">
-                              {truncateWords(req.reason || '', 6)}
+                            <span className="inline-block align-middle">
+                              {truncateChars(req.reason || '', 12)}
                             </span>
                           </TooltipTrigger>
                           <TooltipContent>
@@ -531,16 +533,16 @@ const LeaveRequests = () => {
                          ) : (
                            <Tooltip>
                              <TooltipTrigger asChild>
-                               <span className="inline-block max-w-[220px] align-middle">
-                                 {truncateWords(req.remarks || 'Empty remarks', 6)}
+                               <span className="inline-block align-middle">
+                                 {truncateChars(req.remarks || 'Empty remarks', 12)}
                                </span>
                              </TooltipTrigger>
                              <TooltipContent>
                                <div className="max-w-xs break-words">{req.remarks || 'Empty remarks'}</div>
                              </TooltipContent>
                            </Tooltip>
-                         )}
-                       </td>
+                       )}
+                      </td>
 
                     {/* Actions */}
                     <td className="px-4 py-3">
@@ -690,20 +692,45 @@ const LeaveRequests = () => {
           {currentDocs && currentDocs.filter(isImageUrl).length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {currentDocs.filter(isImageUrl).map((url, idx) => (
-                <img
-                  key={idx}
-                  src={url}
-                  alt={`Document ${idx + 1}`}
-                  className="w-full h-auto rounded border"
-                  onError={(e) => {
-                    (e.currentTarget as HTMLImageElement).style.display = 'none';
-                  }}
-                />
+                <div key={idx} className="space-y-2">
+                  <img
+                    src={url}
+                    alt={`Document ${idx + 1}`}
+                    className="w-full h-auto rounded border"
+                    onError={(e) => {
+                      (e.currentTarget as HTMLImageElement).style.display = 'none';
+                    }}
+                  />
+                  <Button
+                    size="sm"
+                    onClick={() => {
+                      setFullImageUrl(url);
+                      setFullImageOpen(true);
+                    }}
+                    className="w-full"
+                    style={{backgroundColor: '#4CDC9C', color: '#2C373B'}}
+                  >
+                    View
+                  </Button>
+                </div>
               ))}
             </div>
           ) : (
             <div className="text-sm text-muted-foreground">No images attached.</div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Full-screen Image Viewer */}
+      <Dialog open={fullImageOpen} onOpenChange={(open) => { setFullImageOpen(open); if (!open) setFullImageUrl(null); }}>
+        <DialogContent className="!left-0 !top-0 !translate-x-0 !translate-y-0 !max-w-none w-screen h-screen p-0 bg-black/90 flex items-center justify-center">
+          {fullImageUrl ? (
+            <img
+              src={fullImageUrl}
+              alt="Full view"
+              className="w-screen h-screen object-contain"
+            />
+          ) : null}
         </DialogContent>
       </Dialog>
     </div>
