@@ -190,6 +190,14 @@ const LeaveRequests = () => {
     setCurrentPage(1);
   }, [status, selectedEmployee]);
 
+  // Page-scoped body class to adjust header spacing only on this page
+  useEffect(() => {
+    document.body.classList.add('page-leaves-requests');
+    return () => {
+      document.body.classList.remove('page-leaves-requests');
+    };
+  }, []);
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -678,6 +686,18 @@ const LeaveRequests = () => {
             </div>
           </div>
         )}
+
+        {/* Page-only header spacing override for clear avatar visibility */}
+        <style jsx global>{`
+          body.page-leaves-requests header.sticky .container {
+            padding-right: 2.25rem !important; /* more space on right, avatar shifts left */
+          }
+          @media (min-width: 768px) {
+            body.page-leaves-requests header.sticky .container {
+              padding-right: 3rem !important; /* extra right space on md+ */
+            }
+          }
+        `}</style>
 
         {/* Hide scrollbars */}
         <style jsx global>{`
