@@ -207,7 +207,7 @@ const OrganizationSettings: React.FC = () => {
   };
 
   return (
-    <div className="min-h-svh bg-gradient-to-b from-[#4CDC9C] via-[#7fe7bd] to-[#aaf3d3]">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-200 via-emerald-100 to-emerald-50">
       
 
       <div className="px-6">
