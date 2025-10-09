@@ -54,7 +54,7 @@ const LeaveRequests = () => {
   const truncateChars = (text: string = "", max = 12) => {
     const safe = text || "";
     if (safe.length <= max) return safe;
-    return safe.slice(0, max) + "…";
+    return safe.slice(0, max) + "...";
   };
 
   useEffect(() => {
@@ -296,18 +296,18 @@ const LeaveRequests = () => {
     <div className="min-h-screen bg-gradient-to-br from-emerald-100 via-emerald-50 to-white px-2 py-6 sm:px-6">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
-         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+         <div className="flex flex-col sm:flex-row flex-wrap items-start sm:items-center justify-between gap-4">
            <div>
              <h2 className="text-base font-medium" style={{color: '#2C373B'}}>
                Leave Request - {totalRequests}
              </h2>
            </div>
 
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+          <div className="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-3 w-full">
             {/* Employee Search Filter */}
             <div className="relative employee-search-container">
               <div 
-                className="flex items-center gap-2 border border-emerald-300 rounded-lg px-3 py-2 bg-white w-full sm:w-[320px] hover:border-emerald-400 focus-within:border-emerald-500 transition-colors h-10 cursor-pointer"
+                className="flex items-center gap-2 border border-emerald-300 rounded-lg px-3 py-2 bg-white w-full sm:max-w-[280px] hover:border-emerald-400 focus-within:border-emerald-500 transition-colors h-10 cursor-pointer"
                 onClick={handleSearchClick}
               >
                 <Search className="h-4 w-4 text-emerald-500 flex-shrink-0" />
@@ -386,7 +386,7 @@ const LeaveRequests = () => {
 
             {/* Status Filter */}
             <Select value={status} onValueChange={setStatus}>
-              <SelectTrigger className="w-full sm:w-[180px] border-emerald-300 bg-emerald-100 text-emerald-700 font-medium hover:bg-emerald-200 h-8" style={{backgroundColor: 'rgb(209 250 229)', color: '#2C373B'}}>
+              <SelectTrigger className="w-full sm:max-w-[160px] border-emerald-300 bg-emerald-100 text-emerald-700 font-medium hover:bg-emerald-200 h-8" style={{backgroundColor: 'rgb(209 250 229)', color: '#2C373B'}}>
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
@@ -404,35 +404,35 @@ const LeaveRequests = () => {
 
         {/* Table */}
         <div className="bg-white rounded-xl shadow-md border overflow-hidden">
-          <div className="overflow-x-auto no-scrollbar touch-pan-x cursor-grab active:cursor-grabbing">
-            <table className="w-max min-w-[1400px] text-sm">
+          <div className="overflow-x-auto touch-pan-x cursor-grab active:cursor-grabbing">
+            <table className="w-max min-w-[1200px] text-sm">
               <thead className="bg-gray-50 border-b">
                 <tr>
-                  <th className="px-4 py-3 text-left" style={{fontSize: '12px', fontWeight: 600, color: '#2C373B'}}>
+                  <th className="px-2 py-2 text-left" style={{fontSize: '12px', fontWeight: 600, color: '#2C373B'}}>
                     Name
                   </th>
-                  <th className="px-4 py-3 text-left" style={{fontSize: '12px', fontWeight: 600, color: '#2C373B'}}>
+                  <th className="px-2 py-2 text-left" style={{fontSize: '12px', fontWeight: 600, color: '#2C373B'}}>
                     Leave Type
                   </th>
-                  <th className="px-4 py-3 text-left" style={{fontSize: '12px', fontWeight: 600, color: '#2C373B'}}>
+                  <th className="px-2 py-2 text-left" style={{fontSize: '12px', fontWeight: 600, color: '#2C373B'}}>
                     Start Date
                   </th>
-                  <th className="px-4 py-3 text-left" style={{fontSize: '12px', fontWeight: 600, color: '#2C373B'}}>
+                  <th className="px-2 py-2 text-left" style={{fontSize: '12px', fontWeight: 600, color: '#2C373B'}}>
                     End Date
                   </th>
-                  <th className="px-4 py-3 text-left" style={{fontSize: '12px', fontWeight: 600, color: '#2C373B'}}>
+                  <th className="px-2 py-2 text-left" style={{fontSize: '12px', fontWeight: 600, color: '#2C373B'}}>
                     Reason
                   </th>
-                  <th className="px-4 py-3 text-left" style={{fontSize: '12px', fontWeight: 600, color: '#2C373B'}}>
+                  <th className="px-2 py-2 text-left" style={{fontSize: '12px', fontWeight: 600, color: '#2C373B'}}>
                     Total Days
                   </th>
-                  <th className="px-4 py-3 text-left" style={{fontSize: '12px', fontWeight: 600, color: '#2C373B'}}>
+                  <th className="px-2 py-2 text-left" style={{fontSize: '12px', fontWeight: 600, color: '#2C373B'}}>
                      Status
                    </th>
-                   <th className="px-4 py-3 text-left" style={{fontSize: '12px', fontWeight: 600, color: '#2C373B'}}>
+                   <th className="px-2 py-2 text-left" style={{fontSize: '12px', fontWeight: 600, color: '#2C373B'}}>
                      Remarks
                    </th>
-                   <th className="px-4 py-3 text-left" style={{fontSize: '12px', fontWeight: 600, color: '#2C373B'}}>
+                   <th className="px-2 py-2 text-left" style={{fontSize: '12px', fontWeight: 600, color: '#2C373B'}}>
                      Actions
                    </th>
                 </tr>
@@ -457,7 +457,7 @@ const LeaveRequests = () => {
                     className="border-b last:border-0 hover:bg-emerald-50 transition-colors"
                   >
                     {/* Name with avatar */}
-                    <td className="px-4 py-3">
+                    <td className="px-2 py-2">
                       <div className="flex items-center gap-3">
                         <Avatar className="h-8 w-8">
                           {req.employeeId.profilePhotoUrl ? (
@@ -477,14 +477,14 @@ const LeaveRequests = () => {
                       </div>
                     </td>
 
-                    <td className="px-4 py-3 capitalize" style={{ fontFamily: 'Montserrat', fontWeight: 500, fontSize: '14px', color: '#2C373B' }}>{req.leaveType}</td>
-                      <td className="px-4 py-3" style={{ fontFamily: 'Montserrat', fontWeight: 500, fontSize: '14px', color: '#2C373B' }}>{formatDate(req.startDate)}</td>
-                      <td className="px-4 py-3" style={{ fontFamily: 'Montserrat', fontWeight: 500, fontSize: '14px', color: '#2C373B' }}>{formatDate(req.endDate)}</td>
-                      <td className="px-4 py-3" style={{ fontFamily: 'Montserrat', fontWeight: 500, fontSize: '14px', color: '#2C373B' }}>
+                    <td className="px-2 py-2 capitalize" style={{ fontFamily: 'Montserrat', fontWeight: 500, fontSize: '14px', color: '#2C373B' }}>{req.leaveType}</td>
+                      <td className="px-2 py-2" style={{ fontFamily: 'Montserrat', fontWeight: 500, fontSize: '14px', color: '#2C373B' }}>{formatDate(req.startDate)}</td>
+                      <td className="px-2 py-2" style={{ fontFamily: 'Montserrat', fontWeight: 500, fontSize: '14px', color: '#2C373B' }}>{formatDate(req.endDate)}</td>
+                      <td className="px-2 py-2" style={{ fontFamily: 'Montserrat', fontWeight: 500, fontSize: '14px', color: '#2C373B' }}>
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <span className="inline-block align-middle">
-                              {truncateChars(req.reason || '', 12)}
+                              {truncateChars(req.reason || '', 3)}
                             </span>
                           </TooltipTrigger>
                           <TooltipContent>
@@ -492,10 +492,10 @@ const LeaveRequests = () => {
                           </TooltipContent>
                         </Tooltip>
                       </td>
-                      <td className="px-4 py-3" style={{ fontFamily: 'Montserrat', fontWeight: 500, fontSize: '14px', color: '#2C373B' }}>{req.days}</td>
+                      <td className="px-2 py-2" style={{ fontFamily: 'Montserrat', fontWeight: 500, fontSize: '14px', color: '#2C373B' }}>{req.days}</td>
 
                     {/* Status badge */}
-                     <td className="px-4 py-3">
+                     <td className="px-2 py-2">
                        {editingRows.has(req._id) ? (
                            <Select
                              value={editValues[req._id]?.status || req.status}
@@ -521,7 +521,7 @@ const LeaveRequests = () => {
                      </td>
 
                      {/* Remarks */}
-                       <td className="px-4 py-3" style={{ fontFamily: 'Montserrat', fontWeight: 500, fontSize: '14px', color: '#2C373B' }}>
+                       <td className="px-2 py-2" style={{ fontFamily: 'Montserrat', fontWeight: 500, fontSize: '14px', color: '#2C373B' }}>
                          {editingRows.has(req._id) ? (
                            <Input
                              value={editValues[req._id]?.remarks || req.remarks || ''}
@@ -534,7 +534,7 @@ const LeaveRequests = () => {
                            <Tooltip>
                              <TooltipTrigger asChild>
                                <span className="inline-block align-middle">
-                                 {truncateChars(req.remarks || 'Empty remarks', 12)}
+                                 {truncateChars(req.remarks || 'Empty remarks', 3)}
                                </span>
                              </TooltipTrigger>
                              <TooltipContent>
@@ -545,7 +545,7 @@ const LeaveRequests = () => {
                       </td>
 
                     {/* Actions */}
-                    <td className="px-4 py-3">
+                    <td className="px-2 py-2">
                       {editingRows.has(req._id) ? (
                         <div className="flex gap-2">
                           <Button
@@ -724,6 +724,9 @@ const LeaveRequests = () => {
       {/* Full-screen Image Viewer */}
       <Dialog open={fullImageOpen} onOpenChange={(open) => { setFullImageOpen(open); if (!open) setFullImageUrl(null); }}>
         <DialogContent className="!left-0 !top-0 !translate-x-0 !translate-y-0 !max-w-none w-screen h-screen p-0 bg-black/90 flex items-center justify-center">
+          <DialogHeader>
+            <DialogTitle className="sr-only">Full-screen document viewer</DialogTitle>
+          </DialogHeader>
           <DialogClose asChild>
             <Button
               size="sm"
