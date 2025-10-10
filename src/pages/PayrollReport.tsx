@@ -274,7 +274,13 @@ const PayrollReport = () => {
   }, [showEmployeeDropdown]);
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div
+      className="min-h-screen w-full overflow-x-hidden flex flex-col"
+      style={{
+        background:
+          "linear-gradient(151.95deg, rgba(76, 220, 156, 0.81) 17.38%, rgba(255, 255, 255, 0.81) 107.36%)",
+      }}
+    >
       <div className="flex-1 overflow-x-hidden">
         <div className="w-full max-w-none space-y-6 px-1 py-4 md:px-6 md:py-6">
           {/* Header */}
