@@ -207,10 +207,15 @@ const OrganizationSettings: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-200 via-emerald-100 to-emerald-50">
-      
+    <div
+      className="min-h-screen w-full overflow-x-hidden"
+      style={{
+        background:
+          "linear-gradient(151.95deg, rgba(76, 220, 156, 0.81) 17.38%, rgba(255, 255, 255, 0.81) 107.36%)",
+      }}
+    >
 
-      <div className="px-6">
+      <div className="px-3 md:px-6 py-6 max-w-[1200px] mx-auto">
         <h1 className="text-xl font-semibold mb-4">Settings</h1>
         <Card className="border rounded-lg">
           <CardHeader className="flex flex-row items-center justify-between gap-4">
