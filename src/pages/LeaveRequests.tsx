@@ -437,34 +437,34 @@ const LeaveRequests = () => {
         {/* Table */}
         <div className="bg-white rounded-xl shadow-md border overflow-hidden">
           <div className="overflow-x-auto touch-pan-x cursor-grab active:cursor-grabbing">
-            <table className="w-max min-w-[1000px] text-sm">
-              <thead className="bg-gray-50 border-b">
+            <table className="w-full min-w-[1000px] text-sm">
+              <thead className="border-b" style={{ background: '#2C373B', color: '#FFFFFF' }}>
                 <tr>
-                  <th className="px-2 py-2 text-left" style={{fontSize: '12px', fontWeight: 600, color: '#2C373B'}}>
+                  <th className="px-2 py-2 text-left" style={{fontSize: '12px', fontWeight: 600, color: '#FFFFFF'}}>
                     Name
                   </th>
-                  <th className="px-2 py-2 text-left" style={{fontSize: '12px', fontWeight: 600, color: '#2C373B'}}>
+                  <th className="px-2 py-2 text-left" style={{fontSize: '12px', fontWeight: 600, color: '#FFFFFF'}}>
                     Leave Type
                   </th>
-                  <th className="px-2 py-2 text-left" style={{fontSize: '12px', fontWeight: 600, color: '#2C373B'}}>
+                  <th className="px-2 py-2 text-left" style={{fontSize: '12px', fontWeight: 600, color: '#FFFFFF'}}>
                     Start Date
                   </th>
-                  <th className="px-2 py-2 text-left" style={{fontSize: '12px', fontWeight: 600, color: '#2C373B'}}>
+                  <th className="px-2 py-2 text-left" style={{fontSize: '12px', fontWeight: 600, color: '#FFFFFF'}}>
                     End Date
                   </th>
-                  <th className="px-2 py-2 text-left" style={{fontSize: '12px', fontWeight: 600, color: '#2C373B'}}>
+                  <th className="px-2 py-2 text-left" style={{fontSize: '12px', fontWeight: 600, color: '#FFFFFF'}}>
                     Reason
                   </th>
-                  <th className="px-2 py-2 text-left" style={{fontSize: '12px', fontWeight: 600, color: '#2C373B'}}>
+                  <th className="px-2 py-2 text-left" style={{fontSize: '12px', fontWeight: 600, color: '#FFFFFF'}}>
                     Total Days
                   </th>
-                  <th className="px-2 py-2 text-left" style={{fontSize: '12px', fontWeight: 600, color: '#2C373B'}}>
+                  <th className="px-2 py-2 text-left" style={{fontSize: '12px', fontWeight: 600, color: '#FFFFFF'}}>
                      Status
                    </th>
-                   <th className="px-2 py-2 text-left" style={{fontSize: '12px', fontWeight: 600, color: '#2C373B'}}>
+                   <th className="px-2 py-2 text-left" style={{fontSize: '12px', fontWeight: 600, color: '#FFFFFF'}}>
                      Remarks
                    </th>
-                   <th className="px-2 py-2 text-left w-[220px]" style={{fontSize: '12px', fontWeight: 600, color: '#2C373B'}}>
+                   <th className="px-2 py-2 text-left w-[220px]" style={{fontSize: '12px', fontWeight: 600, color: '#FFFFFF'}}>
                      Actions
                    </th>
                 </tr>
