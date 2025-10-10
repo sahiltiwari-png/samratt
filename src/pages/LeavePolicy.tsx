@@ -557,17 +557,18 @@ const LeavePolicy = () => {
             </CardHeader>
             <CardContent>
               <div className="overflow-x-auto">
+                <div className="rounded-md overflow-hidden">
                 <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead style={{fontSize: '12px', fontWeight: '600'}}>Leave Type</TableHead>
-                      <TableHead style={{fontSize: '12px', fontWeight: '600'}}>Limit</TableHead>
-                      <TableHead style={{fontSize: '12px', fontWeight: '600'}}>Interval</TableHead>
-                      <TableHead style={{fontSize: '12px', fontWeight: '600'}}>Carry Forward</TableHead>
-                      <TableHead style={{fontSize: '12px', fontWeight: '600'}}>Encashment</TableHead>
-                      <TableHead style={{fontSize: '12px', fontWeight: '600'}}>Probation</TableHead>
-                      <TableHead style={{fontSize: '12px', fontWeight: '600'}}>Min Work Days</TableHead>
-                      <TableHead style={{fontSize: '12px', fontWeight: '600'}}>Actions</TableHead>
+                  <TableHeader style={{ background: '#2C373B', color: '#FFFFFF' }}>
+                    <TableRow className="bg-[#2C373B]" style={{ borderBottom: '1px solid #2C373B' }}>
+                      <TableHead style={{fontSize: '12px', fontWeight: '600', color: '#FFFFFF'}}>Leave Type</TableHead>
+                      <TableHead style={{fontSize: '12px', fontWeight: '600', color: '#FFFFFF'}}>Limit</TableHead>
+                      <TableHead style={{fontSize: '12px', fontWeight: '600', color: '#FFFFFF'}}>Interval</TableHead>
+                      <TableHead style={{fontSize: '12px', fontWeight: '600', color: '#FFFFFF'}}>Carry Forward</TableHead>
+                      <TableHead style={{fontSize: '12px', fontWeight: '600', color: '#FFFFFF'}}>Encashment</TableHead>
+                      <TableHead style={{fontSize: '12px', fontWeight: '600', color: '#FFFFFF'}}>Probation</TableHead>
+                      <TableHead style={{fontSize: '12px', fontWeight: '600', color: '#FFFFFF'}}>Min Work Days</TableHead>
+                      <TableHead style={{fontSize: '12px', fontWeight: '600', color: '#FFFFFF'}}>Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -610,6 +611,7 @@ const LeavePolicy = () => {
                     )}
                   </TableBody>
                 </Table>
+                </div>
               </div>
             </CardContent>
           </Card>
