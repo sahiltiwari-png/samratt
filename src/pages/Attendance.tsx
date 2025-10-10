@@ -213,13 +213,13 @@ const Attendance = () => {
           ) : attendanceData && attendanceData.items.length > 0 ? (
             <div className="overflow-x-auto" style={{ WebkitOverflowScrolling: 'touch' }}>
               <table className="min-w-full text-sm">
-                <thead className="bg-gray-50 border-b">
+                <thead className="border-b" style={{ background: '#2C373B', color: '#FFFFFF' }}>
                   <tr>
-                    <th className="px-4 py-2 text-left" style={{fontSize: '12px', fontWeight: 600, color: '#2C373B'}}>Employee</th>
-                    <th className="px-4 py-2 text-left" style={{fontSize: '12px', fontWeight: 600, color: '#2C373B'}}>Status</th>
-                    <th className="px-4 py-2 text-left" style={{fontSize: '12px', fontWeight: 600, color: '#2C373B'}}>Clock In</th>
-                    <th className="px-4 py-2 text-left" style={{fontSize: '12px', fontWeight: 600, color: '#2C373B'}}>Clock Out</th>
-                    <th className="px-4 py-2 text-left" style={{fontSize: '12px', fontWeight: 600, color: '#2C373B'}}>Actions</th>
+                    <th className="px-4 py-2 text-left" style={{fontSize: '12px', fontWeight: 600, color: '#FFFFFF'}}>Employee</th>
+                    <th className="px-4 py-2 text-left" style={{fontSize: '12px', fontWeight: 600, color: '#FFFFFF'}}>Status</th>
+                    <th className="px-4 py-2 text-left" style={{fontSize: '12px', fontWeight: 600, color: '#FFFFFF'}}>Clock In</th>
+                    <th className="px-4 py-2 text-left" style={{fontSize: '12px', fontWeight: 600, color: '#FFFFFF'}}>Clock Out</th>
+                    <th className="px-4 py-2 text-left" style={{fontSize: '12px', fontWeight: 600, color: '#FFFFFF'}}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
