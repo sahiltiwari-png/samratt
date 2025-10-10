@@ -297,7 +297,13 @@ const LeaveRequests = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-emerald-100 via-emerald-50 to-white p-6">
+      <div
+        className="min-h-screen w-full overflow-x-hidden p-6"
+        style={{
+          background:
+            "linear-gradient(151.95deg, rgba(76, 220, 156, 0.81) 17.38%, rgba(255, 255, 255, 0.81) 107.36%)",
+        }}
+      >
         <div className="max-w-7xl mx-auto space-y-6">
           <div className="animate-pulse">
             <div className="h-8 bg-emerald-200 rounded w-1/4 mb-4"></div>
@@ -313,7 +319,13 @@ const LeaveRequests = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-100 via-emerald-50 to-white px-2 py-6 sm:px-6">
+    <div
+      className="min-h-screen w-full overflow-x-hidden px-2 py-6 sm:px-6"
+      style={{
+        background:
+          "linear-gradient(151.95deg, rgba(76, 220, 156, 0.81) 17.38%, rgba(255, 255, 255, 0.81) 107.36%)",
+      }}
+    >
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
          <div className="flex flex-col sm:flex-row flex-wrap items-start sm:items-center justify-between gap-4">

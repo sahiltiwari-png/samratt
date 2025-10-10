@@ -391,7 +391,13 @@ const LeavePolicy = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-200 via-emerald-100 to-emerald-50 px-2 sm:px-4 md:px-6 py-6">
+    <div
+      className="min-h-screen w-full overflow-x-hidden px-2 sm:px-4 md:px-6 py-6"
+      style={{
+        background:
+          "linear-gradient(151.95deg, rgba(76, 220, 156, 0.81) 17.38%, rgba(255, 255, 255, 0.81) 107.36%)",
+      }}
+    >
       <div className="w-full space-y-6">
         <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
           <h1 className="text-2xl font-bold" style={{color: '#2C373B'}}>Leave Policy creation</h1>
