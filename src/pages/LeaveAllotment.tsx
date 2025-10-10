@@ -667,30 +667,30 @@ const LeaveAllotment = () => {
       <div className="bg-white rounded-xl shadow-md border overflow-hidden">
         <div className="overflow-x-auto">
           <table className="min-w-full w-full text-xs sm:text-sm">
-            <thead className="bg-gray-50 border-b">
+            <thead className="border-b" style={{ backgroundColor: '#2C373B' }}>
               <tr>
-                <th className="px-2 sm:px-4 py-3 text-left font-semibold min-w-[150px]" style={{fontSize: '12px', fontWeight: 600, color: '#2C373B'}}>
+                <th className="px-2 sm:px-4 py-3 text-left font-semibold min-w-[150px]" style={{fontSize: '12px', fontWeight: 600, color: '#FFFFFF'}}>
                   Name
                 </th>
-                <th className="px-2 sm:px-4 py-3 text-left font-semibold hidden sm:table-cell" style={{fontSize: '12px', fontWeight: 600, color: '#2C373B'}}>
+                <th className="px-2 sm:px-4 py-3 text-left font-semibold hidden sm:table-cell whitespace-nowrap" style={{fontSize: '12px', fontWeight: 600, color: '#FFFFFF'}}>
                   Employee code
                 </th>
-                <th className="px-2 sm:px-4 py-3 text-left font-semibold min-w-[80px]" style={{fontSize: '12px', fontWeight: 600, color: '#2C373B'}}>
+                <th className="px-2 sm:px-4 py-3 text-left font-semibold min-w-[80px]" style={{fontSize: '12px', fontWeight: 600, color: '#FFFFFF'}}>
                   Casual
                 </th>
-                <th className="px-2 sm:px-4 py-3 text-left font-semibold min-w-[80px]" style={{fontSize: '12px', fontWeight: 600, color: '#2C373B'}}>
+                <th className="px-2 sm:px-4 py-3 text-left font-semibold min-w-[80px]" style={{fontSize: '12px', fontWeight: 600, color: '#FFFFFF'}}>
                   Earned
                 </th>
-                <th className="px-2 sm:px-4 py-3 text-left font-semibold min-w-[80px]" style={{fontSize: '12px', fontWeight: 600, color: '#2C373B'}}>
+                <th className="px-2 sm:px-4 py-3 text-left font-semibold min-w-[80px]" style={{fontSize: '12px', fontWeight: 600, color: '#FFFFFF'}}>
                   Medical
                 </th>
-                <th className="px-2 sm:px-4 py-3 text-left font-semibold min-w-[80px] hidden md:table-cell" style={{fontSize: '12px', fontWeight: 600, color: '#2C373B'}}>
+                <th className="px-2 sm:px-4 py-3 text-left font-semibold min-w-[80px] hidden md:table-cell" style={{fontSize: '12px', fontWeight: 600, color: '#FFFFFF'}}>
                   Paternity
                 </th>
-                <th className="px-2 sm:px-4 py-3 text-left font-semibold min-w-[80px] hidden md:table-cell" style={{fontSize: '12px', fontWeight: 600, color: '#2C373B'}}>
+                <th className="px-2 sm:px-4 py-3 text-left font-semibold min-w-[80px] hidden md:table-cell" style={{fontSize: '12px', fontWeight: 600, color: '#FFFFFF'}}>
                   Maternity
                 </th>
-                <th className="px-2 sm:px-4 py-3 text-left font-semibold min-w-[80px]" style={{fontSize: '12px', fontWeight: 600, color: '#2C373B'}}>
+                <th className="px-2 sm:px-4 py-3 text-left font-semibold min-w-[80px]" style={{fontSize: '12px', fontWeight: 600, color: '#FFFFFF'}}>
                   Actions
                 </th>
               </tr>
@@ -740,7 +740,7 @@ const LeaveAllotment = () => {
                     </td>
 
                     {/* Employee Code */}
-                    <td className="px-2 sm:px-4 py-3 hidden sm:table-cell" style={{fontSize: '14px', fontWeight: 500, color: '#2C373B'}}>
+                    <td className="px-2 sm:px-4 py-3 hidden sm:table-cell whitespace-nowrap" style={{fontSize: '14px', fontWeight: 500, color: '#2C373B'}}>
                       {employee.employeeCode}
                     </td>
 
