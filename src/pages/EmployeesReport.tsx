@@ -219,14 +219,14 @@ const EmployeesReport = () => {
         <div className="bg-white rounded-lg shadow-sm border border-emerald-200 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-emerald-50 border-b border-emerald-200">
+              <thead className="border-b" style={{ background: '#2C373B', color: '#FFFFFF' }}>
                  <tr>
-                   <th className="text-left p-4 font-medium text-emerald-900" style={{fontSize: '12px', fontWeight: 600}}>Name</th>
-                   <th className="text-left p-4 font-medium text-emerald-900" style={{fontSize: '12px', fontWeight: 600}}>Employee Code</th>
-                   <th className="text-left p-4 font-medium text-emerald-900" style={{fontSize: '12px', fontWeight: 600}}>Date of Joining</th>
-                   <th className="text-left p-4 font-medium text-emerald-900" style={{fontSize: '12px', fontWeight: 600}}>Probation End</th>
-                   <th className="text-left p-4 font-medium text-emerald-900" style={{fontSize: '12px', fontWeight: 600}}>Email</th>
-                   <th className="text-left p-4 font-medium text-emerald-900" style={{fontSize: '12px', fontWeight: 600}}>Status</th>
+                   <th className="text-left p-4 font-medium whitespace-nowrap" style={{fontSize: '12px', fontWeight: 600, color: '#FFFFFF'}}>Name</th>
+                   <th className="text-left p-4 font-medium whitespace-nowrap" style={{fontSize: '12px', fontWeight: 600, color: '#FFFFFF'}}>Employee Code</th>
+                   <th className="text-left p-4 font-medium whitespace-nowrap" style={{fontSize: '12px', fontWeight: 600, color: '#FFFFFF'}}>Date of Joining</th>
+                   <th className="text-left p-4 font-medium whitespace-nowrap" style={{fontSize: '12px', fontWeight: 600, color: '#FFFFFF'}}>Probation End</th>
+                   <th className="text-left p-4 font-medium whitespace-nowrap" style={{fontSize: '12px', fontWeight: 600, color: '#FFFFFF'}}>Email</th>
+                   <th className="text-left p-4 font-medium whitespace-nowrap" style={{fontSize: '12px', fontWeight: 600, color: '#FFFFFF'}}>Status</th>
                  </tr>
                </thead>
                <tbody>
