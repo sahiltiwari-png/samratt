@@ -230,7 +230,7 @@ const Dashboard = () => {
         )}
         {/* Header Card */}
         <div className="max-w-5xl mx-auto">
-          <div className="rounded-2xl bg-[#23292F] flex flex-col md:flex-row items-stretch justify-between pl-8 pr-0 pt-6 pb-0 mb-8 shadow-lg">
+          <div className="rounded-2xl bg-[#23292F] flex flex-col md:flex-row items-stretch justify-between px-4 sm:px-5 md:px-0 md:pl-8 md:pr-0 pt-6 pb-0 mb-8 shadow-lg">
             {/* Left: Greeting + Profile */}
             <div className="w-full md:w-auto mb-4 md:mb-0">
               <div className="text-white text-base font-semibold mb-2">Hello <span role="img" aria-label="waving hand">👋</span></div>
@@ -252,7 +252,7 @@ const Dashboard = () => {
             <div className="flex flex-col justify-between md:items-start w-full md:flex-1 md:min-h-[120px] items-stretch">
               <div className="md:self-end md:w-auto w-full h-full flex flex-col">
                 <div className="mt-auto flex flex-col">
-                  <div className="flex gap-2 md:gap-2 mb-1 md:mb-1">
+                  <div className="flex gap-2 md:gap-2 mb-3 sm:mb-4 md:mb-1">
                   <button
                     type="button"
                     onClick={handleClockIn}
