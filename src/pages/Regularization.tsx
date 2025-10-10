@@ -509,30 +509,30 @@ const Regularization = () => {
           <div className="bg-white rounded-xl shadow-sm border border-emerald-200 overflow-hidden">
           <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-emerald-300 scrollbar-track-emerald-100" style={{ WebkitOverflowScrolling: 'touch' }}>
             <table className="min-w-[820px] w-full table-fixed">
-              <thead className="bg-emerald-50 border-b border-emerald-200">
+              <thead className="border-b" style={{ background: '#2C373B', color: '#FFFFFF' }}>
                 <tr>
-                  <th className="px-3 py-3 text-left text-[12px] font-semibold text-[#2C373B] w-[18%]">
+                  <th className="px-3 py-3 text-left text-[12px] font-semibold text-[#FFFFFF] w-[18%]">
                     Employee
                   </th>
-                  <th className="px-3 py-3 text-left text-[12px] font-semibold text-[#2C373B] w-[10%]">
+                  <th className="px-3 py-3 text-left text-[12px] font-semibold text-[#FFFFFF] w-[10%]">
                     Date
                   </th>
-                  <th className="px-5 py-3 text-left text-[12px] font-semibold text-[#2C373B] w-[8%] min-w-[110px]">
+                  <th className="px-5 py-3 text-left text-[12px] font-semibold text-[#FFFFFF] w-[8%] min-w-[110px]">
                     Field
                   </th>
-                  <th className="px-6 py-3 text-left text-[12px] font-semibold text-[#2C373B] w-[10%] min-w-[120px]">
+                  <th className="px-6 py-3 text-left text-[12px] font-semibold text-[#FFFFFF] w-[10%] min-w-[120px]">
                     Time
                   </th>
-                  <th className="px-6 py-3 text-left text-[12px] font-semibold text-[#2C373B] w-[20%] min-w-[160px]">
+                  <th className="px-6 py-3 text-left text-[12px] font-semibold text-[#FFFFFF] w-[20%] min-w-[160px]">
                     Reason
                   </th>
-                  <th className="px-3 py-3 text-left text-[12px] font-semibold text-[#2C373B] w-[12%]">
+                  <th className="px-3 py-3 text-left text-[12px] font-semibold text-[#FFFFFF] w-[12%]">
                      Status
                    </th>
-                   <th className="px-3 py-3 text-left text-[12px] font-semibold text-[#2C373B] w-[12%]">
+                   <th className="px-3 py-3 text-left text-[12px] font-semibold text-[#FFFFFF] w-[12%]">
                      Remarks
                    </th>
-                   <th className="px-3 py-3 text-left text-[12px] font-semibold text-[#2C373B] w-[10%]">
+                   <th className="px-3 py-3 text-left text-[12px] font-semibold text-[#FFFFFF] w-[10%]">
                      Actions
                    </th>
                 </tr>
