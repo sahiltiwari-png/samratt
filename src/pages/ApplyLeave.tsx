@@ -381,7 +381,13 @@ const ApplyLeave = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-200 to-green-50 py-6 px-4">
+    <div
+      className="min-h-screen w-full overflow-x-hidden p-6"
+      style={{
+        background:
+          'linear-gradient(151.95deg, rgba(76, 220, 156, 0.81) 17.38%, rgba(255, 255, 255, 0.81) 107.36%)',
+      }}
+    >
       {showForm ? renderForm() : renderTable()}
     </div>
   );
