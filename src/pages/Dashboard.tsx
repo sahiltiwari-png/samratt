@@ -230,7 +230,7 @@ const Dashboard = () => {
         )}
         {/* Header Card */}
         <div className="max-w-5xl mx-auto">
-          <div className="rounded-2xl bg-[#23292F] flex flex-col md:flex-row items-center justify-between px-8 py-6 mb-8 shadow-lg">
+          <div className="rounded-2xl bg-[#23292F] flex flex-col md:flex-row items-stretch justify-between pl-8 pr-0 pt-6 pb-0 mb-8 shadow-lg">
             {/* Left: Greeting + Profile */}
             <div className="w-full md:w-auto mb-4 md:mb-0">
               <div className="text-white text-base font-semibold mb-2">Hello <span role="img" aria-label="waving hand">👋</span></div>
@@ -248,33 +248,37 @@ const Dashboard = () => {
                 </div>
               </div>
             </div>
-            {/* Right: Clock icons + Metrics */}
-            <div className="flex flex-col md:items-start w-full md:w-auto">
-              <div className="flex gap-3 md:gap-4 mb-2 self-start">
-                <button
-                  type="button"
-                  onClick={handleClockIn}
-                  disabled={clocking.in || !!attendanceToday?.clockIn}
-                  className={`flex items-center gap-1 px-3 py-1 rounded-lg text-xs font-semibold transition ${clocking.in ? 'opacity-60 cursor-not-allowed' : ''} ${attendanceToday?.clockIn ? 'bg-gray-200 text-gray-500' : 'bg-green-100 text-green-700 hover:bg-green-200'}`}
-                >
-                  <LogIn className="h-4 w-4" />
-                  {attendanceToday?.clockIn ? 'Clocked in' : 'Clock in'}
-                </button>
-                <button
-                  type="button"
-                  onClick={handleClockOut}
-                  disabled={clocking.out || !attendanceToday?.clockIn || !!attendanceToday?.clockOut}
-                  className={`flex items-center gap-1 px-3 py-1 rounded-lg text-xs font-semibold transition ${clocking.out ? 'opacity-60 cursor-not-allowed' : ''} ${(attendanceToday?.clockOut || !attendanceToday?.clockIn) ? 'bg-gray-200 text-gray-500' : 'bg-red-100 text-red-700 hover:bg-red-200'}`}
-                >
-                  <LogOut className="h-4 w-4" />
-                  {attendanceToday?.clockOut ? 'Clocked out' : 'Clock Out'}
-                </button>
-              </div>
-              <div className="bg-white rounded-lg px-3 sm:px-4 py-2 w-full md:w-auto self-start flex flex-col md:flex-row gap-4 items-start md:items-center shadow">
-                <div className="text-xs text-gray-500 text-left"><span className="font-semibold text-[#1C1C1E]">Date</span><br /><span className="text-base text-gray-800 font-normal">{format(new Date(), 'dd/MM/yyyy')}</span></div>
-                <div className="text-xs text-gray-500 text-left md:text-right"><span className="font-semibold text-[#1C1C1E]">Clockin</span><br /><span className="text-base text-gray-800 font-normal">{attendanceToday?.clockIn ? format(new Date(attendanceToday.clockIn), 'HH:mm:ss') : '-'}</span></div>
-                <div className="text-xs text-gray-500 text-left md:text-right"><span className="font-semibold text-[#1C1C1E]">Clockout</span><br /><span className="text-base text-gray-800 font-normal">{attendanceToday?.clockOut ? format(new Date(attendanceToday.clockOut), 'HH:mm:ss') : '-'}</span></div>
-                <div className="text-xs text-gray-500 text-left md:text-right"><span className="font-semibold text-[#1C1C1E]">Working hours</span><br /><span className="text-base text-gray-800 font-normal">{attendanceToday?.totalWorkingHours != null ? `${attendanceToday.totalWorkingHours}` : '-'}</span></div>
+            {/* Right: Buttons above summary box (aligned left edges) */}
+            <div className="flex flex-col justify-between md:items-start w-full md:flex-1 md:min-h-[120px] items-stretch">
+              <div className="md:self-end md:w-auto w-full h-full flex flex-col">
+                <div className="mt-auto flex flex-col">
+                  <div className="flex gap-2 md:gap-2 mb-1 md:mb-1">
+                  <button
+                    type="button"
+                    onClick={handleClockIn}
+                    disabled={clocking.in || !!attendanceToday?.clockIn}
+                    className={`flex items-center gap-1 px-3 py-1 rounded-lg text-xs font-semibold transition ${clocking.in ? 'opacity-60 cursor-not-allowed' : ''} ${attendanceToday?.clockIn ? 'bg-gray-200 text-gray-500' : 'bg-green-100 text-green-700 hover:bg-green-200'}`}
+                  >
+                    <LogIn className="h-4 w-4" />
+                    {attendanceToday?.clockIn ? 'Clocked in' : 'Clock in'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleClockOut}
+                    disabled={clocking.out || !attendanceToday?.clockIn || !!attendanceToday?.clockOut}
+                    className={`flex items-center gap-1 px-3 py-1 rounded-lg text-xs font-semibold transition ${clocking.out ? 'opacity-60 cursor-not-allowed' : ''} ${(attendanceToday?.clockOut || !attendanceToday?.clockIn) ? 'bg-gray-200 text-gray-500' : 'bg-red-100 text-red-700 hover:bg-red-200'}`}
+                  >
+                    <LogOut className="h-4 w-4" />
+                    {attendanceToday?.clockOut ? 'Clocked out' : 'Clock Out'}
+                  </button>
+                  </div>
+                  <div className="bg-white rounded-t-lg rounded-b-none px-3 sm:px-4 py-2 w-full md:w-auto flex flex-col md:flex-row gap-4 items-start md:items-center shadow">
+                   <div className="text-xs text-gray-500 text-left"><span className="font-semibold text-[#1C1C1E]">Date</span><br /><span className="text-base text-gray-800 font-normal">{format(new Date(), 'dd/MM/yyyy')}</span></div>
+                   <div className="text-xs text-gray-500 text-left md:text-right"><span className="font-semibold text-[#1C1C1E]">Clockin</span><br /><span className="text-base text-gray-800 font-normal">{attendanceToday?.clockIn ? format(new Date(attendanceToday.clockIn), 'HH:mm:ss') : '-'}</span></div>
+                   <div className="text-xs text-gray-500 text-left md:text-right"><span className="font-semibold text-[#1C1C1E]">Clockout</span><br /><span className="text-base text-gray-800 font-normal">{attendanceToday?.clockOut ? format(new Date(attendanceToday.clockOut), 'HH:mm:ss') : '-'}</span></div>
+                   <div className="text-xs text-gray-500 text-left md:text-right"><span className="font-semibold text-[#1C1C1E]">Working hours</span><br /><span className="text-base text-gray-800 font-normal">{attendanceToday?.totalWorkingHours != null ? `${attendanceToday.totalWorkingHours}` : '-'}</span></div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
