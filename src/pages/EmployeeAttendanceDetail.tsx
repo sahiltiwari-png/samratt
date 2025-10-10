@@ -161,15 +161,15 @@ const EmployeeAttendanceDetail: React.FC = () => {
         <div className="bg-white rounded-lg shadow-sm overflow-hidden">
           <div className="overflow-x-auto" style={{ WebkitOverflowScrolling: 'touch' }}>
             <table className="min-w-full text-sm">
-              <thead className="bg-gray-50 border-b">
+              <thead className="border-b" style={{ background: '#2C373B', color: '#FFFFFF' }}>
                 <tr>
-                  <th className="px-4 py-2 text-left font-medium text-gray-600">Date</th>
-                  <th className="px-4 py-2 text-left font-medium text-gray-600">Status</th>
-                  <th className="px-4 py-2 text-left font-medium text-gray-600">Clock In</th>
-                  <th className="px-4 py-2 text-left font-medium text-gray-600">Clock Out</th>
-                  <th className="px-4 py-2 text-left font-medium text-gray-600">Working Hours</th>
-                  <th className="px-4 py-2 text-left font-medium text-gray-600">Marked By</th>
-                  <th className="px-4 py-2 text-left font-medium text-gray-600">Actions</th>
+                  <th className="px-4 py-2 text-left font-medium whitespace-nowrap" style={{ fontSize: '12px', fontWeight: 600, color: '#FFFFFF' }}>Date</th>
+                  <th className="px-4 py-2 text-left font-medium whitespace-nowrap" style={{ fontSize: '12px', fontWeight: 600, color: '#FFFFFF' }}>Status</th>
+                  <th className="px-4 py-2 text-left font-medium whitespace-nowrap" style={{ fontSize: '12px', fontWeight: 600, color: '#FFFFFF' }}>Clock In</th>
+                  <th className="px-4 py-2 text-left font-medium whitespace-nowrap" style={{ fontSize: '12px', fontWeight: 600, color: '#FFFFFF' }}>Clock Out</th>
+                  <th className="px-4 py-2 text-left font-medium whitespace-nowrap" style={{ fontSize: '12px', fontWeight: 600, color: '#FFFFFF' }}>Working Hours</th>
+                  <th className="px-4 py-2 text-left font-medium whitespace-nowrap" style={{ fontSize: '12px', fontWeight: 600, color: '#FFFFFF' }}>Marked By</th>
+                  <th className="px-4 py-2 text-left font-medium whitespace-nowrap" style={{ fontSize: '12px', fontWeight: 600, color: '#FFFFFF' }}>Actions</th>
                 </tr>
               </thead>
               <tbody>
