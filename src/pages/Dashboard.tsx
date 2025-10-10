@@ -192,7 +192,13 @@ const Dashboard = () => {
 
   if (user?.role === 'companyAdmin' || user?.role === 'hr') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-green-200 to-green-50 py-6 px-2 md:px-8">
+      <div
+        className="min-h-screen py-6 px-2 md:px-8"
+        style={{
+          background:
+            'linear-gradient(151.95deg, rgba(76, 220, 156, 0.81) 17.38%, rgba(255, 255, 255, 0.81) 107.36%)'
+        }}
+      >
         {/* Image Modal */}
         {showImageModal && calendarData?.calendarFile && (
           <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
