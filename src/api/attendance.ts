@@ -75,6 +75,23 @@ export const getAttendanceReportAll = async (params?: {
   return response.data as AttendanceReportResponse;
 };
 
+// Download monthly attendance report
+export const downloadMonthlyAttendanceReport = async (params: {
+  organizationId: string;
+  month?: number | string;
+  year?: number | string;
+}) => {
+  const query: string[] = [];
+  if (params.organizationId) query.push(`organizationId=${params.organizationId}`);
+  if (params.month !== undefined) query.push(`month=${params.month}`);
+  if (params.year !== undefined) query.push(`year=${params.year}`);
+  const qs = query.length ? `?${query.join('&')}` : '';
+  const res = await API.get(`/reports/monthly-attendance-report/download${qs}`, {
+    responseType: 'blob',
+  });
+  return res;
+};
+
 export const getEmployeeAttendanceById = async (employeeId: string, params?: any) => {
   try {
     const query = [];

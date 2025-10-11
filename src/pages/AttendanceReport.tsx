@@ -9,7 +9,8 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { getAttendanceReportAll, type AttendanceReportItem } from '@/api/attendance';
+import { getAttendanceReportAll, downloadMonthlyAttendanceReport, type AttendanceReportItem } from '@/api/attendance';
+import { useAuth } from '@/contexts/AuthContext';
 
 // Helpers
 const sanitizePhotoUrl = (url?: string) => {
@@ -45,6 +46,7 @@ const getDesignationPreview = (d?: string) => {
 };
 
 const AttendanceReport = () => {
+  const { organizationId } = useAuth();
   const [attendanceData, setAttendanceData] = useState<AttendanceReportItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [month, setMonth] = useState<number>(new Date().getMonth() + 1);
@@ -97,15 +99,38 @@ const AttendanceReport = () => {
     }
   };
 
-  const handleExportReport = () => {
-    // Dummy export action
-    const blob = new Blob([JSON.stringify(attendanceData, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'attendance-report.json';
-    a.click();
-    URL.revokeObjectURL(url);
+  const handleExportReport = async () => {
+    try {
+      const orgId = organizationId || localStorage.getItem('organizationId') || (JSON.parse(localStorage.getItem('user') || '{}')?.organizationId);
+      if (!orgId) {
+        // Fallback: prevent download without org id
+        alert('Organization ID not found. Please ensure you are logged in.');
+        return;
+      }
+      const response = await downloadMonthlyAttendanceReport({
+        organizationId: String(orgId),
+        month,
+        year,
+      });
+
+      const blob = new Blob([response.data], { type: response.headers['content-type'] || 'application/octet-stream' });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      const cd = response.headers['content-disposition'];
+      let filename = `monthly-attendance-${month}-${year}.xlsx`;
+      if (cd) {
+        const m = cd.match(/filename="(.+?)"/);
+        if (m && m[1]) filename = m[1];
+      }
+      link.setAttribute('download', filename);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (e: any) {
+      alert(e?.response?.data?.message || 'Failed to download report');
+    }
   };
 
   return (
