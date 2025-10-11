@@ -56,7 +56,8 @@ const navigation: NavigationItem[] = [
   { title: "Reports", url: "/reports", icon: FileText, hasSubmenu: true, submenu: [
     { title: "Employees Report", url: "/reports/employees" },
     { title: "Leave Requests Report", url: "/reports/leave-requests" },
-    { title: "Payroll Report", url: "/reports/payroll" }
+    { title: "Payroll Report", url: "/reports/payroll" },
+    { title: "Attendance Report", url: "/reports/attendance" }
   ] },
   { title: "Settings", url: "/settings", icon: Settings },
   { title: "Organization Settings", url: "/organization-settings", icon: Settings },

@@ -34,6 +34,7 @@ import Reports from "./pages/Reports";
 import EmployeesReport from "./pages/EmployeesReport";
 import LeaveRequestsReport from "./pages/LeaveRequestsReport";
 import PayrollReport from "./pages/PayrollReport";
+import AttendanceReport from "./pages/AttendanceReport";
 import CreateOrganization from "./pages/CreateOrganization";
 import OrganizationDetails from "./pages/OrganizationDetails";
 import EmployeeAttendanceDetail from "./pages/EmployeeAttendanceDetail";
@@ -212,6 +213,14 @@ const App = () => (
                         element={
                           <RoleRoute allowedRoles={["companyAdmin","hr"]} redirectTo="/dashboard">
                             <PayrollReport />
+                          </RoleRoute>
+                        }
+                      />
+                      <Route
+                        path="/reports/attendance"
+                        element={
+                          <RoleRoute allowedRoles={["companyAdmin","hr"]} redirectTo="/dashboard">
+                            <AttendanceReport />
                           </RoleRoute>
                         }
                       />

@@ -24,6 +24,46 @@ export const getAttendance = async (params?: {
   return response.data;
 };
 
+// Attendance report (all) interfaces and API
+export interface AttendanceReportItem {
+  clockIn: string | null;
+  clockOut: string | null;
+  totalWorkingHours: string | null;
+  status: string;
+  markedBy?: string;
+  _id: string;
+  employeeCode: string;
+  employeeName: string;
+  email?: string;
+  designation?: string;
+  department?: string;
+  profilePhotoUrl?: string;
+  date: string;
+}
+
+export interface AttendanceReportResponse {
+  success: boolean;
+  data: AttendanceReportItem[];
+}
+
+export const getAttendanceReportAll = async (params?: {
+  startDate?: string;
+  endDate?: string;
+  status?: string; // expected values like 'present', 'absent', etc.
+  employeeId?: string;
+}) => {
+  const query: string[] = [];
+  if (params) {
+    if (params.startDate) query.push(`startDate=${params.startDate}`);
+    if (params.endDate) query.push(`endDate=${params.endDate}`);
+    if (params.status && params.status !== 'all') query.push(`status=${params.status}`);
+    if (params.employeeId) query.push(`employeeId=${params.employeeId}`);
+  }
+  const qs = query.length ? `?${query.join('&')}` : '';
+  const response = await API.get(`/reports/attendance-report/all${qs}`);
+  return response.data as AttendanceReportResponse;
+};
+
 export const getEmployeeAttendanceById = async (employeeId: string, params?: any) => {
   try {
     const query = [];
