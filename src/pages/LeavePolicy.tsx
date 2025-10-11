@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -399,27 +400,46 @@ const LeavePolicy = () => {
       }}
     >
       <div className="w-full space-y-6">
-        <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
-          <h1 className="text-2xl font-bold" style={{color: '#2C373B'}}>Leave Policy creation</h1>
-          {!isFormMode && (
-            <Button
-              onClick={() => setIsModalOpen(true)}
-              className="hover:opacity-90"
-              style={{ backgroundColor: '#4CDC9C', color: '#2C373B' }}
-              disabled={addingLeaveType}
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              {addingLeaveType ? "Adding..." : "Add Leave Type"}
-            </Button>
+        <div className="flex flex-col gap-2">
+          <h1 className="font-semibold" style={{ color: '#2C373B', fontSize: '24px', fontWeight: 600 }}>Review the policy information and manage leave types</h1>
+          {/* Banner with policy details */}
+          {policies.length > 0 && (
+            <div className="mt-2 rounded-2xl p-4" style={{ backgroundColor: '#2C373B' }}>
+              <div className="flex items-start justify-between">
+                <div>
+                  <div className="text-white font-semibold" style={{ fontSize: '18px' }}>Leave Policy details</div>
+                  <div className="text-white mt-2" style={{ fontSize: '14px', fontWeight: 500 }}>
+                    {policies[0]?.name ?? ''}
+                  </div>
+                  <div className="text-white" style={{ fontSize: '14px', fontWeight: 500 }}>
+                    {(() => {
+                      const efFromRaw = policies[0]?.effectiveFrom;
+                      const efToRaw = policies[0]?.effectiveTo;
+                      if (!efFromRaw) return '';
+                      const start = new Date(efFromRaw);
+                      const startMonthStart = new Date(start.getFullYear(), start.getMonth(), 1);
+                      const end = efToRaw ? new Date(efToRaw) : new Date(start.getFullYear(), 11, 31);
+                      const endMonthEnd = new Date(end.getFullYear(), end.getMonth() + 1, 0);
+                      const fmt = (d: Date) => d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+                      return `${fmt(startMonthStart)} - ${fmt(endMonthEnd)}`;
+                    })()}
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Switch checked={policies[0]?.isActive} onCheckedChange={() => {}} />
+                  <span className="text-white" style={{ fontSize: '14px' }}>Active</span>
+                </div>
+              </div>
+            </div>
           )}
         </div>
 
         {isFormMode ? (
           <Card className="w-full shadow-lg rounded-2xl">
-            <CardHeader>
+            <CardHeader className="p-3 sm:p-6">
               <CardTitle style={{color: '#2C373B'}}>Policy Basics</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-6">
+            <CardContent className="space-y-6 p-3 sm:p-6">
               {/* form fields */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
@@ -552,23 +572,32 @@ const LeavePolicy = () => {
           </Card>
         ) : (
           <Card className="shadow-lg rounded-2xl">
-            <CardHeader>
-              <CardTitle>Existing Leave Policies</CardTitle>
+            <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 p-3 sm:p-6">
+              <CardTitle className="break-words" style={{color: '#2C373B'}}>Leave Policy Management</CardTitle>
+              <Button
+                onClick={() => setIsModalOpen(true)}
+                className="hover:opacity-90 w-full sm:w-auto"
+                style={{ backgroundColor: '#4CDC9C', color: '#2C373B' }}
+                disabled={addingLeaveType}
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                {addingLeaveType ? "Adding..." : "Add Leave types"}
+              </Button>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-3 sm:p-6">
               <div className="overflow-x-auto">
                 <div className="rounded-md overflow-hidden">
-                <Table>
+                <Table className="w-full">
                   <TableHeader style={{ background: '#2C373B', color: '#FFFFFF' }}>
                     <TableRow className="bg-[#2C373B]" style={{ borderBottom: '1px solid #2C373B' }}>
-                      <TableHead style={{fontSize: '12px', fontWeight: '600', color: '#FFFFFF'}}>Leave Type</TableHead>
-                      <TableHead style={{fontSize: '12px', fontWeight: '600', color: '#FFFFFF'}}>Limit</TableHead>
-                      <TableHead style={{fontSize: '12px', fontWeight: '600', color: '#FFFFFF'}}>Interval</TableHead>
-                      <TableHead style={{fontSize: '12px', fontWeight: '600', color: '#FFFFFF'}}>Carry Forward</TableHead>
-                      <TableHead style={{fontSize: '12px', fontWeight: '600', color: '#FFFFFF'}}>Encashment</TableHead>
-                      <TableHead style={{fontSize: '12px', fontWeight: '600', color: '#FFFFFF'}}>Probation</TableHead>
-                      <TableHead style={{fontSize: '12px', fontWeight: '600', color: '#FFFFFF'}}>Min Work Days</TableHead>
-                      <TableHead style={{fontSize: '12px', fontWeight: '600', color: '#FFFFFF'}}>Actions</TableHead>
+                      <TableHead className="px-2" style={{fontSize: '12px', fontWeight: '600', color: '#FFFFFF'}}>Leave Type</TableHead>
+                      <TableHead className="px-2" style={{fontSize: '12px', fontWeight: '600', color: '#FFFFFF'}}>Limit</TableHead>
+                      <TableHead className="px-2" style={{fontSize: '12px', fontWeight: '600', color: '#FFFFFF'}}>Interval</TableHead>
+                      <TableHead className="px-2" style={{fontSize: '12px', fontWeight: '600', color: '#FFFFFF'}}>Carry Forward</TableHead>
+                      <TableHead className="px-2" style={{fontSize: '12px', fontWeight: '600', color: '#FFFFFF'}}>Encashment</TableHead>
+                      <TableHead className="px-2" style={{fontSize: '12px', fontWeight: '600', color: '#FFFFFF'}}>Probation</TableHead>
+                      <TableHead className="px-2" style={{fontSize: '12px', fontWeight: '600', color: '#FFFFFF'}}>Min Work Days</TableHead>
+                      <TableHead className="px-2" style={{fontSize: '12px', fontWeight: '600', color: '#FFFFFF'}}>Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -619,7 +648,7 @@ const LeavePolicy = () => {
 
         {/* Modal */}
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl shadow-xl">
+          <DialogContent aria-describedby={undefined} className="max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl shadow-xl">
             <DialogHeader>
               <DialogTitle style={{color: '#2C373B'}}>Add Leave Type</DialogTitle>
             </DialogHeader>
@@ -856,7 +885,7 @@ const LeavePolicy = () => {
 
         {/* Edit Policy Modal */}
         <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl shadow-xl">
+          <DialogContent aria-describedby={undefined} className="max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl shadow-xl">
             <DialogHeader>
               <DialogTitle style={{color: '#2C373B'}}>Edit Policy</DialogTitle>
             </DialogHeader>
@@ -989,7 +1018,7 @@ const LeavePolicy = () => {
 
         {/* Edit Leave Type Modal */}
         <Dialog open={!!editingLeaveType} onOpenChange={() => setEditingLeaveType(null)}>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl shadow-xl">
+          <DialogContent aria-describedby={undefined} className="max-w-2xl max-h-[90vh] overflow-y-auto rounded-2xl shadow-xl">
             <DialogHeader>
               <DialogTitle style={{color: '#2C373B'}}>Edit Leave Type - {editingLeaveType?.type}</DialogTitle>
             </DialogHeader>
