@@ -43,10 +43,17 @@ const EmployeeAttendanceDetail: React.FC = () => {
         params.endDate = format(dateRange.endDate, 'yyyy-MM-dd');
       }
       const response = await getEmployeeAttendanceById(id, params);
-      if (response && response.attendance) {
-        setAttendanceData({ data: [response.attendance], totalPages: 1, currentPage: 1 });
+      // Expecting a paginated response: { page, limit, total, totalPages, items }
+      if (response && Array.isArray(response.items)) {
+        setAttendanceData(response);
         setError(null);
-      } else throw new Error('Invalid response');
+      } else if (response && response.attendance) {
+        // Fallback in case API returns a single attendance record
+        setAttendanceData({ page: 1, limit: 10, total: 1, totalPages: 1, items: [response.attendance] });
+        setError(null);
+      } else {
+        throw new Error('Invalid response');
+      }
     } catch (err) {
       setError('Failed to load attendance data');
       setAttendanceData(null);
@@ -179,7 +186,7 @@ const EmployeeAttendanceDetail: React.FC = () => {
                 </tr>
               </thead>
               <tbody>
-              {attendanceData?.data?.map((rec: any) => (
+              {attendanceData?.items?.map((rec: any) => (
                 <tr key={rec._id} className="border-b last:border-0">
                   <td className="px-4 py-2">{format(new Date(rec.date), 'dd/MM/yyyy')}</td>
                   <td className="px-4 py-2">
@@ -217,20 +224,42 @@ const EmployeeAttendanceDetail: React.FC = () => {
 
           {/* Pagination */}
           <div className="flex items-center justify-between p-3 border-t bg-white">
-            <span className="text-sm text-gray-600">Prev</span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+            >
+              Prev
+            </Button>
             <div className="flex gap-1">
-              {[1, 2, 3, 4, 5].map((p) => (
-                <Button
-                  key={p}
-                  size="sm"
-                  variant={p === currentPage ? 'default' : 'outline'}
-                  onClick={() => setCurrentPage(p)}
-                >
-                  {p}
-                </Button>
-              ))}
+              {(() => {
+                const totalPages = attendanceData?.totalPages || 1;
+                const start = Math.max(1, currentPage - 2);
+                const end = Math.min(totalPages, start + 4);
+                const pages = [] as number[];
+                for (let p = start; p <= end; p++) pages.push(p);
+                return pages.map((p) => (
+                  <Button
+                    key={p}
+                    size="sm"
+                    variant={p === currentPage ? 'default' : 'outline'}
+                    onClick={() => setCurrentPage(p)}
+                  >
+                    {p}
+                  </Button>
+                ));
+              })()}
             </div>
-            <span className="flex items-center text-sm text-gray-600">Next <ChevronRight className="h-4 w-4 ml-1" /></span>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setCurrentPage((p) => Math.min((attendanceData?.totalPages || 1), p + 1))}
+              disabled={currentPage === (attendanceData?.totalPages || 1)}
+              className="flex items-center gap-1"
+            >
+              Next <ChevronRight className="h-4 w-4" />
+            </Button>
           </div>
         </div>
 
