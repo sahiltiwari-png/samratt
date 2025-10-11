@@ -47,17 +47,28 @@ export interface AttendanceReportResponse {
 }
 
 export const getAttendanceReportAll = async (params?: {
+  // date range support (legacy)
   startDate?: string;
   endDate?: string;
+  // new month/year filter support
+  month?: number | string;
+  year?: number | string;
+  // optional filters
   status?: string; // expected values like 'present', 'absent', etc.
   employeeId?: string;
 }) => {
   const query: string[] = [];
   if (params) {
+    // Prefer month/year when provided
+    if (params.month !== undefined) query.push(`month=${params.month}`);
+    if (params.year !== undefined) query.push(`year=${params.year}`);
+    // Fallback to start/end date
     if (params.startDate) query.push(`startDate=${params.startDate}`);
     if (params.endDate) query.push(`endDate=${params.endDate}`);
-    if (params.status && params.status !== 'all') query.push(`status=${params.status}`);
+    // Pass employee filter if present
     if (params.employeeId) query.push(`employeeId=${params.employeeId}`);
+    // Note: status is not used in the new flow, but kept for compatibility
+    if (params.status && params.status !== 'all') query.push(`status=${params.status}`);
   }
   const qs = query.length ? `?${query.join('&')}` : '';
   const response = await API.get(`/reports/attendance-report/all${qs}`);

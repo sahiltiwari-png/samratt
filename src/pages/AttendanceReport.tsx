@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { format } from 'date-fns';
-import { CalendarIcon, Download, User, ChevronLeft, ChevronRight } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { Download, User, ChevronLeft, ChevronRight } from 'lucide-react';
+// import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Calendar } from '@/components/ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
@@ -38,27 +37,26 @@ const formatTime = (iso?: string | null) => {
   }
 };
 
+const getDesignationPreview = (d?: string) => {
+  if (!d) return '-';
+  const parts = d.trim().split(/\s+/);
+  const first = parts[0] || '';
+  return parts.length > 1 ? `${first}...` : first;
+};
+
 const AttendanceReport = () => {
   const [attendanceData, setAttendanceData] = useState<AttendanceReportItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [startDate, setStartDate] = useState<Date | undefined>(undefined);
-  const [endDate, setEndDate] = useState<Date | undefined>(undefined);
-  const [statusFilter, setStatusFilter] = useState<string>('All Status');
+  const [month, setMonth] = useState<number>(new Date().getMonth() + 1);
+  const [year, setYear] = useState<number>(new Date().getFullYear());
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
-
-  const statusOptions = ['All Status', 'Present', 'Absent', 'Leave', 'WFH', 'Late'];
 
   useEffect(() => {
     const fetchReport = async () => {
       setLoading(true);
       try {
-        const params: any = {};
-        if (startDate) params.startDate = format(startDate, 'yyyy-MM-dd');
-        if (endDate) params.endDate = format(endDate, 'yyyy-MM-dd');
-        if (statusFilter && statusFilter.toLowerCase() !== 'all status') {
-          params.status = statusFilter.toLowerCase();
-        }
+        const params: any = { month, year };
         const res = await getAttendanceReportAll(params);
         setAttendanceData(res.data || []);
         setCurrentPage(1);
@@ -69,7 +67,7 @@ const AttendanceReport = () => {
       }
     };
     fetchReport();
-  }, [startDate, endDate, statusFilter]);
+  }, [month, year]);
 
   const totalPages = Math.ceil(attendanceData.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -147,63 +145,41 @@ const AttendanceReport = () => {
           {/* Filters */}
           <Card>
             <CardContent className="p-6">
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 sm:gap-4 items-end">
-                {/* Start Date */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 items-end">
+                {/* Month */}
                 <div className="space-y-2">
-                  <Label className="text-emerald-800 font-medium">Start Date</Label>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className={cn(
-                          'w-full justify-start text-left font-normal bg-emerald-100 border-emerald-300 text-emerald-700 hover:bg-emerald-200 h-9',
-                          !startDate && 'text-emerald-600'
-                        )}
-                      >
-                        <CalendarIcon className="mr-2 h-4 w-4 text-emerald-600" />
-                        {startDate ? format(startDate, 'PPP') : 'Pick a date'}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar mode="single" selected={startDate} onSelect={setStartDate} initialFocus />
-                    </PopoverContent>
-                  </Popover>
-                </div>
-
-                {/* End Date */}
-                <div className="space-y-2">
-                  <Label className="text-emerald-800 font-medium">End Date</Label>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className={cn(
-                          'w-full justify-start text-left font-normal bg-emerald-100 border-emerald-300 text-emerald-700 hover:bg-emerald-200 h-9',
-                          !endDate && 'text-emerald-600'
-                        )}
-                      >
-                        <CalendarIcon className="mr-2 h-4 w-4 text-emerald-600" />
-                        {endDate ? format(endDate, 'PPP') : 'Pick a date'}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar mode="single" selected={endDate} onSelect={setEndDate} initialFocus />
-                    </PopoverContent>
-                  </Popover>
-                </div>
-
-                {/* Status Filter */}
-                <div className="space-y-2">
-                  <Label className="text-emerald-800 font-medium">Status</Label>
-                  <Select value={statusFilter} onValueChange={setStatusFilter}>
+                  <Label className="text-emerald-800 font-medium">Month</Label>
+                  <Select value={String(month)} onValueChange={(val) => setMonth(Number(val))}>
                     <SelectTrigger className="bg-emerald-100 border-emerald-300 text-emerald-700 hover:bg-emerald-200 h-9">
-                      <SelectValue placeholder="Select Status" />
+                      <SelectValue placeholder="Select Month" />
                     </SelectTrigger>
                     <SelectContent>
-                      {statusOptions.map((status) => (
-                        <SelectItem key={status} value={status}>
-                          {status}
-                        </SelectItem>
+                      <SelectItem value="1">January</SelectItem>
+                      <SelectItem value="2">February</SelectItem>
+                      <SelectItem value="3">March</SelectItem>
+                      <SelectItem value="4">April</SelectItem>
+                      <SelectItem value="5">May</SelectItem>
+                      <SelectItem value="6">June</SelectItem>
+                      <SelectItem value="7">July</SelectItem>
+                      <SelectItem value="8">August</SelectItem>
+                      <SelectItem value="9">September</SelectItem>
+                      <SelectItem value="10">October</SelectItem>
+                      <SelectItem value="11">November</SelectItem>
+                      <SelectItem value="12">December</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Year */}
+                <div className="space-y-2">
+                  <Label className="text-emerald-800 font-medium">Year</Label>
+                  <Select value={String(year)} onValueChange={(val) => setYear(Number(val))}>
+                    <SelectTrigger className="bg-emerald-100 border-emerald-300 text-emerald-700 hover:bg-emerald-200 h-9">
+                      <SelectValue placeholder="Select Year" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Array.from({ length: 11 }, (_, i) => new Date().getFullYear() - 5 + i).map((y) => (
+                        <SelectItem key={y} value={String(y)}>{y}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
@@ -216,9 +192,9 @@ const AttendanceReport = () => {
                     variant="outline"
                     className="border-emerald-300 text-emerald-700 hover:bg-emerald-100 h-9"
                     onClick={() => {
-                      setStartDate(undefined);
-                      setEndDate(undefined);
-                      setStatusFilter('All Status');
+                      const now = new Date();
+                      setMonth(now.getMonth() + 1);
+                      setYear(now.getFullYear());
                       setCurrentPage(1);
                     }}
                   >
@@ -269,7 +245,17 @@ const AttendanceReport = () => {
                                 </Avatar>
                                 <div className="flex-1 min-w-0">
                                   <div className="font-bold text-emerald-900 text-base truncate">{item.employeeName}</div>
-                                  <div className="text-emerald-700 text-sm truncate">{item.employeeCode} • {item.designation}</div>
+                                  <div className="text-emerald-700 text-sm truncate">
+                                    {item.employeeCode} • 
+                                    <Tooltip>
+                                      <TooltipTrigger asChild>
+                                        <span className="cursor-help">{getDesignationPreview(item.designation)}</span>
+                                      </TooltipTrigger>
+                                      <TooltipContent>
+                                        <span>{item.designation || '-'}</span>
+                                      </TooltipContent>
+                                    </Tooltip>
+                                  </div>
                                 </div>
                               </div>
 
@@ -277,7 +263,7 @@ const AttendanceReport = () => {
                               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                                 <div className="flex items-center justify-between">
                                   <span className="text-emerald-700 font-semibold" style={{fontSize: '14px', fontWeight: '600'}}>Date:</span>
-                                  <span className="font-medium text-emerald-900">{format(new Date(item.date), 'PPP')}</span>
+                                  <span className="text-emerald-900" style={{fontSize: '14px', fontWeight: 500}}>{format(new Date(item.date), 'PPP')}</span>
                                 </div>
                                 <div className="flex items-center justify-between">
                                   <span className="text-emerald-700 font-semibold" style={{fontSize: '14px', fontWeight: '600'}}>Status:</span>
@@ -364,8 +350,17 @@ const AttendanceReport = () => {
                                   </div>
                                 </td>
                                 <td className="px-3 py-3">{item.employeeCode}</td>
-                                <td className="px-3 py-3">{item.designation}</td>
-                                <td className="px-3 py-3">{format(new Date(item.date), 'PPP')}</td>
+                                <td className="px-3 py-3">
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <span className="cursor-help">{getDesignationPreview(item.designation)}</span>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                      <span>{item.designation || '-'}</span>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </td>
+                                <td className="px-3 py-3"><span className="text-emerald-900" style={{fontSize: '14px', fontWeight: 500}}>{format(new Date(item.date), 'PPP')}</span></td>
                                 <td className="px-3 py-3 text-center">
                                   <Badge className={getStatusBadgeColor(item.status)}>{normalizeStatus(item.status)}</Badge>
                                 </td>
