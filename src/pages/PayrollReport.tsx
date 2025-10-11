@@ -274,7 +274,13 @@ const PayrollReport = () => {
   }, [showEmployeeDropdown]);
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div
+      className="min-h-screen w-full overflow-x-hidden flex flex-col"
+      style={{
+        background:
+          "linear-gradient(151.95deg, rgba(76, 220, 156, 0.81) 17.38%, rgba(255, 255, 255, 0.81) 107.36%)",
+      }}
+    >
       <div className="flex-1 overflow-x-hidden">
         <div className="w-full max-w-none space-y-6 px-1 py-4 md:px-6 md:py-6">
           {/* Header */}
@@ -627,30 +633,30 @@ const PayrollReport = () => {
               <div className="hidden lg:block">
                 <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-emerald-300 scrollbar-track-emerald-100" style={{ WebkitOverflowScrolling: 'touch' }}>
                   <table className="w-full min-w-[800px] divide-y divide-gray-200">
-                    <thead className="bg-emerald-50">
+                    <thead className="border-b" style={{ background: '#2C373B', color: '#FFFFFF' }}>
                       <tr>
-                        <th className="px-3 py-3 text-left text-sm font-semibold text-emerald-800 uppercase tracking-wider w-[200px]" style={{fontSize: '12px', fontWeight: '600'}}>
+                        <th className="px-3 py-3 text-left text-sm font-semibold w-[200px] whitespace-nowrap" style={{ fontSize: '12px', fontWeight: 600, lineHeight: '18px', color: '#FFFFFF' }}>
                           Name
                         </th>
-                        <th className="px-3 py-3 text-left text-sm font-semibold text-emerald-800 uppercase tracking-wider w-[120px]" style={{fontSize: '12px', fontWeight: '600'}}>
+                        <th className="px-3 py-3 text-left text-sm font-semibold w-[120px] whitespace-nowrap" style={{ fontSize: '12px', fontWeight: 600, lineHeight: '18px', color: '#FFFFFF' }}>
                           Employee Code
                         </th>
-                        <th className="px-3 py-3 text-right text-sm font-semibold text-emerald-800 uppercase tracking-wider w-[100px]" style={{fontSize: '12px', fontWeight: '600'}}>
+                        <th className="px-3 py-3 text-right text-sm font-semibold w-[100px] whitespace-nowrap" style={{ fontSize: '12px', fontWeight: 600, lineHeight: '18px', color: '#FFFFFF' }}>
                           Basic
                         </th>
-                        <th className="px-3 py-3 text-right text-sm font-semibold text-emerald-800 uppercase tracking-wider w-[100px]" style={{fontSize: '12px', fontWeight: '600'}}>
+                        <th className="px-3 py-3 text-right text-sm font-semibold w-[100px] whitespace-nowrap" style={{ fontSize: '12px', fontWeight: 600, lineHeight: '18px', color: '#FFFFFF' }}>
                           HRA
                         </th>
-                        <th className="px-3 py-3 text-right text-sm font-semibold text-emerald-800 uppercase tracking-wider w-[120px]" style={{fontSize: '12px', fontWeight: '600'}}>
+                        <th className="px-3 py-3 text-right text-sm font-semibold w-[120px] whitespace-nowrap" style={{ fontSize: '12px', fontWeight: 600, lineHeight: '18px', color: '#FFFFFF' }}>
                           Gross Earning
                         </th>
-                        <th className="px-3 py-3 text-right text-sm font-semibold text-emerald-800 uppercase tracking-wider w-[100px]" style={{fontSize: '12px', fontWeight: '600'}}>
+                        <th className="px-3 py-3 text-right text-sm font-semibold w-[100px] whitespace-nowrap" style={{ fontSize: '12px', fontWeight: 600, lineHeight: '18px', color: '#FFFFFF' }}>
                           Deduction
                         </th>
-                        <th className="px-3 py-3 text-right text-sm font-semibold text-emerald-800 uppercase tracking-wider w-[120px]" style={{fontSize: '12px', fontWeight: '600'}}>
+                        <th className="px-3 py-3 text-right text-sm font-semibold w-[120px] whitespace-nowrap" style={{ fontSize: '12px', fontWeight: 600, lineHeight: '18px', color: '#FFFFFF' }}>
                           Net Salary
                         </th>
-                        <th className="px-3 py-3 text-center text-sm font-semibold text-emerald-800 uppercase tracking-wider w-[100px]" style={{fontSize: '12px', fontWeight: '600'}}>
+                        <th className="px-3 py-3 text-center text-sm font-semibold w-[100px] whitespace-nowrap" style={{ fontSize: '12px', fontWeight: 600, lineHeight: '18px', color: '#FFFFFF' }}>
                           Status
                         </th>
                       </tr>

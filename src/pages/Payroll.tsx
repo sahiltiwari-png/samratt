@@ -292,7 +292,13 @@ const Payroll = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-200 via-emerald-100 to-emerald-50 p-3 sm:p-6">
+    <div
+      className="min-h-screen w-full overflow-x-hidden p-3 sm:p-6"
+      style={{
+        background:
+          "linear-gradient(151.95deg, rgba(76, 220, 156, 0.81) 17.38%, rgba(255, 255, 255, 0.81) 107.36%)",
+      }}
+    >
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
@@ -360,33 +366,33 @@ const Payroll = () => {
         <div className="bg-white rounded-xl shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
             <table className="min-w-[900px] w-full border-collapse">
-              <thead className="bg-gray-50 border-b">
-                <tr>
-                  <th className="px-2 py-2 text-left text-[12px] font-semibold text-[#2C373B]">
+              <thead className="border-b" style={{ background: '#2C373B', color: '#FFFFFF' }}>
+                <tr className="bg-[#2C373B]" style={{ borderBottom: '1px solid #2C373B' }}>
+                  <th className="px-2 py-2 text-left text-[12px] font-semibold text-[#FFFFFF]">
                     Name
                   </th>
-                  <th className="px-2 py-2 text-left text-[12px] font-semibold text-[#2C373B]">
+                  <th className="px-2 py-2 text-left text-[12px] font-semibold text-[#FFFFFF]">
                     Code
                   </th>
-                  <th className="px-2 py-2 text-left text-[12px] font-semibold text-[#2C373B]">
+                  <th className="px-2 py-2 text-left text-[12px] font-semibold text-[#FFFFFF]">
                     Basic
                   </th>
-                  <th className="px-2 py-2 text-left text-[12px] font-semibold text-[#2C373B]">
+                  <th className="px-2 py-2 text-left text-[12px] font-semibold text-[#FFFFFF]">
                     HRA
                   </th>
-                  <th className="px-2 py-2 text-left text-[12px] font-semibold text-[#2C373B]">
+                  <th className="px-2 py-2 text-left text-[12px] font-semibold text-[#FFFFFF]">
                     Gross
                   </th>
-                  <th className="px-2 py-2 text-left text-[12px] font-semibold text-[#2C373B]">
+                  <th className="px-2 py-2 text-left text-[12px] font-semibold text-[#FFFFFF]">
                     Deductions
                   </th>
-                  <th className="px-2 py-2 text-left text-[12px] font-semibold text-[#2C373B]">
+                  <th className="px-2 py-2 text-left text-[12px] font-semibold text-[#FFFFFF]">
                     Net
                   </th>
-                  <th className="px-2 py-2 text-left text-[12px] font-semibold text-[#2C373B]">
+                  <th className="px-2 py-2 text-left text-[12px] font-semibold text-[#FFFFFF]">
                     Status
                   </th>
-                  <th className="px-2 py-2 text-left text-[12px] font-semibold text-[#2C373B]">
+                  <th className="px-2 py-2 text-left text-[12px] font-semibold text-[#FFFFFF]">
                     Actions
                   </th>
                 </tr>

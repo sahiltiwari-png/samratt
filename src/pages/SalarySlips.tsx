@@ -326,7 +326,13 @@ const SalarySlip = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-200 via-emerald-100 to-emerald-50 p-6">
+    <div
+      className="min-h-screen w-full overflow-x-hidden p-6"
+      style={{
+        background:
+          "linear-gradient(151.95deg, rgba(76, 220, 156, 0.81) 17.38%, rgba(255, 255, 255, 0.81) 107.36%)",
+      }}
+    >
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="flex items-start justify-between mb-1">
@@ -355,16 +361,18 @@ const SalarySlip = () => {
           ) : (
             <div className="overflow-x-hidden w-full">
               <table className="min-w-full w-full text-sm">
-                <thead className="bg-gray-50 border-b">
+                <thead className="border-b" style={{ background: '#2C373B', color: '#FFFFFF' }}>
                   <tr>
-                    <th className="px-4 py-2 text-left font-semibold" style={{fontSize: '12px', fontWeight: '600', color: '#2C373B'}}>Employee</th>
-                    <th className="px-4 py-2 text-left font-semibold" style={{fontSize: '12px', fontWeight: '600', color: '#2C373B'}}>Code</th>
-                    <th className="px-4 py-2 text-left font-semibold" style={{fontSize: '12px', fontWeight: '600', color: '#2C373B'}}>CTC</th>
-                    <th className="px-4 py-2 text-left font-semibold" style={{fontSize: '12px', fontWeight: '600', color: '#2C373B'}}>HRA</th>
-                    <th className="px-4 py-2 text-left font-semibold" style={{fontSize: '12px', fontWeight: '600', color: '#2C373B'}}>Conveyance</th>
-                    <th className="px-4 py-2 text-left font-semibold" style={{fontSize: '12px', fontWeight: '600', color: '#2C373B'}}>Special Allowance</th>
-                    <th className="px-4 py-2 text-left font-semibold" style={{fontSize: '12px', fontWeight: '600', color: '#2C373B'}}>Gross</th>
-                    <th className="px-4 py-2 text-left font-semibold" style={{fontSize: '12px', fontWeight: '600', color: '#2C373B'}}>Actions</th>
+                    <th className="px-4 py-2 text-left font-semibold" style={{fontSize: '12px', fontWeight: '600', color: '#FFFFFF'}}>Employee</th>
+                    <th className="px-4 py-2 text-left font-semibold" style={{fontSize: '12px', fontWeight: '600', color: '#FFFFFF'}}>Code</th>
+                    <th className="px-4 py-2 text-left font-semibold" style={{fontSize: '12px', fontWeight: '600', color: '#FFFFFF'}}>CTC</th>
+                    <th className="px-4 py-2 text-left font-semibold" style={{fontSize: '12px', fontWeight: '600', color: '#FFFFFF'}}>HRA</th>
+                    <th className="px-4 py-2 text-left font-semibold" style={{fontSize: '12px', fontWeight: '600', color: '#FFFFFF'}}>Conveyance</th>
+                    <th className="px-4 py-2 text-left font-semibold" style={{fontSize: '12px', fontWeight: '600', color: '#FFFFFF'}}>
+                      <span title="Special Allowance">Special All......</span>
+                    </th>
+                    <th className="px-4 py-2 text-left font-semibold" style={{fontSize: '12px', fontWeight: '600', color: '#FFFFFF'}}>Gross</th>
+                    <th className="px-4 py-2 text-left font-semibold" style={{fontSize: '12px', fontWeight: '600', color: '#FFFFFF'}}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>

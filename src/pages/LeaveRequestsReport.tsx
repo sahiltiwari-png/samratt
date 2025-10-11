@@ -217,7 +217,13 @@ const LeaveRequestsReport = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-100 via-emerald-50 to-white p-4 sm:p-6">
+    <div
+      className="min-h-screen w-full overflow-x-hidden p-4 sm:p-6"
+      style={{
+        background:
+          "linear-gradient(151.95deg, rgba(76, 220, 156, 0.81) 17.38%, rgba(255, 255, 255, 0.81) 107.36%)",
+      }}
+    >
       <div className="w-full mx-auto space-y-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -466,27 +472,27 @@ const LeaveRequestsReport = () => {
         <div className="hidden lg:block bg-white rounded-xl shadow-md border">
           <div className="overflow-x-auto">
             <table className="w-full divide-y divide-gray-200">
-              <thead className="bg-emerald-50">
+              <thead className="border-b" style={{ background: '#2C373B', color: '#FFFFFF', lineHeight: '18px' }}>
                 <tr>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-emerald-800 uppercase tracking-wider" style={{fontSize: '12px', fontWeight: 600}}>
+                  <th className="px-4 py-3 text-left font-semibold whitespace-nowrap" style={{fontSize: '12px', fontWeight: 600, color: '#FFFFFF', lineHeight: '18px'}}>
                     Employee
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-emerald-800 uppercase tracking-wider" style={{fontSize: '12px', fontWeight: 600}}>
+                  <th className="px-4 py-3 text-left font-semibold whitespace-nowrap" style={{fontSize: '12px', fontWeight: 600, color: '#FFFFFF', lineHeight: '18px'}}>
                     Leave Type
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-emerald-800 uppercase tracking-wider" style={{fontSize: '12px', fontWeight: 600}}>
+                  <th className="px-4 py-3 text-left font-semibold whitespace-nowrap" style={{fontSize: '12px', fontWeight: 600, color: '#FFFFFF', lineHeight: '18px'}}>
                     Start Date
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-emerald-800 uppercase tracking-wider" style={{fontSize: '12px', fontWeight: 600}}>
+                  <th className="px-4 py-3 text-left font-semibold whitespace-nowrap" style={{fontSize: '12px', fontWeight: 600, color: '#FFFFFF', lineHeight: '18px'}}>
                     End Date
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-emerald-800 uppercase tracking-wider" style={{fontSize: '12px', fontWeight: 600}}>
+                  <th className="px-4 py-3 text-left font-semibold whitespace-nowrap" style={{fontSize: '12px', fontWeight: 600, color: '#FFFFFF', lineHeight: '18px'}}>
                     Reason
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-emerald-800 uppercase tracking-wider" style={{fontSize: '12px', fontWeight: 600}}>
+                  <th className="px-4 py-3 text-left font-semibold whitespace-nowrap" style={{fontSize: '12px', fontWeight: 600, color: '#FFFFFF', lineHeight: '18px'}}>
                     Days
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-emerald-800 uppercase tracking-wider" style={{fontSize: '12px', fontWeight: 600}}>
+                  <th className="px-4 py-3 text-left font-semibold whitespace-nowrap" style={{fontSize: '12px', fontWeight: 600, color: '#FFFFFF', lineHeight: '18px'}}>
                     Status
                   </th>
                 </tr>

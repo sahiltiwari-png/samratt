@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { Search, Bell, User2, Upload } from "lucide-react";
+import { Upload } from "lucide-react";
 import { getOrganizationById, updateOrganization, type Organization } from "@/api/organizations";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "@/components/ui/use-toast";
@@ -207,29 +207,15 @@ const OrganizationSettings: React.FC = () => {
   };
 
   return (
-    <div className="min-h-svh bg-gradient-to-b from-[#4CDC9C] via-[#7fe7bd] to-[#aaf3d3]">
-      {/* Top search bar */}
-      <div className="sticky top-0 z-10 bg-transparent px-6 pt-4 pb-6">
-        <div className="flex items-center gap-3">
-          <div className="flex-1">
-            <div className="relative">
-              <Input
-                placeholder="Search organization"
-                className="pr-12 h-12 rounded-2xl bg-white text-gray-900 shadow-sm border border-gray-300"
-              />
-              <Search className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-600" />
-            </div>
-          </div>
-          {/* <button className="p-2 rounded-full bg-white text-gray-800 border border-gray-300 shadow-sm hover:bg-white">
-            <Bell className="h-5 w-5" />
-          </button> */}
-          {/* <button className="p-2 rounded-full bg-white text-gray-800 border border-gray-300 shadow-sm hover:bg-white">
-            <User2 className="h-5 w-5" />
-          </button> */}
-        </div>
-      </div>
+    <div
+      className="min-h-screen w-full overflow-x-hidden"
+      style={{
+        background:
+          "linear-gradient(151.95deg, rgba(76, 220, 156, 0.81) 17.38%, rgba(255, 255, 255, 0.81) 107.36%)",
+      }}
+    >
 
-      <div className="px-6">
+      <div className="px-3 md:px-6 py-6 max-w-[1200px] mx-auto">
         <h1 className="text-xl font-semibold mb-4">Settings</h1>
         <Card className="border rounded-lg">
           <CardHeader className="flex flex-row items-center justify-between gap-4">

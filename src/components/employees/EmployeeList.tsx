@@ -4,6 +4,8 @@ const EmployeeFilterBar = ({
   setStatusFilter,
   designationFilter,
   setDesignationFilter,
+  employeeFilter,
+  setEmployeeFilter,
   onClear,
   onAddEmployee,
   total
@@ -12,6 +14,8 @@ const EmployeeFilterBar = ({
   setStatusFilter: (v: string | null) => void,
   designationFilter: string | null,
   setDesignationFilter: (v: string | null) => void,
+  employeeFilter: { id: string | null; name: string } | null,
+  setEmployeeFilter: (v: { id: string | null; name: string } | null) => void,
   onClear: () => void,
   onAddEmployee: () => void,
   total: number
@@ -150,12 +154,28 @@ const EmployeeFilterBar = ({
     "Service Delivery Manager"
   ];
   const [designationOpen, setDesignationOpen] = useState(false);
+  const [employeeOpen, setEmployeeOpen] = useState(false);
+  const [employeeQuery, setEmployeeQuery] = useState("");
+  const [employeeLoading, setEmployeeLoading] = useState(false);
+  const [employeeResults, setEmployeeResults] = useState<any[]>([]);
+  const searchEmployees = async (query: string) => {
+    try {
+      setEmployeeLoading(true);
+      const res = await getEmployees({ page: 1, limit: 10, search: query });
+      setEmployeeResults(res.items || res.data || []);
+      setEmployeeOpen(true);
+    } catch (e) {
+      setEmployeeResults([]);
+    } finally {
+      setEmployeeLoading(false);
+    }
+  };
   return (
     <div className="flex flex-col md:flex-row md:flex-nowrap md:items-center md:justify-between gap-3 mb-4 w-full pb-2 rounded-lg p-3 bg-white">
       <div className="flex items-center gap-2 flex-wrap md:flex-nowrap">
-        <span className="font-medium text-base text-[#2C373B]">Total Employees - {total}</span>
+        <span className="font-semibold text-[#2C373B]">Total Employees - {total}</span>
         <select
-          className="rounded border border-emerald-300 h-8 px-3 bg-[rgb(209,250,229)] text-[#2C373B] focus:outline-none focus:ring-2 focus:ring-emerald-200 min-w-[120px]"
+          className="rounded-lg border border-gray-300 h-8 px-2 bg-[#E1F9EF] text-[#2C373B] focus:outline-none focus:ring-2 focus:ring-gray-300 min-w-[100px]"
           value={statusFilter || ""}
           onChange={e => setStatusFilter(e.target.value === "" ? null : e.target.value)}
         >
@@ -171,13 +191,13 @@ const EmployeeFilterBar = ({
             <button
               type="button"
               aria-expanded={designationOpen}
-              className="rounded border border-emerald-300 h-8 px-3 bg-[rgb(209,250,229)] text-[#2C373B] focus:outline-none focus:ring-2 focus:ring-emerald-200 min-w-[180px] inline-flex items-center justify-between"
-            >
+            className="rounded-lg border border-gray-300 h-8 px-2 bg-[#E1F9EF] text-[#2C373B] focus:outline-none focus:ring-2 focus:ring-gray-300 min-w-[150px] inline-flex items-center justify-between"
+          >
               <span className="truncate">{designationFilter || "Designation"}</span>
               <ChevronDown className="ml-2 h-4 w-4 opacity-60" />
             </button>
           </PopoverTrigger>
-          <PopoverContent className="p-0 w-[240px]">
+          <PopoverContent className="p-0 w-[220px]">
             <Command>
               <CommandInput placeholder="Search designation..." />
               <CommandList>
@@ -200,8 +220,61 @@ const EmployeeFilterBar = ({
             </Command>
           </PopoverContent>
         </Popover>
+        {/* Employee Dropdown Filter */}
+        <Popover open={employeeOpen} onOpenChange={(open) => { 
+          setEmployeeOpen(open); 
+          if (open) { 
+            // Fetch initial employees list when opening dropdown
+            searchEmployees(employeeQuery || ""); 
+          }
+        }}>
+          <PopoverTrigger asChild>
+            <button
+              type="button"
+              aria-expanded={employeeOpen}
+              className="rounded-lg border border-gray-300 h-8 px-2 bg-[#E1F9EF] text-[#2C373B] focus:outline-none focus:ring-2 focus:ring-gray-300 min-w-[160px] inline-flex items-center justify-between"
+            >
+              <span className="truncate">{employeeFilter?.name || "Employee"}</span>
+              <ChevronDown className="ml-2 h-4 w-4 opacity-60" />
+            </button>
+          </PopoverTrigger>
+          <PopoverContent className="p-0 w-[240px]" align="start">
+            <Command>
+              <CommandInput
+                placeholder="Search employee by name/code..."
+                value={employeeQuery}
+                onValueChange={(val: string) => {
+                  setEmployeeQuery(val);
+                  if (val && val.length > 0) {
+                    searchEmployees(val);
+                  }
+                }}
+              />
+              <CommandList className="max-h-64 overflow-auto">
+                <CommandEmpty>{employeeLoading ? "Loading..." : "No employees found."}</CommandEmpty>
+                <CommandGroup heading="Employees">
+                  {employeeResults.map((emp) => (
+                    <CommandItem
+                      key={emp._id}
+                      value={`${emp.firstName || ''} ${emp.lastName || ''}`.trim()}
+                      onSelect={() => {
+                        setEmployeeFilter({ id: emp._id, name: `${emp.firstName || ''} ${emp.lastName || ''} (${emp.employeeCode || ''})`.trim() });
+                        setEmployeeOpen(false);
+                      }}
+                    >
+                      <div className="flex items-center justify-between w-full">
+                        <span className="truncate">{`${emp.firstName || ''} ${emp.lastName || ''}`.trim()}</span>
+                        <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-700">{emp.employeeCode || '-'}</span>
+                      </div>
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </CommandList>
+            </Command>
+          </PopoverContent>
+        </Popover>
         <button
-          className="inline-flex items-center gap-1 h-8 px-3 rounded border border-[#4CDC9C] bg-[#4CDC9C] text-[#2C373B] text-sm transition shadow-sm hover:bg-[#3fd190]"
+          className="inline-flex items-center gap-1 h-8 px-3 rounded-lg border border-transparent bg-transparent text-[#2C373B] text-sm transition shadow-none hover:bg-transparent"
           onClick={onClear}
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
@@ -210,9 +283,10 @@ const EmployeeFilterBar = ({
       </div>
       <div className="flex-shrink-0">
         <button
-          className="bg-[#4CDC9C] hover:bg-[#3fd190] text-[#2C373B] font-semibold px-4 h-8 rounded transition"
+          className="bg-[#4CDC9C] hover:bg-[#3fd190] text-[#2C373B] font-semibold text-sm px-3 h-8 rounded-lg transition inline-flex items-center gap-2"
           onClick={onAddEmployee}
         >
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4"><path strokeLinecap="round" strokeLinejoin="round" d="M12 5v14M5 12h14"/></svg>
           Add Employee
         </button>
       </div>
@@ -275,6 +349,7 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
   const [totalPages, setTotalPages] = useState(1);
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
   const [designationFilter, setDesignationFilter] = useState<string | null>(null);
+  const [employeeFilter, setEmployeeFilter] = useState<{ id: string | null; name: string } | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState<Employee | null>(null);
   const [employeeDetails, setEmployeeDetails] = useState<any>(null);
@@ -339,11 +414,29 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
           limit: 10,
           status: statusFilter ? statusFilter.toLowerCase() : statusFilter,
           designation: designationFilter,
-          search: searchTerm
+          search: searchTerm,
+          employeeId: employeeFilter?.id || undefined
         });
-        setEmployees(Array.isArray(data.items) ? data.items : []);
-        setTotal(data.total || 0);
-        setTotalPages(data.totalPages || 1);
+        const items = Array.isArray((data as any)?.items)
+          ? (data as any).items
+          : Array.isArray((data as any)?.data)
+          ? (data as any).data
+          : Array.isArray(data as any)
+          ? (data as any)
+          : (data as any)?._id
+          ? [data as any]
+          : [];
+        setEmployees(items);
+        const computedTotal = typeof (data as any)?.total === 'number'
+          ? (data as any).total
+          : typeof (data as any)?.count === 'number'
+          ? (data as any).count
+          : items.length;
+        setTotal(computedTotal);
+        const computedTotalPages = typeof (data as any)?.totalPages === 'number'
+          ? (data as any).totalPages
+          : Math.max(1, Math.ceil(computedTotal / 10));
+        setTotalPages(computedTotalPages);
       } catch (err) {
         setEmployees([]);
         setTotal(0);
@@ -353,7 +446,11 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
       }
     };
     fetchEmployees();
-  }, [page, statusFilter, designationFilter, searchTerm]);
+  }, [page, statusFilter, designationFilter, employeeFilter?.id, searchTerm]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [statusFilter, designationFilter, employeeFilter?.id]);
 
   const handleStatusChange = (id: string, newStatus: string) => {
     setEmployees((prev) => prev.map(emp => emp._id === id ? { ...emp, status: newStatus } : emp));
@@ -363,6 +460,7 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
   const clearFilters = () => {
     setStatusFilter(null);
     setDesignationFilter(null);
+    setEmployeeFilter(null);
   };
 
   return (
@@ -373,6 +471,8 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
           setStatusFilter={setStatusFilter}
           designationFilter={designationFilter}
           setDesignationFilter={setDesignationFilter}
+          employeeFilter={employeeFilter}
+          setEmployeeFilter={setEmployeeFilter}
           onClear={clearFilters}
           onAddEmployee={() => navigate('/add-employee')}
           total={total}
@@ -389,8 +489,8 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
               <col style={{ width: '8%' }} />
               <col style={{ width: '12%' }} />
             </colgroup>
-            <thead className="text-[#2C373B]">
-              <tr className="border-b bg-white">
+            <thead className="text-[#FFFFFF]">
+              <tr className="bg-[#2C373B]" style={{ borderBottom: '0.76px solid #2C373B' }}>
                 <th className="px-1 py-1 text-left rounded-tl-lg" style={{fontSize: '12px', fontWeight: 600}}>Name</th>
                 <th className="px-1 py-1 text-left" style={{fontSize: '12px', fontWeight: 600}}>Code</th>
                 <th className="px-1 py-1 text-left" style={{fontSize: '12px', fontWeight: 600}}>Designation</th>
@@ -408,7 +508,33 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
                 <tr><td colSpan={8} className="text-center py-8 text-muted-foreground">No employees found.</td></tr>
               ) : (
                 employees.map((emp) => (
-                  <tr key={emp._id} className="border-b last:border-b-0 bg-white hover:bg-gray-50 transition-colors">
+                  <tr
+                    key={emp._id}
+                    className="border-b last:border-b-0 bg-white hover:bg-gray-50 transition-colors cursor-pointer"
+                    onClick={async () => {
+                      setSelectedEmployee(emp);
+                      setModalOpen(true);
+                      setLoadingDetails(true);
+                      setEditMode(false);
+                      setUpdateMessage(null);
+                      try {
+                        const details = await getEmployeeById(emp._id);
+                        setEmployeeDetails(details);
+                        setFormData(details);
+                        // Normalize reporting manager if API returns object
+                        if (details?.reportingManagerId && typeof details.reportingManagerId === 'object') {
+                          const rmObj: any = details.reportingManagerId;
+                          const rmName = `${rmObj?.firstName || ''} ${rmObj?.lastName || ''}`.trim();
+                          setEmployeeDetails((prev: any) => ({ ...prev, reportingManagerName: rmName, reportingManagerCode: rmObj?.employeeCode || '' }));
+                          setFormData((fd: any) => ({ ...fd, reportingManagerId: rmObj?._id, reportingManagerName: rmName, reportingManagerCode: rmObj?.employeeCode || '' }));
+                        }
+                      } catch (e) {
+                        setEmployeeDetails(null);
+                      } finally {
+                        setLoadingDetails(false);
+                      }
+                    }}
+                  >
                     <td className="px-1 py-1 max-w-xs truncate align-middle">
                       <div className="flex flex-row items-center gap-1 w-full">
                         <Avatar className="h-8 w-8">
@@ -456,7 +582,7 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
                       <div className="flex gap-2">
                         <Button
                           size="icon"
-                          className="bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3fd190]"
+                          className="bg-[#E2E9F0] text-[#2C373B] hover:bg-[#d6dde6]"
                           title="View details"
                           onClick={async () => {
                             setSelectedEmployee(emp);
@@ -486,7 +612,7 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
                         </Button>
                         <Button
                           size="icon"
-                          className="bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3fd190]"
+                          className="bg-[#E2E9F0] text-[#2C373B] hover:bg-[#d6dde6]"
                           title="Edit details"
                           onClick={async () => {
                             setSelectedEmployee(emp);
@@ -1071,15 +1197,55 @@ const EmployeeList = ({ searchTerm }: EmployeeListProps) => {
             </DialogFooter>
           </DialogContent>
         </Dialog>
-        {/* Pagination */}
+        {/* Pagination - Prev left, pages center, Next right */}
         <div className="flex items-center justify-between mt-4">
-          <div>
-            <Button size="sm" className="bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3fd190]" disabled={page === 1} onClick={() => setPage(page - 1)}>Prev</Button>
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-              <Button key={p} size="sm" className={`mx-1 ${p === page ? 'bg-[#3fd190]' : 'bg-[#4CDC9C]'} text-[#2C373B] hover:bg-[#3fd190]`} onClick={() => setPage(p)}>{p}</Button>
-            ))}
-            <Button size="sm" className="bg-[#4CDC9C] text-[#2C373B] hover:bg-[#3fd190]" disabled={page === totalPages} onClick={() => setPage(page + 1)}>Next</Button>
+          {/* Prev left */}
+          <button
+            className="text-sm px-2 py-1 rounded-lg hover:underline disabled:opacity-50"
+            disabled={page === 1}
+            onClick={() => setPage(page - 1)}
+          >
+            Prev
+          </button>
+          {/* Pages center with ellipsis */}
+          <div className="flex items-center gap-2 text-[#2C373B]">
+            {(() => {
+              const items: (number | string)[] = [];
+              const max = totalPages;
+              if (max <= 6) {
+                for (let i = 1; i <= max; i++) items.push(i);
+              } else {
+                items.push(1);
+                if (page > 3) items.push('…');
+                const start = Math.max(2, page - 1);
+                const end = Math.min(max - 1, page + 1);
+                for (let i = start; i <= end; i++) items.push(i);
+                if (page < max - 2) items.push('…');
+                items.push(max);
+              }
+              return items.map((it, idx) => (
+                typeof it === 'string' ? (
+                  <span key={`e-${idx}`} className="text-sm">{it}</span>
+                ) : (
+                  <button
+                    key={it}
+                    className={`text-sm px-2 py-1 rounded-lg ${page === it ? 'bg-[#4CDC9C] text-[#2C373B]' : 'hover:bg-[#E6F9F1]'}`}
+                    onClick={() => setPage(it)}
+                  >
+                    {it}
+                  </button>
+                )
+              ));
+            })()}
           </div>
+          {/* Next right */}
+          <button
+            className="text-sm px-2 py-1 rounded-lg hover:underline disabled:opacity-50"
+            disabled={page === totalPages}
+            onClick={() => setPage(page + 1)}
+          >
+            Next
+          </button>
         </div>
       </CardContent>
     </Card>

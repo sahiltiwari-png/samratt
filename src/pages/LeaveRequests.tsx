@@ -297,7 +297,13 @@ const LeaveRequests = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-emerald-100 via-emerald-50 to-white p-6">
+      <div
+        className="min-h-screen w-full overflow-x-hidden p-6"
+        style={{
+          background:
+            "linear-gradient(151.95deg, rgba(76, 220, 156, 0.81) 17.38%, rgba(255, 255, 255, 0.81) 107.36%)",
+        }}
+      >
         <div className="max-w-7xl mx-auto space-y-6">
           <div className="animate-pulse">
             <div className="h-8 bg-emerald-200 rounded w-1/4 mb-4"></div>
@@ -313,7 +319,13 @@ const LeaveRequests = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-100 via-emerald-50 to-white px-2 py-6 sm:px-6">
+    <div
+      className="min-h-screen w-full overflow-x-hidden px-2 py-6 sm:px-6"
+      style={{
+        background:
+          "linear-gradient(151.95deg, rgba(76, 220, 156, 0.81) 17.38%, rgba(255, 255, 255, 0.81) 107.36%)",
+      }}
+    >
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
          <div className="flex flex-col sm:flex-row flex-wrap items-start sm:items-center justify-between gap-4">
@@ -425,34 +437,34 @@ const LeaveRequests = () => {
         {/* Table */}
         <div className="bg-white rounded-xl shadow-md border overflow-hidden">
           <div className="overflow-x-auto touch-pan-x cursor-grab active:cursor-grabbing">
-            <table className="w-max min-w-[1000px] text-sm">
-              <thead className="bg-gray-50 border-b">
+            <table className="w-full min-w-[1000px] text-sm">
+              <thead className="border-b" style={{ background: '#2C373B', color: '#FFFFFF' }}>
                 <tr>
-                  <th className="px-2 py-2 text-left" style={{fontSize: '12px', fontWeight: 600, color: '#2C373B'}}>
+                  <th className="px-2 py-2 text-left" style={{fontSize: '12px', fontWeight: 600, color: '#FFFFFF'}}>
                     Name
                   </th>
-                  <th className="px-2 py-2 text-left" style={{fontSize: '12px', fontWeight: 600, color: '#2C373B'}}>
+                  <th className="px-2 py-2 text-left" style={{fontSize: '12px', fontWeight: 600, color: '#FFFFFF'}}>
                     Leave Type
                   </th>
-                  <th className="px-2 py-2 text-left" style={{fontSize: '12px', fontWeight: 600, color: '#2C373B'}}>
+                  <th className="px-2 py-2 text-left" style={{fontSize: '12px', fontWeight: 600, color: '#FFFFFF'}}>
                     Start Date
                   </th>
-                  <th className="px-2 py-2 text-left" style={{fontSize: '12px', fontWeight: 600, color: '#2C373B'}}>
+                  <th className="px-2 py-2 text-left" style={{fontSize: '12px', fontWeight: 600, color: '#FFFFFF'}}>
                     End Date
                   </th>
-                  <th className="px-2 py-2 text-left" style={{fontSize: '12px', fontWeight: 600, color: '#2C373B'}}>
+                  <th className="px-2 py-2 text-left" style={{fontSize: '12px', fontWeight: 600, color: '#FFFFFF'}}>
                     Reason
                   </th>
-                  <th className="px-2 py-2 text-left" style={{fontSize: '12px', fontWeight: 600, color: '#2C373B'}}>
+                  <th className="px-2 py-2 text-left" style={{fontSize: '12px', fontWeight: 600, color: '#FFFFFF'}}>
                     Total Days
                   </th>
-                  <th className="px-2 py-2 text-left" style={{fontSize: '12px', fontWeight: 600, color: '#2C373B'}}>
+                  <th className="px-2 py-2 text-left" style={{fontSize: '12px', fontWeight: 600, color: '#FFFFFF'}}>
                      Status
                    </th>
-                   <th className="px-2 py-2 text-left" style={{fontSize: '12px', fontWeight: 600, color: '#2C373B'}}>
+                   <th className="px-2 py-2 text-left" style={{fontSize: '12px', fontWeight: 600, color: '#FFFFFF'}}>
                      Remarks
                    </th>
-                   <th className="px-2 py-2 text-left w-[220px]" style={{fontSize: '12px', fontWeight: 600, color: '#2C373B'}}>
+                   <th className="px-2 py-2 text-left w-[220px]" style={{fontSize: '12px', fontWeight: 600, color: '#FFFFFF'}}>
                      Actions
                    </th>
                 </tr>

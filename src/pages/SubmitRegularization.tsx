@@ -151,7 +151,13 @@ const SubmitRegularization = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-100 via-emerald-50 to-white px-2 py-6 sm:px-6">
+    <div
+      className="min-h-screen w-full overflow-x-hidden p-6"
+      style={{
+        background:
+          'linear-gradient(151.95deg, rgba(76, 220, 156, 0.81) 17.38%, rgba(255, 255, 255, 0.81) 107.36%)',
+      }}
+    >
       <div className="max-w-7xl mx-auto space-y-6">
         <div className="bg-white rounded-xl shadow-sm border border-emerald-200 p-6">
           <div className="flex items-center justify-between mb-6">

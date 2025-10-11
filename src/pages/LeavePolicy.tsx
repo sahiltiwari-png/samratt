@@ -391,7 +391,13 @@ const LeavePolicy = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-200 via-emerald-100 to-emerald-50 px-2 sm:px-4 md:px-6 py-6">
+    <div
+      className="min-h-screen w-full overflow-x-hidden px-2 sm:px-4 md:px-6 py-6"
+      style={{
+        background:
+          "linear-gradient(151.95deg, rgba(76, 220, 156, 0.81) 17.38%, rgba(255, 255, 255, 0.81) 107.36%)",
+      }}
+    >
       <div className="w-full space-y-6">
         <div className="flex flex-col md:flex-row justify-between md:items-center gap-4">
           <h1 className="text-2xl font-bold" style={{color: '#2C373B'}}>Leave Policy creation</h1>
@@ -551,17 +557,18 @@ const LeavePolicy = () => {
             </CardHeader>
             <CardContent>
               <div className="overflow-x-auto">
+                <div className="rounded-md overflow-hidden">
                 <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead style={{fontSize: '12px', fontWeight: '600'}}>Leave Type</TableHead>
-                      <TableHead style={{fontSize: '12px', fontWeight: '600'}}>Limit</TableHead>
-                      <TableHead style={{fontSize: '12px', fontWeight: '600'}}>Interval</TableHead>
-                      <TableHead style={{fontSize: '12px', fontWeight: '600'}}>Carry Forward</TableHead>
-                      <TableHead style={{fontSize: '12px', fontWeight: '600'}}>Encashment</TableHead>
-                      <TableHead style={{fontSize: '12px', fontWeight: '600'}}>Probation</TableHead>
-                      <TableHead style={{fontSize: '12px', fontWeight: '600'}}>Min Work Days</TableHead>
-                      <TableHead style={{fontSize: '12px', fontWeight: '600'}}>Actions</TableHead>
+                  <TableHeader style={{ background: '#2C373B', color: '#FFFFFF' }}>
+                    <TableRow className="bg-[#2C373B]" style={{ borderBottom: '1px solid #2C373B' }}>
+                      <TableHead style={{fontSize: '12px', fontWeight: '600', color: '#FFFFFF'}}>Leave Type</TableHead>
+                      <TableHead style={{fontSize: '12px', fontWeight: '600', color: '#FFFFFF'}}>Limit</TableHead>
+                      <TableHead style={{fontSize: '12px', fontWeight: '600', color: '#FFFFFF'}}>Interval</TableHead>
+                      <TableHead style={{fontSize: '12px', fontWeight: '600', color: '#FFFFFF'}}>Carry Forward</TableHead>
+                      <TableHead style={{fontSize: '12px', fontWeight: '600', color: '#FFFFFF'}}>Encashment</TableHead>
+                      <TableHead style={{fontSize: '12px', fontWeight: '600', color: '#FFFFFF'}}>Probation</TableHead>
+                      <TableHead style={{fontSize: '12px', fontWeight: '600', color: '#FFFFFF'}}>Min Work Days</TableHead>
+                      <TableHead style={{fontSize: '12px', fontWeight: '600', color: '#FFFFFF'}}>Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -604,6 +611,7 @@ const LeavePolicy = () => {
                     )}
                   </TableBody>
                 </Table>
+                </div>
               </div>
             </CardContent>
           </Card>
